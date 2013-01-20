@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<xsd:schema xmlns="http://www.smf4j.org/schema/spring/smf4j"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://www.smf4j.org/schema/spring/smf4j"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+
+    <xsd:element name="registrar">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                    <xsd:element ref="node" minOccurs="0" maxOccurs="unbounded" />
+                </xsd:choice>
+            </xsd:sequence>
+            <xsd:attribute name="id" type="xsd:ID" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:attributeGroup name="acc-or-calc-name-attribute">
+        <xsd:attribute name="name" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:pattern value="[a-zA-Z0-9_]+" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="node-name-attribute">
+        <xsd:attribute name="name" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:pattern value="[a-zA-Z0-9\-_\.]+" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <xsd:element name="node">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:choice minOccurs="0" maxOccurs="unbounded" >
+                    <!-- Embedded nodes -->
+                    <xsd:element ref="node" />
+
+                    <!-- Accumulators -->
+                    <xsd:element ref="counter" />
+                    <xsd:element ref="mincounter" />
+                    <xsd:element ref="maxcounter" />
+                    <xsd:element ref="windowedcounter" />
+
+                    <!-- Calculators -->
+
+                    <!-- Random Beans -->
+                    <xsd:element ref="custom" />
+                </xsd:choice>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="node-name-attribute" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="counter">
+        <xsd:complexType>
+            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="mincounter">
+        <xsd:complexType>
+            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="maxcounter">
+        <xsd:complexType>
+            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="windowedcounter">
+        <xsd:complexType>
+            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+            <xsd:attribute name="timewindow" type="xsd:integer" use="required" />
+            <xsd:attribute name="intervals" type="xsd:integer" use="required" />
+            <xsd:attribute name="intervalType" use="optional" >
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="seconds" />
+                        <xsd:enumeration value="powersof2" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:attribute name="timereporter" type="xsd:string" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="custom" type="customType" />
+
+    <xsd:complexType name="customType">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="1">
+                <xsd:element ref="beans:bean"/>
+                <xsd:element ref="beans:ref"/>
+                <xsd:element ref="beans:idref"/>
+            </xsd:choice>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+        <xsd:attribute name="ref" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:element name="lookup">
+        <xsd:complexType>
+            <xsd:attribute name="path" use="required">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:pattern value="[a-zA-Z0-9\-_\.]+" />
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:attribute name="registrar" type="xsd:string" use="optional" />
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

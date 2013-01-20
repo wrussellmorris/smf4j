@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:smf4j="http://www.smf4j.org/schema/spring/smf4j"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.smf4j.org/schema/spring/smf4j http://www.smf4j.org/schema/spring/smf4j-spring-1.0.xsd
+">
+
+    <smf4j:registrar id="foo">
+        <smf4j:node name="foo.bar">
+            <smf4j:counter name="counter" />
+        </smf4j:node>
+    </smf4j:registrar>
+
+    <bean id="mockBean" class="org.smf4j.spring.MockBean">
+        <property name="accumulator">
+            <smf4j:lookup path="foo.bar.counter" registrar="foo" />
+        </property>
+    </bean>
+</beans>
