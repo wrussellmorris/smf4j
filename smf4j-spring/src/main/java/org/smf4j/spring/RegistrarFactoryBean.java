@@ -17,6 +17,7 @@ package org.smf4j.spring;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.FactoryBean;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
@@ -24,14 +25,17 @@ import org.smf4j.RegistrarFactory;
 import org.smf4j.InvalidNodeNameException;
 import org.smf4j.Registrar;
 import org.smf4j.RegistryNode;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RegistrarFactoryBean implements FactoryBean<Registrar> {
+public class RegistrarFactoryBean implements FactoryBean<Registrar>,
+        DisposableBean {
 
     private boolean initialized;
+    private Registrar registrar;
     private List<RegistryNodeProxy> nodeProxies = Collections.emptyList();
 
     @Override
@@ -53,7 +57,10 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar> {
     }
 
     public Registrar getRegistrar() {
-        return RegistrarFactory.getRegistrar();
+        if(registrar == null) {
+            registrar = RegistrarFactory.getRegistrar();
+        }
+        return registrar;
     }
 
     public List<RegistryNodeProxy> getNodeProxies() {
@@ -96,5 +103,26 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar> {
         }
 
         r.initializationComplete();
+    }
+
+    public void destroy() throws Exception {
+        if(registrar != null) {
+            RegistryNode rootNode = registrar.getRootNode();
+            Set<String> rootNames =
+                    rootNode.getChildNodes().keySet();
+            Set<String> accNames =
+                    rootNode.getAccumulators().keySet();
+            Set<String> calcNames =
+                    rootNode.getCalculators().keySet();
+            for(String acc : calcNames) {
+                rootNode.unregister(acc, rootNode.getAccumulator(acc));
+            }
+            for(String calc : calcNames) {
+                rootNode.unregister(calc, rootNode.getAccumulator(calc));
+            }
+            for(String node : rootNames) {
+                registrar.unregister(node);
+            }
+        }
     }
 }

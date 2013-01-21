@@ -126,14 +126,15 @@ public final class WindowedCounter implements Accumulator {
         return windowedIntervals.buckets(timeReporter.nanos());
     }
 
-    public void incr(long delta) {
+    @Override
+    public void add(long delta) {
         if(!isOn()) {
             return;
         }
         windowedIntervals.incr(timeReporter.nanos(), delta);
     }
 
-    public void incr() {
+    public void add() {
         if(!isOn()) {
             return;
         }

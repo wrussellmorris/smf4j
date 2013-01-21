@@ -35,7 +35,8 @@ public class MinOrMaxCounter extends AbstractAccumulator {
         this.max = max;
     }
 
-    public void inspect(long val) {
+    @Override
+    public void add(long val) {
         if(!isOn()) {
             return;
         }

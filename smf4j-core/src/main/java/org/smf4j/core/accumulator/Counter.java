@@ -29,11 +29,12 @@ public class Counter extends AbstractAccumulator {
         this.scavengedValue = new AtomicLong();
     }
 
-    public void incr() {
-        incr(1);
+    public void add() {
+        add(1);
     }
 
-    public void incr(long delta) {
+    @Override
+    public void add(long delta) {
         if(!isOn()) {
             return;
         }

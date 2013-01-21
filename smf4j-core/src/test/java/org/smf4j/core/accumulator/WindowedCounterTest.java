@@ -15,10 +15,6 @@
  */
 package org.smf4j.core.accumulator;
 
-import org.smf4j.core.accumulator.IntervalStrategy;
-import org.smf4j.core.accumulator.WindowedCounter;
-import org.smf4j.core.accumulator.WindowedIntervals;
-import org.smf4j.core.accumulator.TimeReporter;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import static org.smf4j.core.accumulator.TestUtils.*;
@@ -95,7 +91,7 @@ public class WindowedCounterTest {
 
         replay(t, intervals, strategy);
         counter.setOn(true);
-        counter.incr(delta);
+        counter.add(delta);
         verify(t, intervals, strategy);
     }
 
@@ -105,7 +101,7 @@ public class WindowedCounterTest {
 
         replay(t, intervals, strategy);
         counter.setOn(false);
-        counter.incr(delta);
+        counter.add(delta);
         verify(t, intervals, strategy);
     }
 
@@ -119,7 +115,7 @@ public class WindowedCounterTest {
 
         replay(t, intervals, strategy);
         counter.setOn(true);
-        counter.incr();
+        counter.add();
         verify(t, intervals, strategy);
     }
 
@@ -127,7 +123,7 @@ public class WindowedCounterTest {
     public void incrOffTest() {
         replay(t, intervals, strategy);
         counter.setOn(false);
-        counter.incr();
+        counter.add();
         verify(t, intervals, strategy);
     }
 }

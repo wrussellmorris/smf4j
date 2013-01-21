@@ -21,6 +21,8 @@ package org.smf4j;
  */
 public interface Accumulator {
 
+    void add(long delta);
+
     long getValue();
 
     boolean isOn();

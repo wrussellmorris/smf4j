@@ -45,4 +45,8 @@ public class MockAccumulator implements Accumulator {
         this.on = on;
     }
 
+    public void add(long delta) {
+        this.value = delta;
+    }
+
 }

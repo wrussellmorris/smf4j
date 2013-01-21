@@ -24,9 +24,9 @@
         <module>smf4j-spring</module>
         <module>smf4j-to-slf4j</module>
         <module>smf4j-to-csv</module>
-		<module>smf4j-core</module>
+        <module>smf4j-core</module>
         <module>smf4j-standalone</module>
-    </modules>
+  </modules>
 
     <build>
         <pluginManagement>

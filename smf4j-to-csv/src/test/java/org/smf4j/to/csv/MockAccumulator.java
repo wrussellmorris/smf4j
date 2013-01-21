@@ -42,4 +42,8 @@ public class MockAccumulator implements Accumulator {
     @Override
     public void setOn(boolean on) {
     }
+
+    public void add(long delta) {
+        this.val = delta;
+    }
 }

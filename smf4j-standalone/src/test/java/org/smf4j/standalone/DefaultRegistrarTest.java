@@ -15,7 +15,6 @@
  */
 package org.smf4j.standalone;
 
-import org.smf4j.standalone.DefaultRegistrar;
 import org.smf4j.InvalidNodeNameException;
 import org.smf4j.RegistryNode;
 import org.smf4j.Accumulator;
@@ -174,6 +173,9 @@ public class DefaultRegistrarTest {
             @Override
             public void setOn(boolean on) {
                 this.on = on;
+            }
+
+            public void add(long delta) {
             }
         };
     }
