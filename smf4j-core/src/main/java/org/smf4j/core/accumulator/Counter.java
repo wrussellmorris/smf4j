@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class Counter extends AbstractAccumulator {
+public final class Counter extends AbstractAccumulator {
 
     final AtomicLong scavengedValue;
 
@@ -34,7 +34,7 @@ public class Counter extends AbstractAccumulator {
     }
 
     @Override
-    public void add(long delta) {
+    public final void add(long delta) {
         if(!isOn()) {
             return;
         }
@@ -43,7 +43,7 @@ public class Counter extends AbstractAccumulator {
     }
 
     @Override
-    long combineValues(long nanos, long input, AccumulatorThread accThread,
+    final long combineValues(long nanos, long input, AccumulatorThread accThread,
             boolean scavenging) {
         long combined = input;
         long newValue = accThread.threadLocalInst.syncGet();

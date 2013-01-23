@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,7 @@ package org.smf4j.core.accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class MinOrMaxCounter extends AbstractAccumulator {
-
-    private boolean max;
-
-    public MinOrMaxCounter() {
-        max = false;
-    }
-
-    public boolean isMax() {
-        return max;
-    }
-
-    public void setMax(boolean max) {
-        this.max = max;
-    }
-
+public final class MinCounter extends AbstractAccumulator {
     @Override
     public final void add(long val) {
         if(!isOn()) {
@@ -44,7 +29,7 @@ public final class MinOrMaxCounter extends AbstractAccumulator {
         // Check for new bound
         AtomicLongValue inst = getInst();
         long current = inst.localGet();
-        if(max ? (val > current) : (val < current)) {
+        if(val < current) {
             inst.set(val);
         }
     }
@@ -53,7 +38,7 @@ public final class MinOrMaxCounter extends AbstractAccumulator {
     final long combineValues(long nanos, long input, AccumulatorThread accThread,
             boolean scavenging) {
         long newValue = accThread.threadLocalInst.syncGet();
-        if(max ? (input > newValue) : (input < newValue)) {
+        if(input < newValue) {
             return input;
         }
         return newValue;

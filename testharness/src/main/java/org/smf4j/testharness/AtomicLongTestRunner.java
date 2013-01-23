@@ -21,34 +21,17 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public abstract class TestRunner implements Runnable {
-    private final String name;
-    private final AtomicLong duration;
-    private final long testIterations;
+public class AtomicLongTestRunner extends TestRunner {
 
-    public TestRunner(long testIterations, String name) {
-        this.testIterations = testIterations;
-        this.name = name;
-        this.duration = new AtomicLong();
+    private final AtomicLong counter;
+
+    public AtomicLongTestRunner(long testIterations) {
+        super(testIterations, "AtomicLong");
+        counter = new AtomicLong();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public final void run() {
-        long localCount = 0;
-        long start = System.currentTimeMillis();
-        while(localCount < testIterations) {
-            doRun();
-            localCount++;
-        }
-        duration.getAndSet(System.currentTimeMillis() - start);
-    }
-
-    public abstract void doRun();
-
-    public final long getDuration() {
-        return duration.get();
+    @Override
+    public final void doRun() {
+        counter.incrementAndGet();
     }
 }
