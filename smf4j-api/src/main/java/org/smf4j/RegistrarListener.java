@@ -15,9 +15,6 @@
  */
 package org.smf4j;
 
-import org.smf4j.RegistryNode;
-import org.smf4j.Registrar;
-
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
@@ -36,11 +33,11 @@ public interface RegistrarListener {
     void accumulatorRemoved(Registrar registrar, RegistryNode node,
             Accumulator accumulator);
 
-    void calculationAdded(Registrar registrar, RegistryNode node,
-            Calculator calculation);
+    void calculatorAdded(Registrar registrar, RegistryNode node,
+            Calculator calculator);
 
-    void calculationRemoved(Registrar registrar, RegistryNode node,
-            Calculator calculation);
+    void calculatorRemoved(Registrar registrar, RegistryNode node,
+            Calculator calculator);
 
 
 }

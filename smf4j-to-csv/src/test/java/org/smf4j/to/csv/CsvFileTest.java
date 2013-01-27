@@ -28,7 +28,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
-import org.smf4j.DynamicFilter;
+import org.smf4j.FilteredRegistrarListener;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
@@ -243,7 +243,7 @@ public class CsvFileTest {
 
     CsvFileLayout createLayout(Registrar r) {
         CsvFileLayout layout = new CsvFileLayout();
-        List<DynamicFilter> filters = new ArrayList<DynamicFilter>();
+        List<FilteredRegistrarListener> filters = new ArrayList<FilteredRegistrarListener>();
         filters.add(r.createDynamicFilter("**"));
         layout.setNodeFilters(filters);
         return layout;

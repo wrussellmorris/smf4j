@@ -39,7 +39,7 @@ public abstract class AbstractAccumulator implements Accumulator {
                 new ConcurrentHashMap<Long, AccumulatorThread>();
         this.threadLocal = new ThreadLocal<AtomicLongValue>() {
             @Override
-            protected AtomicLongValue initialValue() {
+            protected final AtomicLongValue initialValue() {
                 AtomicLongValue threadLocalInst = new AtomicLongValue();
                 Thread cur = Thread.currentThread();
                 participatingThreads.put(cur.getId(), new AccumulatorThread(cur,

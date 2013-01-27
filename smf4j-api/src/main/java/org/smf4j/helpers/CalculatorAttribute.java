@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.helpers;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface DynamicFilterListener {
+public final class CalculatorAttribute {
 
-    void nodeAdded(RegistryNode registryNode);
+    public final String name;
+    public final Class<?> clazz;
 
-    void nodeRemoved(RegistryNode registryNode);
-
-    void accumulatorAdded(RegistryNode registryNode, Accumulator accumulator);
-
-    void accumulatorRemoved(RegistryNode registryNode, Accumulator accumulator);
-
-    void calculatorAdded(RegistryNode registryNode, Calculator calculator);
-
-    void calculatorRemoved(RegistryNode registryNode, Calculator calculator);
+    CalculatorAttribute(String name, Class<?> clazz) {
+        this.name = name;
+        this.clazz = clazz;
+    }
 }

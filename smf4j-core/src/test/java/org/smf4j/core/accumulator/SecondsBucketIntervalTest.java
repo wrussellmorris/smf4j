@@ -15,8 +15,6 @@
  */
 package org.smf4j.core.accumulator;
 
-import org.smf4j.core.accumulator.SecondsIntervalStrategy;
-import org.smf4j.core.accumulator.IntervalStrategy;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -38,23 +36,6 @@ public class SecondsBucketIntervalTest {
         SecondsIntervalStrategy interval = create(window, intervals, buffer);
 
         long windowInNanos = ((long)window) * SecondsIntervalStrategy.ONE_BILLION;
-        assertEquals(windowInNanos, interval.timeWindowInNanos());
-        assertEquals(intervals, interval.intervals());
-        assertEquals(windowInNanos / ((long)intervals),
-                interval.intervalResolutionInNanos());
-        assertEquals(buffer, interval.bufferIntervals());
-    }
-
-    @Test
-    public void initWindowExpand() {
-        int window = 10;
-        int expandedWindow = 12;
-        int intervals = 6;
-        int buffer = 2;
-        SecondsIntervalStrategy interval = create(window, intervals, buffer);
-
-        long windowInNanos = ((long)expandedWindow) *
-                SecondsIntervalStrategy.ONE_BILLION;
         assertEquals(windowInNanos, interval.timeWindowInNanos());
         assertEquals(intervals, interval.intervals());
         assertEquals(windowInNanos / ((long)intervals),

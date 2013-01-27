@@ -58,8 +58,6 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
 
         // Extend timeWindowInNanos so that it is evenly
         // divided by intervals
-        int rem = timeWindowInSeconds % intervals;
-        timeWindowInSeconds += (rem != 0) ? intervals-rem : 0;
         this.timeWindowInNanos = ((long)timeWindowInSeconds) * ONE_BILLION;
 
         // Figure out the interval resolution

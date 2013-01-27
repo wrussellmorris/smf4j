@@ -49,12 +49,12 @@ public final class Intervals {
         int index = bucketInterval.intervalIndex(nanos);
         if(localTimestamps[index] < nanos - intervalResolutionInNanos) {
             // This bucket is stale
-            timestamps.set(index, nanos);
+            timestamps.lazySet(index, nanos);
             localTimestamps[index] = nanos;
-            values.set(index, val);
+            values.lazySet(index, val);
         } else {
             // Bucket's still fresh...
-            values.set(index, values.get(index) + val);
+            values.lazySet(index, values.get(index) + val);
         }
     }
 

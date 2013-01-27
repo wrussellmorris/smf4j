@@ -34,8 +34,8 @@ public interface Registrar {
 
     RegistryNode getRootNode();
 
-    DynamicFilter createDynamicFilter(String pattern);
-    void removeDynamicFilter(DynamicFilter dynamicFilter);
+    FilteredRegistrarListener createDynamicFilter(String pattern);
+    void removeDynamicFilter(FilteredRegistrarListener dynamicFilter);
 
     void setOn(String node, boolean on)
     throws InvalidNodeNameException;

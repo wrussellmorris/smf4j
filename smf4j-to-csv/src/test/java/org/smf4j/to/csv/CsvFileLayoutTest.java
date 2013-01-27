@@ -25,7 +25,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 
 import org.junit.Test;
-import org.smf4j.DynamicFilter;
+import org.smf4j.FilteredRegistrarListener;
 import org.smf4j.DynamicFilterListener;
 import org.smf4j.RegistryNode;
 
@@ -47,14 +47,14 @@ public class CsvFileLayoutTest {
         List<RegistryNode> fn1 = new ArrayList<RegistryNode>();
         fn1.add(nodes.get(2));
         fn1.add(nodes.get(3));
-        DynamicFilter f1 = new StaticFilter(fn1);
+        FilteredRegistrarListener f1 = new StaticFilter(fn1);
 
         List<RegistryNode> fn2 = new ArrayList<RegistryNode>();
         fn2.add(nodes.get(3));
         fn2.add(nodes.get(4));
-        DynamicFilter f2 = new StaticFilter(fn2);
+        FilteredRegistrarListener f2 = new StaticFilter(fn2);
 
-        List<DynamicFilter> f = new ArrayList<DynamicFilter>();
+        List<FilteredRegistrarListener> f = new ArrayList<FilteredRegistrarListener>();
         f.add(f1);
         f.add(f2);
 
@@ -156,7 +156,7 @@ public class CsvFileLayoutTest {
         return mock;
     }
 
-    static class StaticFilter implements DynamicFilter {
+    static class StaticFilter implements FilteredRegistrarListener {
 
         private final List<RegistryNode> nodes;
 

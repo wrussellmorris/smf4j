@@ -26,6 +26,7 @@
         <module>smf4j-to-csv</module>
         <module>smf4j-core</module>
         <module>smf4j-standalone</module>
+    <module>smf4j-to-jmx</module>
   </modules>
 
     <build>

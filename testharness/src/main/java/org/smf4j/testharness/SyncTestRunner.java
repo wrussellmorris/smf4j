@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
-
-import org.smf4j.RegistryNode;
+package org.smf4j.testharness;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface DynamicFilter extends Iterable<RegistryNode> {
+public class SyncTestRunner extends TestRunner {
+    private final Object lock = new Object();
+    private long count = 0;
 
-    void registerListener(DynamicFilterListener listener);
+    public SyncTestRunner(long testIterations) {
+        super(testIterations, "synchronized");
+    }
 
-    void unregisterListener(DynamicFilterListener listener);
+    @Override
+    public void doRun() {
+        synchronized(lock) {
+            count++;
+        }
+    }
+
 }

@@ -60,11 +60,13 @@ public class WindowNormalizer implements Calculator {
     }
 
     public enum Frequency {
-        MILLIS      (1000000L),
-        SECONDS     (1000000000L),
-        MINUTES     (1000000000L * 60L),
-        HOURS       (1000000000L * 60L * 60L),
-        DAYS        (1000000000L * 60L * 60L * 24L);
+        NANOS       (1),
+        MILLIS      (NANOS.getNanos() * 1000000L),
+        SECONDS     (MILLIS.getNanos() * 1000L),
+        MINUTES     (SECONDS.getNanos() * 60L),
+        HOURS       (MINUTES.getNanos() * 60L),
+        DAYS        (HOURS.getNanos() * 24L),
+        WEEKS       (DAYS.getNanos() * 7L);
 
         private final long nanos;
 

@@ -17,7 +17,7 @@ package org.smf4j.standalone;
 
 import org.smf4j.DynamicFilterListener;
 import org.smf4j.InvalidNodeNameException;
-import org.smf4j.DynamicFilter;
+import org.smf4j.FilteredRegistrarListener;
 import org.smf4j.RegistrarListener;
 import org.smf4j.RegistryNode;
 import org.smf4j.Registrar;
@@ -36,21 +36,18 @@ public class DefaultRegistrar implements Registrar {
 
     private static final Pattern validPartChars =
             Pattern.compile("[a-zA-Z0-9_]+");
-    private final ReentrantLock stateLock;
     private final DefaultRegistryNode root;
     private final ConcurrentLinkedQueue<WeakRefWithEq<RegistrarListener>>
             listeners;
-    private final ConcurrentLinkedQueue<WeakRefWithEq<DynamicFilter>>
-            filters;
     private String name;
+
+    final ReentrantLock stateLock;
 
     public DefaultRegistrar() {
         this.stateLock = new ReentrantLock();
-        this.root = new DefaultRegistryNode(stateLock, null, "");
+        this.root = new DefaultRegistryNode(this, null, "");
         this.listeners =
             new ConcurrentLinkedQueue<WeakRefWithEq<RegistrarListener>>();
-        this.filters =
-            new ConcurrentLinkedQueue<WeakRefWithEq<DynamicFilter>>();
     }
 
     @Override
@@ -101,21 +98,22 @@ public class DefaultRegistrar implements Registrar {
     }
 
     @Override
-    public DynamicFilter createDynamicFilter(String pattern) {
-        final DefaultDynamicFilter filter = new DefaultDynamicFilter(pattern);
+    public FilteredRegistrarListener createDynamicFilter(String pattern) {
+        final DefaultFilteredRegistrarListener filter = new DefaultFilteredRegistrarListener(pattern);
         dfs(root, new RegistryNodeCall() {
             @Override
             public void call(RegistryNode node) {
-                filter.inspectNode(node, true);
+                filter.nodeAdded(DefaultRegistrar.this, node);
             }
         });
-        filters.add(new WeakRefWithEq<DynamicFilter>(filter));
+        listeners.add(new WeakRefWithEq<RegistrarListener>(filter));
         return filter;
     }
 
     @Override
-    public void removeDynamicFilter(DynamicFilter dynamicFilter) {
-        filters.remove(new WeakRefWithEq<DynamicFilter>(dynamicFilter));
+    public void removeDynamicFilter(FilteredRegistrarListener dynamicFilter) {
+        listeners.remove(new WeakRefWithEq<RegistrarListener>(
+                (DefaultFilteredRegistrarListener)dynamicFilter));
     }
 
     @Override
@@ -179,7 +177,7 @@ public class DefaultRegistrar implements Registrar {
             if(node == null) {
                 if(create) {
                     // No node yet - we need to create it
-                    node = cur.add(part, new DefaultRegistryNode(stateLock, cur,
+                    node = cur.add(part, new DefaultRegistryNode(this, cur,
                             part));
                     fireNodeAdded(node);
                 } else {
@@ -285,13 +283,13 @@ public class DefaultRegistrar implements Registrar {
         });
     }
 
-    protected void fireCalculationAdded(final RegistryNode node,
+    protected void fireCalculatorAdded(final RegistryNode node,
             final Calculator calculation) {
         final Registrar me = this;
         eachListener(new ListenerCall() {
            @Override
             public void call(RegistrarListener listener) {
-               listener.calculationAdded(me, node, calculation);
+               listener.calculatorAdded(me, node, calculation);
             }
         });
     }
@@ -302,7 +300,7 @@ public class DefaultRegistrar implements Registrar {
         eachListener(new ListenerCall() {
            @Override
             public void call(RegistrarListener listener) {
-               listener.calculationRemoved(me, node, calculation);
+               listener.calculatorRemoved(me, node, calculation);
             }
         });
     }

@@ -32,8 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
-import org.smf4j.DynamicFilter;
+import org.smf4j.helpers.CalculatorHelper;
+import org.smf4j.FilteredRegistrarListener;
 import org.smf4j.RegistryNode;
+import org.smf4j.helpers.CalculatorAttribute;
 
 /**
  *
@@ -41,29 +43,9 @@ import org.smf4j.RegistryNode;
  */
 public class CsvFileLayout {
 
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     private List<RegistryNode> nodes = new ArrayList<RegistryNode>();
-    private List<DynamicFilter> nodeFilters = new ArrayList<DynamicFilter>();
+    private List<FilteredRegistrarListener> nodeFilters = new ArrayList<FilteredRegistrarListener>();
     private List<CsvDataColumn> columns;
-
-    private static final Set<Class<?>> leafTypes = new HashSet<Class<?>>();
-    static {
-        leafTypes.add(byte.class);
-        leafTypes.add(short.class);
-        leafTypes.add(int.class);
-        leafTypes.add(long.class);
-        leafTypes.add(float.class);
-        leafTypes.add(double.class);
-
-        leafTypes.add(Byte.class);
-        leafTypes.add(Short.class);
-        leafTypes.add(Integer.class);
-        leafTypes.add(Long.class);
-        leafTypes.add(Float.class);
-        leafTypes.add(Double.class);
-        leafTypes.add(String.class);
-    }
 
     public void prepare() {
         this.columns = createColumns(gatherAllNodes());
@@ -101,10 +83,12 @@ public class CsvFileLayout {
 
             Map<String, Calculator> calcs = node.getCalculators();
             for(Map.Entry<String, Calculator> entry : calcs.entrySet()) {
-                List<String> calcNames = getAllCalcNames(
-                        entry.getKey(), entry.getValue());
+                List<CalculatorAttribute> attrs =
+                        CalculatorHelper.getCalculatorAttributes(entry.getKey(),
+                        entry.getValue().getClass());
 
-                for(String calcName : calcNames) {
+                for(CalculatorAttribute attr : attrs) {
+                    String calcName = attr.name;
                     // Create column
                     CsvCalculatorColumn col =
                             new CsvCalculatorColumn(node, calcName);
@@ -136,7 +120,7 @@ public class CsvFileLayout {
         Set<RegistryNode> all = new HashSet<RegistryNode>();
 
         all.addAll(nodes);
-        for(DynamicFilter nodeFilter : nodeFilters) {
+        for(FilteredRegistrarListener nodeFilter : nodeFilters) {
             for(RegistryNode node : nodeFilter) {
                 all.add(node);
             }
@@ -155,49 +139,6 @@ public class CsvFileLayout {
         return list;
     }
 
-    protected List<String> getAllCalcNames(String rootName, Calculator calc) {
-        List<String> names = new ArrayList<String>();
-
-        // Get the return type of the calculate method
-        Method m;
-        try {
-            m = calc.getClass().getMethod("calculate", Map.class, Map.class);
-        } catch(Throwable t) {
-            log.error(String.format(
-                    "Failed to determine return value of the 'calculate' method"
-                    + " for the Calculator implementing class '%s'.",
-                    calc.getClass().getCanonicalName()));
-            return names;
-        }
-
-        Class<?> calcResult = m.getReturnType();
-
-        if(leafTypes.contains(calcResult)) {
-            names.add(rootName);
-        } else {
-            collectLeafProperties(rootName, calcResult, names);
-        }
-
-        return names;
-    }
-
-    protected void collectLeafProperties(String rootName, Class<?> calcType,
-            List<String> names) {
-        try {
-            BeanInfo bi = Introspector.getBeanInfo(calcType);
-
-            for(PropertyDescriptor pd : bi.getPropertyDescriptors()) {
-                if(pd.getReadMethod() == null ||
-                        !leafTypes.contains(pd.getPropertyType())) {
-                    continue;
-                }
-
-                names.add(rootName + "." + pd.getName());
-            }
-        } catch(IntrospectionException e) {
-        }
-    }
-
     public List<RegistryNode> getNodes() {
         return nodes;
     }
@@ -206,11 +147,11 @@ public class CsvFileLayout {
         this.nodes = nodes;
     }
 
-    public List<DynamicFilter> getNodeFilters() {
+    public List<FilteredRegistrarListener> getNodeFilters() {
         return nodeFilters;
     }
 
-    public void setNodeFilters(List<DynamicFilter> nodeFilters) {
+    public void setNodeFilters(List<FilteredRegistrarListener> nodeFilters) {
         this.nodeFilters = nodeFilters;
     }
 }

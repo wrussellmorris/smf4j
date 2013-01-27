@@ -22,7 +22,7 @@ package org.smf4j.testharness;
 public class NullTestRunner extends TestRunner {
 
     public NullTestRunner(long testIterations) {
-        super(testIterations, "Base case");
+        super(testIterations, "null_case");
     }
 
     @Override

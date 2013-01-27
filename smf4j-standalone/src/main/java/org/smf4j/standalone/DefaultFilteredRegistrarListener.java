@@ -16,55 +16,32 @@
 package org.smf4j.standalone;
 
 import org.smf4j.DynamicFilterListener;
-import org.smf4j.DynamicFilter;
+import org.smf4j.FilteredRegistrarListener;
 import org.smf4j.RegistryNode;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Pattern;
+import org.smf4j.Accumulator;
+import org.smf4j.Calculator;
+import org.smf4j.Registrar;
+import org.smf4j.RegistrarListener;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-class DefaultDynamicFilter implements DynamicFilter {
+class DefaultFilteredRegistrarListener implements FilteredRegistrarListener, RegistrarListener {
 
     private final Pattern filterPattern;
     private final ConcurrentLinkedQueue<RegistryNode> matchedNodes;
     private final Queue<WeakRefWithEq<DynamicFilterListener>> listeners;
 
-    public DefaultDynamicFilter(String filterString) {
+    public DefaultFilteredRegistrarListener(String filterString) {
         this.filterPattern = createPattern(filterString);
         this.matchedNodes = new ConcurrentLinkedQueue<RegistryNode>();
         this.listeners =
             new ConcurrentLinkedQueue<WeakRefWithEq<DynamicFilterListener>>();
-    }
-
-    public void inspectNode(RegistryNode node, boolean adding) {
-        boolean fireEvent = false;
-
-        if(filterPattern.matcher(node.getName()).matches()) {
-            if(adding) {
-                fireEvent = matchedNodes.add(node);
-            } else {
-                fireEvent = matchedNodes.remove(node);
-            }
-        }
-
-        if(!fireEvent) {
-            return;
-        }
-
-        for(WeakRefWithEq<DynamicFilterListener> ref : listeners) {
-            DynamicFilterListener listener = ref.get();
-            if(listener != null) {
-                if(adding) {
-                    listener.nodeAdded(node);
-                } else {
-                    listener.nodeRemoved(node);
-                }
-            }
-        }
     }
 
     @Override
@@ -119,5 +96,92 @@ class DefaultDynamicFilter implements DynamicFilter {
                 throw new UnsupportedOperationException("Not supported.");
             }
         };
+    }
+
+    public void initializationComplete(Registrar registrar) {
+    }
+
+    public void nodeAdded(Registrar registrar, RegistryNode node) {
+        if(!filterPattern.matcher(node.getName()).matches()) {
+            return;
+        }
+
+        matchedNodes.add(node);
+        for(WeakRefWithEq<DynamicFilterListener> ref : listeners) {
+            DynamicFilterListener listener = ref.get();
+            if(listener != null) {
+                listener.nodeAdded(node);
+            }
+        }
+    }
+
+    public void nodeRemoved(Registrar registrar, RegistryNode node) {
+        if(!filterPattern.matcher(node.getName()).matches()) {
+            return;
+        }
+
+        matchedNodes.remove(node);
+        for(WeakRefWithEq<DynamicFilterListener> ref : listeners) {
+            DynamicFilterListener listener = ref.get();
+            if(listener != null) {
+                listener.nodeRemoved(node);
+            }
+        }
+    }
+
+    public void accumulatorAdded(Registrar registrar, RegistryNode node,
+            Accumulator accumulator) {
+        if(!filterPattern.matcher(node.getName()).matches()) {
+            return;
+        }
+
+        for(WeakRefWithEq<DynamicFilterListener> ref : listeners) {
+            DynamicFilterListener listener = ref.get();
+            if(listener != null) {
+                listener.accumulatorAdded(node, accumulator);
+            }
+        }
+    }
+
+    public void accumulatorRemoved(Registrar registrar, RegistryNode node,
+            Accumulator accumulator) {
+        if(!filterPattern.matcher(node.getName()).matches()) {
+            return;
+        }
+
+        for(WeakRefWithEq<DynamicFilterListener> ref : listeners) {
+            DynamicFilterListener listener = ref.get();
+            if(listener != null) {
+                listener.accumulatorRemoved(node, accumulator);
+            }
+        }
+    }
+
+    public void calculatorAdded(Registrar registrar, RegistryNode node,
+            Calculator calculator) {
+        if(!filterPattern.matcher(node.getName()).matches()) {
+            return;
+        }
+
+        for(WeakRefWithEq<DynamicFilterListener> ref : listeners) {
+            DynamicFilterListener listener = ref.get();
+            if(listener != null) {
+                listener.calculatorAdded(node, calculator);
+            }
+        }
+    }
+
+    public void calculatorRemoved(Registrar registrar, RegistryNode node,
+            Calculator calculator) {
+        if(!filterPattern.matcher(node.getName()).matches()) {
+            return;
+        }
+
+        for(WeakRefWithEq<DynamicFilterListener> ref : listeners) {
+            DynamicFilterListener listener = ref.get();
+            if(listener != null) {
+                listener.calculatorRemoved(node, calculator);
+            }
+        }
     }
 }

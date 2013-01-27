@@ -34,7 +34,7 @@ import org.smf4j.Accumulator;
 class DefaultRegistryNode implements RegistryNode {
     private static final Pattern invalidNameChars = Pattern.compile("[+*.]");
 
-    private final ReentrantLock stateLock;
+    private final DefaultRegistrar registrar;
     private final DefaultRegistryNode parent;
     private final String name;
     private final ConcurrentMap<String, Accumulator> accumulators;
@@ -46,9 +46,9 @@ class DefaultRegistryNode implements RegistryNode {
     private volatile boolean state;
     private volatile Boolean localState;
 
-    public DefaultRegistryNode(ReentrantLock stateLock,
+    public DefaultRegistryNode(DefaultRegistrar registrar,
             DefaultRegistryNode parent, String name) {
-        this.stateLock = stateLock;
+        this.registrar = registrar;
         this.parent = parent;
         this.accumulators = new ConcurrentHashMap<String, Accumulator>();
         this.readOnlyAccumulators =
@@ -93,6 +93,7 @@ class DefaultRegistryNode implements RegistryNode {
     public boolean register(String name, Accumulator acc) {
         if(null == accumulators.putIfAbsent(name, acc)) {
             acc.setOn(isOn());
+            registrar.fireAccumulatorAdded(this, acc);
             return true;
         }
         return false;
@@ -100,21 +101,33 @@ class DefaultRegistryNode implements RegistryNode {
 
     @Override
     public boolean register(String name, Calculator calc) {
-        return (null == calcuations.putIfAbsent(name, calc));
+        if(null == calcuations.putIfAbsent(name, calc)) {
+            registrar.fireCalculatorAdded(this, calc);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean unregister(String name, Accumulator acc) {
-        return accumulators.remove(name, acc);
+        if(accumulators.remove(name, acc)) {
+            registrar.fireAccumulatorRemoved(this, acc);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean unregister(String name, Calculator calc) {
-        return calcuations.remove(name, calc);
+        if(calcuations.remove(name, calc)) {
+            registrar.fireCalculationRemoved(this, calc);
+            return true;
+        }
+        return false;
     }
 
     void recalculateState() {
-        stateLock.lock();
+        registrar.stateLock.lock();
         try {
             boolean calculatedState;
 
@@ -150,7 +163,7 @@ class DefaultRegistryNode implements RegistryNode {
                 ((DefaultRegistryNode)childNode).recalculateState();
             }
         } finally {
-            stateLock.unlock();
+            registrar.stateLock.unlock();
         }
     }
 
@@ -240,25 +253,25 @@ class DefaultRegistryNode implements RegistryNode {
 
     @Override
     public void setOn(boolean on) {
-        stateLock.lock();
+        registrar.stateLock.lock();
         try {
 
             localState = on;
             recalculateState();
         } finally {
-            stateLock.unlock();
+            registrar.stateLock.unlock();
         }
     }
 
     @Override
     public void clearOn() {
-        stateLock.lock();
+        registrar.stateLock.lock();
         try {
 
             localState = null;
             recalculateState();
         } finally {
-            stateLock.unlock();
+            registrar.stateLock.unlock();
         }
     }
 }

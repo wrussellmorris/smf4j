@@ -1,7 +1,6 @@
 package org.smf4j.testharness;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,12 +8,14 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
+import org.smf4j.Registrar;
+import org.smf4j.RegistrarFactory;
 import org.smf4j.core.accumulator.Counter;
 import org.smf4j.core.accumulator.MaxCounter;
 import org.smf4j.core.accumulator.MinCounter;
 import org.smf4j.core.accumulator.MinOrMaxCounter;
 import org.smf4j.core.accumulator.WindowedCounter;
+import org.smf4j.to.jmx.JmxRegistrarPublisher;
 
 /**
  * Hello world!
@@ -22,17 +23,26 @@ import org.smf4j.core.accumulator.WindowedCounter;
  */
 public class App
 {
-    ExecutorService tpe;
     BufferedWriter bw;
+    ExecutorService tpe;
 
     public void go(long testIterations, int numThreads) throws IOException, InterruptedException {
+        List<TestRunner> runners = getTestRunners(testIterations);
+        Registrar r = RegistrarFactory.getRegistrar();
+        r.getRootNode().setOn(true);
+        JmxRegistrarPublisher publisher = new JmxRegistrarPublisher(r);
+        publisher.publish();
+
         tpe = Executors.newFixedThreadPool(numThreads);
 
-        List<TestRunner> runners = getTestRunners(testIterations);
-
-        System.out.println("Starting...");
+        // Run one pass of lower-concurrency tests to prime the app
+        System.out.println("Priming...");
         runLowConcurrencyTests(runners);
+
+        // Now for the real tests
+        System.out.println("Starting...");
         runHighConcurrencyTests(runners, numThreads);
+        runLowConcurrencyTests(runners);
 
         tpe.shutdown();
         System.out.println("Done");
@@ -88,7 +98,6 @@ public class App
     }
 
     public void runHighConcurrencyTest(final TestRunner runner, int threads) throws InterruptedException, IOException {
-
         List<Callable<Long>> runners = new ArrayList<Callable<Long>>();
         for(int i=0; i<threads; i++) {
             runners.add(new Callable<Long> () {
@@ -98,7 +107,6 @@ public class App
                 }
             });
         }
-
         tpe.invokeAll(runners);
         writeData(runner.getDuration());
     }
@@ -109,33 +117,36 @@ public class App
         // Base case
         runners.add(new NullTestRunner(testIterations));
 
+        // Plain synchronized block
+        //runners.add(new SyncTestRunner(testIterations));
+
         // Plain AtomicLong
-        runners.add(new AtomicLongTestRunner(testIterations));
+        //runners.add(new AtomicLongTestRunner(testIterations));
 
         // Counter
         runners.add(new AccTestRunner(testIterations, "Counter", new Counter()));
 
         // WindowedCounter (powers of ten)
-        runners.add(new AccTestRunner(testIterations, "WindowedCounter - powers of ten", new WindowedCounter(1, 10, false)));
+        runners.add(new AccTestRunner(testIterations, "Windowed_10s", new WindowedCounter(1, 10, false)));
 
         // WindowedCounter (powers of two)
-        runners.add(new AccTestRunner(testIterations, "WindowedCounter - powers of two", new WindowedCounter(24, 4, true)));
+        runners.add(new AccTestRunner(testIterations, "Windowed_2s", new WindowedCounter(28, 5, true)));
 
         // MinMax (min)
         MinOrMaxCounter min = new MinOrMaxCounter();
         min.setMax(false);
-        runners.add(new AccTestRunner(testIterations, "MinOrMaxCounter - min", min));
+        //runners.add(new AccTestRunner(testIterations, "MinOrMaxCounter_min", min));
 
         // MinMax (min)
         MinOrMaxCounter max = new MinOrMaxCounter();
-        min.setMax(true);
-        runners.add(new AccTestRunner(testIterations, "MinOrMaxCounter - max", max));
+        max.setMax(true);
+        //runners.add(new AccTestRunner(testIterations, "MinOrMaxCounter_max", max));
 
         // MinCounter
-        runners.add(new AccTestRunner(testIterations, "MinCounter", new MinCounter()));
+        //runners.add(new AccTestRunner(testIterations, "MinCounter", new MinCounter()));
 
         // MaxCounter
-        runners.add(new AccTestRunner(testIterations, "MaxCounter", new MaxCounter()));
+        //runners.add(new AccTestRunner(testIterations, "MaxCounter", new MaxCounter()));
         return runners;
     }
 

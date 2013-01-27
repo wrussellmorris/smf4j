@@ -19,17 +19,9 @@ package org.smf4j;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface DynamicFilterListener {
+public interface FilteredRegistrarListener extends Iterable<RegistryNode> {
 
-    void nodeAdded(RegistryNode registryNode);
+    void registerListener(DynamicFilterListener listener);
 
-    void nodeRemoved(RegistryNode registryNode);
-
-    void accumulatorAdded(RegistryNode registryNode, Accumulator accumulator);
-
-    void accumulatorRemoved(RegistryNode registryNode, Accumulator accumulator);
-
-    void calculatorAdded(RegistryNode registryNode, Calculator calculator);
-
-    void calculatorRemoved(RegistryNode registryNode, Calculator calculator);
+    void unregisterListener(DynamicFilterListener listener);
 }

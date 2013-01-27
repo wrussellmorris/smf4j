@@ -15,7 +15,7 @@
  */
 package org.smf4j.standalone;
 
-import org.smf4j.standalone.DefaultDynamicFilter;
+import org.smf4j.standalone.DefaultFilteredRegistrarListener;
 import java.util.regex.Pattern;
 import static org.junit.Assert.*;
 
@@ -60,7 +60,7 @@ public class DefaultDynamicFilterTest {
     }
 
     private boolean matches(String pattern, String test) {
-        Pattern p = DefaultDynamicFilter.createPattern(pattern);
+        Pattern p = DefaultFilteredRegistrarListener.createPattern(pattern);
         return p.matcher(test).matches();
     }
 }
