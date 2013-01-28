@@ -60,10 +60,8 @@ public final class CalculatorHelper {
     private static final Comparator<CalculatorAttribute> SORTER =
             new Comparator<CalculatorAttribute>() {
         public int compare(CalculatorAttribute o1, CalculatorAttribute o2) {
-            if(o1 instanceof CalculatorAttribute &&
-                    o2 instanceof CalculatorAttribute) {
-                return ((CalculatorAttribute)o1).name.compareTo(
-                        ((CalculatorAttribute)o2).name);
+            if(o1 != null  && o2 != null) {
+                return o1.name.compareTo(o2.name);
             }
             return 0;
         }
@@ -83,14 +81,6 @@ public final class CalculatorHelper {
                     "Failed to determine return value of the 'calculate' method"
                     + " for the Calculator-implementing class '%s'.",
                     calculatorClass.getCanonicalName()), t);
-            return attrs;
-        }
-
-        if(m == null) {
-            log.error(String.format(
-                    "Failed to find 'calculate' method for the Calculator-"
-                    + "implementing class '%s'.",
-                    calculatorClass.getCanonicalName()));
             return attrs;
         }
 
@@ -156,6 +146,7 @@ public final class CalculatorHelper {
                     log.warn(String.format(
                             "Unable to get property read method for %s.[%s]",
                             walkedPath.toString(), part));
+                    return null;
                 }
 
                 Object val = null;
@@ -175,6 +166,9 @@ public final class CalculatorHelper {
                 cur = val;
             }
         } catch(IntrospectionException e) {
+            log.warn(String.format(
+                    "Unable to introspect bean from '%s'",
+                    walkedPath.toString()),e);
             cur = null;
         }
 

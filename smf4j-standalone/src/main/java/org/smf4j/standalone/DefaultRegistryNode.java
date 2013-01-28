@@ -22,8 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
 
@@ -34,6 +35,7 @@ import org.smf4j.Accumulator;
 class DefaultRegistryNode implements RegistryNode {
     private static final Pattern invalidNameChars = Pattern.compile("[+*.]");
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final DefaultRegistrar registrar;
     private final DefaultRegistryNode parent;
     private final String name;
@@ -187,7 +189,7 @@ class DefaultRegistryNode implements RegistryNode {
         // Snapshot the values for all of the accumulators
         Map<String, Long> vals = new HashMap<String, Long>();
         for(Map.Entry<String, Accumulator> entry : accumulators.entrySet()) {
-            vals.put(entry.getKey(), entry.getValue().getValue());
+            vals.put(entry.getKey(), entry.getValue().get());
         }
 
         // Run calculations with accumulator values as input
@@ -197,7 +199,9 @@ class DefaultRegistryNode implements RegistryNode {
             try {
                 o = entry.getValue().calculate(vals, readOnlyAccumulators);
             } catch(Throwable t) {
-                // TODO: Log
+                log.error(String.format("Error executing calculator named '%s'"
+                        + " of type '%s'.", entry.getKey(),
+                        entry.getValue().getClass().getCanonicalName()), t);
             }
             results.put(entry.getKey(), o);
         }

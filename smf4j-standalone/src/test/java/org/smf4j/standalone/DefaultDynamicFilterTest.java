@@ -15,7 +15,6 @@
  */
 package org.smf4j.standalone;
 
-import org.smf4j.standalone.DefaultFilteredRegistrarListener;
 import java.util.regex.Pattern;
 import static org.junit.Assert.*;
 

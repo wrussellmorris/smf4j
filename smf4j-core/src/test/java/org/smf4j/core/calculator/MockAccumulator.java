@@ -16,22 +16,23 @@
 package org.smf4j.core.calculator;
 
 import org.smf4j.Accumulator;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class MockAccumulator implements Accumulator {
+public class MockAccumulator implements Accumulator, Mutator {
 
     long value;
     boolean on;
 
     @Override
-    public long getValue() {
+    public long get() {
         return value;
     }
 
-    public void setValue(long value) {
+    public void set(long value) {
         this.value = value;
     }
 
@@ -47,6 +48,18 @@ public class MockAccumulator implements Accumulator {
 
     public void add(long delta) {
         this.value = delta;
+    }
+
+    public Mutator getMutator() {
+        return this;
+    }
+
+    public long localGet() {
+        return value;
+    }
+
+    public long syncGet() {
+        return value;
     }
 
 }

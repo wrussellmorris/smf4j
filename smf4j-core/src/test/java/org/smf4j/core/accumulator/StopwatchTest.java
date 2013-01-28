@@ -15,7 +15,6 @@
  */
 package org.smf4j.core.accumulator;
 
-import org.smf4j.core.accumulator.Stopwatch;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;

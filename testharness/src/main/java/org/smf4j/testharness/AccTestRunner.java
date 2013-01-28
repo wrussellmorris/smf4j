@@ -17,6 +17,7 @@ package org.smf4j.testharness;
 
 import org.smf4j.Accumulator;
 import org.smf4j.InvalidNodeNameException;
+import org.smf4j.Mutator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
@@ -52,8 +53,16 @@ public class AccTestRunner extends TestRunner {
     }
 
     @Override
-    public final void doRun() {
-        accumulator.add(1);
+    public final void run() {
+        long localCount = 0;
+        Mutator mutator = accumulator.getMutator();
+        long start = System.currentTimeMillis();
+        while(localCount < testIterations) {
+            mutator.add(1L);
+            //accumulator.getMutator().add(1L);
+            localCount++;
+        }
+        duration.getAndSet(System.currentTimeMillis() - start);
     }
 
 }

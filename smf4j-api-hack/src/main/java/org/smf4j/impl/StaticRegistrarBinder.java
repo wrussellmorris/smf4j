@@ -13,30 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.testharness;
-
-import java.util.concurrent.atomic.AtomicLong;
+package org.smf4j.impl;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public abstract class TestRunner implements Runnable {
-    private final String name;
-    final AtomicLong duration;
-    final long testIterations;
-
-    public TestRunner(long testIterations, String name) {
-        this.testIterations = testIterations;
-        this.name = name;
-        this.duration = new AtomicLong();
+public class StaticRegistrarBinder {
+    public static StaticRegistrarBinder getSingleton() {
+        return null;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public final long getDuration() {
-        return duration.get();
+    public Object getRegistrarProvider() {
+        return null;
     }
 }

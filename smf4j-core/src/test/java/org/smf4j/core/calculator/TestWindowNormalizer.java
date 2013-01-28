@@ -15,10 +15,13 @@
  */
 package org.smf4j.core.calculator;
 
-import org.smf4j.core.calculator.WindowNormalizer;
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Before;
 import org.junit.Test;
+import org.smf4j.Accumulator;
 import org.smf4j.core.accumulator.WindowedCounter;
 
 /**
@@ -28,29 +31,142 @@ import org.smf4j.core.accumulator.WindowedCounter;
 public class TestWindowNormalizer {
 
     private final double epsilon = 0.0000001d;
+    private WindowedCounter w;
+    private WindowNormalizer n;
+    private Map<String, Long> vals;
+    private Map<String, Accumulator> as;
+
+    @Before
+    public void before() {
+        w = new WindowedCounter(1,1);
+        n = new WindowNormalizer();
+        n.setWindowedCounter("w");
+        as = new HashMap<String, Accumulator>();
+        as.put("w", w);
+        vals = new HashMap<String, Long>();
+    }
+
+    private void set(long val) {
+        vals.put("w", val);
+    }
 
     @Test
-    public void basic() {
-        WindowNormalizer w = new WindowNormalizer();
-        w.setFrequency(WindowNormalizer.Frequency.MILLIS);
-        //assertEquals(0.0d, w.calc(0.0d, 2000000000.0d), epsilon);
-        //assertEquals(0.001d, w.calc(2.0d, 2000000000.0d), epsilon);
-        //assertEquals(0.0005d, w.calc(1.0d, 2000000000.0d), epsilon);
-        //assertEquals(0.002d, w.calc(4.0d, 2000000000.0d), epsilon);
+    public void nanos() {
+        n.setFrequency(WindowNormalizer.Frequency.NANOS);
 
-        w.setFrequency(WindowNormalizer.Frequency.SECONDS);
-        //assertEquals(0.0d, w.calc(0.0d, 2000000000.0d), epsilon);
-        //assertEquals(1.0d, w.calc(2.0d, 2000000000.0d), epsilon);
-        //assertEquals(0.5d, w.calc(1.0d, 2000000000.0d), epsilon);
-        //assertEquals(2.0d, w.calc(4.0d, 2000000000.0d), epsilon);
+        set(0L);
+        assertEquals(0.0d, n.calculate(vals, as), epsilon);
 
-        w.setFrequency(WindowNormalizer.Frequency.MINUTES);
-        //assertEquals(60.0d, w.calc(1.0d, 1000000000.0d), epsilon);
+        set(1000000L);
+        assertEquals(0.001d, n.calculate(vals, as), epsilon);
 
-        w.setFrequency(WindowNormalizer.Frequency.HOURS);
-        //assertEquals(3600.0d, w.calc(1.0d, 1000000000.0d), epsilon);
+        set(5000000000L);
+        assertEquals(5.0d, n.calculate(vals, as), epsilon);
 
-        w.setFrequency(WindowNormalizer.Frequency.DAYS);
-        //assertEquals(86400.0d, w.calc(1.0d, 1000000000.0d), epsilon);
+        set(123456789L);
+        assertEquals(0.123456789d, n.calculate(vals, as), epsilon);
+    }
+
+    @Test
+    public void millis() {
+        n.setFrequency(WindowNormalizer.Frequency.MILLIS);
+
+        set(0L);
+        assertEquals(0.0d, n.calculate(vals, as), epsilon);
+
+        set(1000000L);
+        assertEquals(1000.0d, n.calculate(vals, as), epsilon);
+
+        set(5000000000L);
+        assertEquals(5000000.0d, n.calculate(vals, as), epsilon);
+
+        set(123456789L);
+        assertEquals(123456.789d, n.calculate(vals, as), epsilon);
+    }
+
+
+    @Test
+    public void seconds() {
+        n.setFrequency(WindowNormalizer.Frequency.SECONDS);
+
+        set(0L);
+        assertEquals(0.0d, n.calculate(vals, as), epsilon);
+
+        set(1000000L);
+        assertEquals(1000000.0d, n.calculate(vals, as), epsilon);
+
+        set(5000000000L);
+        assertEquals(5000000000.0d, n.calculate(vals, as), epsilon);
+
+        set(123456789L);
+        assertEquals(123456789.0d, n.calculate(vals, as), epsilon);
+    }
+
+    @Test
+    public void minutes() {
+        n.setFrequency(WindowNormalizer.Frequency.MINUTES);
+
+        set(0L);
+        assertEquals(0.0d, n.calculate(vals, as), epsilon);
+
+        set(1000000L);
+        assertEquals(1000000.0d * 60.0d, n.calculate(vals, as), epsilon);
+
+        set(5000000000L);
+        assertEquals(5000000000.0d * 60.0d, n.calculate(vals, as), epsilon);
+
+        set(123456789L);
+        assertEquals(123456789.0d * 60.0d, n.calculate(vals, as), epsilon);
+    }
+
+    @Test
+    public void hours() {
+        n.setFrequency(WindowNormalizer.Frequency.HOURS);
+
+        set(0L);
+        assertEquals(0.0d, n.calculate(vals, as), epsilon);
+
+        set(1000000L);
+        assertEquals(1000000.0d * 60.0d * 60.0d, n.calculate(vals, as), epsilon);
+
+        set(5000000000L);
+        assertEquals(5000000000.0d * 60.0d * 60.0d, n.calculate(vals, as), epsilon);
+
+        set(123456789L);
+        assertEquals(123456789.0d * 60.0d * 60.0d, n.calculate(vals, as), epsilon);
+    }
+
+    @Test
+    public void days() {
+        n.setFrequency(WindowNormalizer.Frequency.DAYS);
+
+        set(0L);
+        assertEquals(0.0d, n.calculate(vals, as), epsilon);
+
+        set(1000000L);
+        assertEquals(1000000.0d * 60.0d * 60.0d * 24.0d, n.calculate(vals, as), epsilon);
+
+        set(5000000000L);
+        assertEquals(5000000000.0d * 60.0d * 60.0d * 24.0d, n.calculate(vals, as), epsilon);
+
+        set(123456789L);
+        assertEquals(123456789.0d * 60.0d * 60.0d * 24.0d, n.calculate(vals, as), epsilon);
+    }
+
+    @Test
+    public void weeks() {
+        n.setFrequency(WindowNormalizer.Frequency.WEEKS);
+
+        set(0L);
+        assertEquals(0.0d, n.calculate(vals, as), epsilon);
+
+        set(1000000L);
+        assertEquals(1000000.0d * 60.0d * 60.0d * 24.0d * 7.0d, n.calculate(vals, as), epsilon);
+
+        set(5000000000L);
+        assertEquals(5000000000.0d * 60.0d * 60.0d * 24.0d * 7.0d, n.calculate(vals, as), epsilon);
+
+        set(123456789L);
+        assertEquals(123456789.0d * 60.0d * 60.0d * 24.0d * 7.0d, n.calculate(vals, as), epsilon);
     }
 }

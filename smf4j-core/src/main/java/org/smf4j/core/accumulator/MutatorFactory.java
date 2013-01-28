@@ -13,30 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.testharness;
+package org.smf4j.core.accumulator;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public abstract class TestRunner implements Runnable {
-    private final String name;
-    final AtomicLong duration;
-    final long testIterations;
-
-    public TestRunner(long testIterations, String name) {
-        this.testIterations = testIterations;
-        this.name = name;
-        this.duration = new AtomicLong();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public final long getDuration() {
-        return duration.get();
-    }
+public interface MutatorFactory {
+    Mutator createMutator();
 }

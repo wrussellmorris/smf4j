@@ -16,7 +16,8 @@
 package org.smf4j.to.csv;
 
 import java.util.Map;
-import org.smf4j.Accumulator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smf4j.RegistryNode;
 
 /**
@@ -24,6 +25,8 @@ import org.smf4j.RegistryNode;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class CsvAccumulatorColumn extends CsvDataColumn {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public CsvAccumulatorColumn(RegistryNode node, String dataName) {
         super(node, dataName);
@@ -38,7 +41,8 @@ public class CsvAccumulatorColumn extends CsvDataColumn {
     public Object getDatum(Map<String, Object> snapshot) {
         Object o = snapshot.get(getDataName());
         if(o == null) {
-            // TODO: WARN: Couldn't find value
+            log.warn("Snapshot does not contain a value for '{}'.",
+                    getDataName());
         }
 
         return o;

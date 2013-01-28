@@ -15,16 +15,15 @@
  */
 package org.smf4j.core.accumulator;
 
-import java.util.List;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public interface WindowedIntervals {
-    void incr(long nanos, long val);
 
     public long[] buckets(long nanos);
 
-    List<Intervals> getActiveBuckets();
+    Mutator getMutator();
 }

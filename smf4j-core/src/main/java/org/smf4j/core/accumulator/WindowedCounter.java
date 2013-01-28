@@ -16,6 +16,7 @@
 package org.smf4j.core.accumulator;
 
 import org.smf4j.Accumulator;
+import org.smf4j.Mutator;
 
 /**
  *
@@ -61,7 +62,6 @@ public final class WindowedCounter implements Accumulator {
 
     public WindowedCounter(int timeWindow, int intervals,
             boolean powersOfTwo, TimeReporter timeReporter) {
-
         this.timeReporter = timeReporter;
         if(timeReporter == null) {
             throw new NullPointerException("timeReporter");
@@ -75,29 +75,19 @@ public final class WindowedCounter implements Accumulator {
                     STAGING_BUCKETS);
         }
 
-        windowedIntervals = new WindowedIntervalsImpl(strategy);
+        windowedIntervals = new WindowedIntervalsImpl(strategy, timeReporter);
     }
 
     public WindowedCounter(IntervalStrategy strategy,
-            TimeReporter timeReporter) {
-        this.timeReporter = timeReporter;
-        if(timeReporter == null) {
-            throw new NullPointerException("timeReporter");
-        }
-
-        this.strategy = strategy;
-        if(strategy == null) {
-            throw new NullPointerException("strategy");
-        }
-
-        windowedIntervals = new WindowedIntervalsImpl(strategy);
+            WindowedIntervals intervals) {
+        this(strategy, intervals, SystemNanosTimeReporter.INSTANCE);
     }
 
     public WindowedCounter(IntervalStrategy strategy,
-            WindowedIntervals windowedIntervals, TimeReporter timeReporter) {
-        this.timeReporter = timeReporter;
+            WindowedIntervals intervals, TimeReporter timeReporter) {
         this.strategy = strategy;
-        this.windowedIntervals = windowedIntervals;
+        this.windowedIntervals = intervals;
+        this.timeReporter = timeReporter;
     }
 
     public long getTimeWindow() {
@@ -109,9 +99,17 @@ public final class WindowedCounter implements Accumulator {
     }
 
     @Override
-    public long getValue() {
+    public Mutator getMutator() {
         if(!isOn()) {
-            return 0;
+            return Mutator.NOOP;
+        }
+        return windowedIntervals.getMutator();
+    }
+
+    @Override
+    public long get() {
+        if(!isOn()) {
+            return 0L;
         }
 
         long result = 0L;
@@ -124,21 +122,6 @@ public final class WindowedCounter implements Accumulator {
 
     public long[] buckets() {
         return windowedIntervals.buckets(timeReporter.nanos());
-    }
-
-    @Override
-    public void add(long delta) {
-        if(!isOn()) {
-            return;
-        }
-        windowedIntervals.incr(timeReporter.nanos(), delta);
-    }
-
-    public void add() {
-        if(!isOn()) {
-            return;
-        }
-        windowedIntervals.incr(timeReporter.nanos(), 1);
     }
 
     @Override

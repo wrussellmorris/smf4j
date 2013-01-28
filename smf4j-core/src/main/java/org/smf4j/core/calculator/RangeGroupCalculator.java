@@ -23,13 +23,15 @@ import org.smf4j.Accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class PowerBaseCalculator implements Calculator {
+public class RangeGroupCalculator implements Calculator {
+
+    private static final GroupingComparator sorter = new GroupingComparator();
 
     private String accumulator;
     private List<Grouping> groupings;
     private double threshold = 0.85d;
 
-    public PowerBaseCalculator() {
+    public RangeGroupCalculator() {
         this.groupings = new ArrayList<Grouping>();
     }
 
@@ -73,17 +75,7 @@ public class PowerBaseCalculator implements Calculator {
             this.groupings = new ArrayList<Grouping>();
         }
 
-        Collections.sort(groupings,
-                new Comparator<Grouping>() {
-                    @Override
-                    public int compare(Grouping o1, Grouping o2) {
-                        long diff = o1.multiple - o2.multiple;
-                        if(diff == 0L) {
-                            return 0;
-                        }
-                        return diff < 0L ? -1 : 1;
-                    }
-                });
+        Collections.sort(groupings, sorter);
         this.groupings = groupings;
     }
 
@@ -146,6 +138,16 @@ public class PowerBaseCalculator implements Calculator {
         public void setMultiple(long multiple) {
             this.multiple = multiple;
         }
+    }
 
+    static class GroupingComparator implements Comparator<Grouping> {
+        @Override
+        public int compare(Grouping o1, Grouping o2) {
+            long diff = o1.multiple - o2.multiple;
+            if(diff == 0L) {
+                return 0;
+            }
+            return diff < 0L ? -1 : 1;
+        }
     }
 }

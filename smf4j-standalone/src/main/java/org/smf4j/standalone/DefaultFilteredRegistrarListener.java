@@ -81,21 +81,7 @@ class DefaultFilteredRegistrarListener implements FilteredRegistrarListener, Reg
 
     @Override
     public Iterator<RegistryNode> iterator() {
-        final Iterator<RegistryNode> inner = matchedNodes.iterator();
-        return new Iterator<RegistryNode>() {
-            @Override
-            public boolean hasNext() {
-                return inner.hasNext();
-            }
-            @Override
-            public RegistryNode next() {
-                return inner.next();
-            }
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Not supported.");
-            }
-        };
+        return new InternalIterator(matchedNodes.iterator());
     }
 
     public void initializationComplete(Registrar registrar) {
@@ -182,6 +168,27 @@ class DefaultFilteredRegistrarListener implements FilteredRegistrarListener, Reg
             if(listener != null) {
                 listener.calculatorRemoved(node, calculator);
             }
+        }
+    }
+
+    static final class InternalIterator implements Iterator<RegistryNode> {
+        private final Iterator<RegistryNode> inner;
+
+        InternalIterator(Iterator<RegistryNode> inner) {
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return inner.hasNext();
+        }
+        @Override
+        public RegistryNode next() {
+            return inner.next();
+        }
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported.");
         }
     }
 }

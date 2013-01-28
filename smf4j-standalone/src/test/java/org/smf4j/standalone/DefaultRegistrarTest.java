@@ -21,6 +21,7 @@ import org.smf4j.Accumulator;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.smf4j.Mutator;
 
 /**
  *
@@ -161,7 +162,7 @@ public class DefaultRegistrarTest {
             private boolean on = false;
 
             @Override
-            public long getValue() {
+            public long get() {
                 return 0;
             }
 
@@ -176,6 +177,24 @@ public class DefaultRegistrarTest {
             }
 
             public void add(long delta) {
+            }
+
+            public Mutator getMutator() {
+                return new Mutator() {
+                    @Override
+                    public void add(long delta) {
+                    }
+
+                    @Override
+                    public long localGet() {
+                        return 0L;
+                    }
+
+                    @Override
+                    public long syncGet() {
+                        return 0L;
+                    }
+                };
             }
         };
     }

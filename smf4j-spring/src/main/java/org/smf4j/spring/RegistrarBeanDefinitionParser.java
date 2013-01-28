@@ -30,7 +30,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.smf4j.core.accumulator.Counter;
-import org.smf4j.core.accumulator.MinOrMaxCounter;
+import org.smf4j.core.accumulator.MinCounter;
+import org.smf4j.core.accumulator.MaxCounter;
 import org.smf4j.core.accumulator.WindowedCounter;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -183,7 +184,8 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
 
         // Create bean definition for accumulator
         BeanDefinitionBuilder accBdb = BeanDefinitionBuilder
-                .genericBeanDefinition(MinOrMaxCounter.class);
+                .genericBeanDefinition(max ?
+                MaxCounter.class : MinCounter.class);
         accBdb.addPropertyValue(MAX_ATTR, max);
         String accBeanId = context.getReaderContext()
                 .registerWithGeneratedName(accBdb.getBeanDefinition());

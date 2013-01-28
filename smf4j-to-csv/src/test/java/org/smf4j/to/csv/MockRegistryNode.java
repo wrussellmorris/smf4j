@@ -94,7 +94,7 @@ public class MockRegistryNode implements RegistryNode {
         // Snapshot the values for all of the accumulators
         Map<String, Long> vals = new HashMap<String, Long>();
         for(Map.Entry<String, Accumulator> entry : accs.entrySet()) {
-            vals.put(entry.getKey(), entry.getValue().getValue());
+            vals.put(entry.getKey(), entry.getValue().get());
         }
 
         // Run calculators with accumulator values as input

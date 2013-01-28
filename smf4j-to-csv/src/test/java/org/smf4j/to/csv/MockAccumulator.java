@@ -16,12 +16,13 @@
 package org.smf4j.to.csv;
 
 import org.smf4j.Accumulator;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class MockAccumulator implements Accumulator {
+public class MockAccumulator implements Accumulator, Mutator {
 
     private long val;
 
@@ -30,7 +31,7 @@ public class MockAccumulator implements Accumulator {
     }
 
     @Override
-    public long getValue() {
+    public long get() {
         return val;
     }
 
@@ -45,5 +46,17 @@ public class MockAccumulator implements Accumulator {
 
     public void add(long delta) {
         this.val = delta;
+    }
+
+    public Mutator getMutator() {
+        return this;
+    }
+
+    public long localGet() {
+        return val;
+    }
+
+    public long syncGet() {
+        return val;
     }
 }

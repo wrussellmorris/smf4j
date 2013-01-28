@@ -15,8 +15,6 @@
  */
 package org.smf4j.core.accumulator;
 
-import org.smf4j.core.accumulator.IntervalStrategy;
-
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)

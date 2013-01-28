@@ -114,7 +114,7 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
                     rootNode.getAccumulators().keySet();
             Set<String> calcNames =
                     rootNode.getCalculators().keySet();
-            for(String acc : calcNames) {
+            for(String acc : accNames) {
                 rootNode.unregister(acc, rootNode.getAccumulator(acc));
             }
             for(String calc : calcNames) {

@@ -31,7 +31,7 @@ public class StaticRegistrarBinder {
         return instance;
     }
 
-    public RegistrarProvider getRegistrarProvider() {
+    public Object getRegistrarProvider() {
         return provider;
     }
 }

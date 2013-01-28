@@ -16,6 +16,7 @@
 package org.smf4j;
 
 import org.smf4j.impl.StaticRegistrarBinder;
+import org.smf4j.spi.RegistrarProvider;
 
 /**
  *
@@ -35,7 +36,8 @@ public final class RegistrarFactory {
     }
 
     public static Registrar getRegistrar() {
-        return StaticRegistrarBinder.getSingleton()
-                .getRegistrarProvider().getRegistrar();
+        RegistrarProvider provider = (RegistrarProvider)
+                StaticRegistrarBinder.getSingleton().getRegistrarProvider();
+        return provider.getRegistrar();
     }
 }

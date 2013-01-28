@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2012 rmorris.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.testharness;
+package org.smf4j.core.accumulator;
 
 import java.util.concurrent.atomic.AtomicLong;
+import org.smf4j.Mutator;
 
 /**
  *
- * @author Russell Morris (wrussellmorris@gmail.com)
+ * @author rmorris
  */
-public abstract class TestRunner implements Runnable {
-    private final String name;
-    final AtomicLong duration;
-    final long testIterations;
+public final class CounterMutator implements Mutator {
 
-    public TestRunner(long testIterations, String name) {
-        this.testIterations = testIterations;
-        this.name = name;
-        this.duration = new AtomicLong();
+    static final MutatorFactory MUTATOR_FACTORY = new MutatorFactory() {
+        public Mutator createMutator() {
+            return new CounterMutator();
+        }
+    };
+
+    private long localValue;
+    private final AtomicLong value = new AtomicLong();
+
+    public void add(long delta) {
+        localValue += delta;
+        value.lazySet(localValue);
     }
 
-    public String getName() {
-        return name;
+    public long localGet() {
+        return localValue;
     }
 
-    public final long getDuration() {
-        return duration.get();
+    public long syncGet() {
+        return value.get();
     }
 }

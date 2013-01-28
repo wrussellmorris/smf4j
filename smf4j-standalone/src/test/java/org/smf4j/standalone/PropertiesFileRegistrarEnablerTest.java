@@ -25,6 +25,7 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import org.junit.Ignore;
 
 import org.junit.Test;
 
@@ -55,6 +56,7 @@ public class PropertiesFileRegistrarEnablerTest {
     }
 
     @Test
+    @Ignore
     public void loadPropertiesFromFileTest()
     throws Exception {
         PropertiesFileRegistrarEnabler pfre =

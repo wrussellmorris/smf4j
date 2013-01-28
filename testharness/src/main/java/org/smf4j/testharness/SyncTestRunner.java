@@ -28,10 +28,16 @@ public class SyncTestRunner extends TestRunner {
     }
 
     @Override
-    public void doRun() {
-        synchronized(lock) {
-            count++;
+    public void run() {
+        long localCount = 0;
+        long start = System.currentTimeMillis();
+        while(localCount < testIterations) {
+            synchronized(lock) {
+                count++;
+            }
+            localCount++;
         }
+        duration.getAndSet(System.currentTimeMillis() - start);
     }
 
 }

@@ -16,15 +16,29 @@
 package org.smf4j.core.accumulator;
 
 import java.util.concurrent.atomic.AtomicLong;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author rmorris
  */
-public final class AtomicLongValue {
+public final class MaxMutator implements Mutator {
+
+    static final MutatorFactory MUTATOR_FACTORY = new MutatorFactory() {
+        public Mutator createMutator() {
+            return new MaxMutator();
+        }
+    };
 
     private long localValue;
     private final AtomicLong value = new AtomicLong();
+
+    public void add(final long delta) {
+        if(delta > localValue) {
+            localValue = delta;
+            value.lazySet(delta);
+        }
+    }
 
     public long localGet() {
         return localValue;
@@ -32,20 +46,5 @@ public final class AtomicLongValue {
 
     public long syncGet() {
         return value.get();
-    }
-
-    public void incr() {
-        localValue += 1;
-        value.set(localValue);
-    }
-
-    public void incr(long delta) {
-        localValue += delta;
-        value.set(localValue);
-    }
-
-    public void set(long val) {
-        localValue = val;
-        value.set(val);
     }
 }

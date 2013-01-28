@@ -26,7 +26,12 @@ public class NullTestRunner extends TestRunner {
     }
 
     @Override
-    public final void doRun() {
+    public final void run() {
+        long localCount = 0;
+        long start = System.currentTimeMillis();
+        while(localCount < testIterations) {
+            localCount++;
+        }
+        duration.getAndSet(System.currentTimeMillis() - start);
     }
-
 }

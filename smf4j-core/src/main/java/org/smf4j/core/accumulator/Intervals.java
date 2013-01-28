@@ -16,13 +16,15 @@
 package org.smf4j.core.accumulator;
 
 import java.util.concurrent.atomic.AtomicLongArray;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class Intervals {
+public final class Intervals implements Mutator {
 
+    private final TimeReporter timeReporter;
     private final int buckets;
     private final int intervals;
     private final int bufferIntervals;
@@ -30,11 +32,12 @@ public final class Intervals {
     private final long[] localTimestamps;
     private final AtomicLongArray timestamps;
     private final long intervalResolutionInNanos;
-    private final IntervalStrategy bucketInterval;
+    private final IntervalStrategy strategy;
     private final long staleWindowTimestampOffset;
 
-    Intervals(IntervalStrategy strategy) {
-        this.bucketInterval = strategy;
+    Intervals(IntervalStrategy strategy, TimeReporter timeReporter) {
+        this.timeReporter = timeReporter;
+        this.strategy = strategy;
         this.intervals = strategy.intervals();
         this.bufferIntervals = strategy.bufferIntervals();
         this.intervalResolutionInNanos = strategy.intervalResolutionInNanos();
@@ -45,29 +48,70 @@ public final class Intervals {
         this.staleWindowTimestampOffset = intervalResolutionInNanos * buckets;
     }
 
-    public void incr(long nanos, long val) {
-        int index = bucketInterval.intervalIndex(nanos);
-        if(localTimestamps[index] < nanos - intervalResolutionInNanos) {
+    @Override
+    public void add(long delta) {
+        long nanos = timeReporter.nanos();
+        int index = strategy.intervalIndex(nanos);
+        long stale = nanos - intervalResolutionInNanos;
+        if(localTimestamps[index] < stale) {
             // This bucket is stale
             timestamps.lazySet(index, nanos);
             localTimestamps[index] = nanos;
-            values.lazySet(index, val);
+            values.lazySet(index, delta);
         } else {
             // Bucket's still fresh...
-            values.lazySet(index, values.get(index) + val);
+            values.lazySet(index, values.get(index) + delta);
         }
     }
 
-    public long[] buckets(long nanos) {
-        int index = bucketInterval.intervalIndex(nanos);
-
-        long[] ret = new long[intervals];
+    @Override
+    public long syncGet() {
+        long nanos = timeReporter.nanos();
+        long result = 0L;
+        int index = strategy.intervalIndex(nanos);
+        long stale = nanos - staleWindowTimestampOffset;
         for(int count=0,i=parw(index-bufferIntervals);
             count<intervals;
             i = parw(i-1),count++) {
 
             long bucketTimestamp = timestamps.get(i);
-            if( bucketTimestamp >= nanos - staleWindowTimestampOffset) {
+            if(bucketTimestamp >= stale) {
+                result += values.get(i);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public long localGet() {
+        long nanos = timeReporter.nanos();
+        long result = 0L;
+        int index = strategy.intervalIndex(nanos);
+        long stale = nanos - staleWindowTimestampOffset;
+        for(int count=0,i=parw(index-bufferIntervals);
+            count<intervals;
+            i = parw(i-1),count++) {
+
+            long bucketTimestamp = localTimestamps[i];
+            if(bucketTimestamp >= stale) {
+                result += values.get(i);
+            }
+        }
+
+        return result;
+    }
+
+    public long[] buckets(long nanos) {
+        int index = strategy.intervalIndex(nanos);
+        long[] ret = new long[intervals];
+        long stale = nanos - staleWindowTimestampOffset;
+        for(int count=0,i=parw(index-bufferIntervals);
+            count<intervals;
+            i = parw(i-1),count++) {
+
+            long bucketTimestamp = timestamps.get(i);
+            if(bucketTimestamp >= stale) {
                 ret[count] = values.get(i);
             }
         }

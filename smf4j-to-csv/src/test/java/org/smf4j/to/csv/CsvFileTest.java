@@ -235,7 +235,7 @@ public class CsvFileTest {
                 Map<String, Accumulator> accumulators) {
             long total = 0;
             for(Accumulator acc : accumulators.values()) {
-                total += acc.getValue();
+                total += acc.get();
             }
             return total;
         }

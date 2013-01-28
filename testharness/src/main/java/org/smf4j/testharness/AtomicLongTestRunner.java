@@ -31,7 +31,13 @@ public class AtomicLongTestRunner extends TestRunner {
     }
 
     @Override
-    public final void doRun() {
-        counter.incrementAndGet();
+    public final void run() {
+        long localCount = 0;
+        long start = System.currentTimeMillis();
+        while(localCount < testIterations) {
+            counter.incrementAndGet();
+            localCount++;
+        }
+        duration.getAndSet(System.currentTimeMillis() - start);
     }
 }

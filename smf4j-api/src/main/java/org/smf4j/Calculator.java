@@ -16,7 +16,6 @@
 package org.smf4j;
 
 import java.util.Map;
-import org.smf4j.Accumulator;
 
 /**
  *

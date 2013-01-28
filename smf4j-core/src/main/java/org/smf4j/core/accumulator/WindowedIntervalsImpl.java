@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import org.smf4j.Mutator;
 
 /**
  *
@@ -32,13 +33,14 @@ public final class WindowedIntervalsImpl implements WindowedIntervals {
     private final ConcurrentMap<Long, WeakReference<Intervals>> registry;
     private final int intervals;
 
-    public WindowedIntervalsImpl(final IntervalStrategy strategy) {
+    public WindowedIntervalsImpl(final IntervalStrategy strategy,
+            final TimeReporter timeReporter) {
         this.intervals = strategy.intervals();
         this.registry = new ConcurrentHashMap<Long, WeakReference<Intervals>>();
         this.threadLocalBuckets = new ThreadLocal<Intervals>() {
             @Override
             protected Intervals initialValue() {
-                Intervals tlb = new Intervals(strategy);
+                Intervals tlb = new Intervals(strategy, timeReporter);
                 registry.put(Thread.currentThread().getId(),
                         new WeakReference(tlb));
                 return tlb;
@@ -47,8 +49,8 @@ public final class WindowedIntervalsImpl implements WindowedIntervals {
     }
 
     @Override
-    public void incr(long nanos, long val) {
-        threadLocalBuckets.get().incr(nanos, val);
+    public Mutator getMutator() {
+        return threadLocalBuckets.get();
     }
 
     @Override
@@ -67,7 +69,6 @@ public final class WindowedIntervalsImpl implements WindowedIntervals {
         return ret;
     }
 
-    @Override
     public List<Intervals> getActiveBuckets() {
         List<Intervals> activeBuckets = new ArrayList<Intervals>();
 

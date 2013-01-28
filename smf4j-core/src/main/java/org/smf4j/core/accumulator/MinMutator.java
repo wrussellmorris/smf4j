@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2012 rmorris.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,35 @@
 package org.smf4j.core.accumulator;
 
 import java.util.concurrent.atomic.AtomicLong;
+import org.smf4j.Mutator;
 
 /**
- * {@code TestingTimeReporter} is an implementation of {@link TimeReporter}
- * that allows testing code to set the time it reports.
  *
- * @author Russell Morris (wrussellmorris@gmail.com)
+ * @author rmorris
  */
-public class TestingTimeReporter implements TimeReporter {
-    private AtomicLong currentTime = new AtomicLong(0);
+public final class MinMutator implements Mutator {
 
-    @Override
-    public long nanos() {
-        return currentTime.get();
+    static final MutatorFactory MUTATOR_FACTORY = new MutatorFactory() {
+        public Mutator createMutator() {
+            return new MinMutator();
+        }
+    };
+
+    private long localValue;
+    private final AtomicLong value = new AtomicLong();
+
+    public void add(final long delta) {
+        if(delta < localValue) {
+            localValue = delta;
+            value.lazySet(delta);
+        }
     }
 
-    public void set(long nanos) {
-        this.currentTime.set(nanos);
+    public long localGet() {
+        return localValue;
+    }
+
+    public long syncGet() {
+        return value.get();
     }
 }

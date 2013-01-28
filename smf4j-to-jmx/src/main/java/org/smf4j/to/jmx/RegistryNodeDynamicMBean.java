@@ -64,7 +64,7 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
         // Is it a named accumulator?
         Accumulator acc = registryNode.getAccumulator(attribute);
         if(acc != null) {
-            return acc.getValue();
+            return acc.get();
         }
 
         try {
@@ -162,7 +162,7 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
         return new MBeanInfo(
                 getClass().getCanonicalName(),
                 registryNode.getName(),
-                attrs.toArray(new MBeanAttributeInfo[0]),
+                attrs.toArray(new MBeanAttributeInfo[attrs.size()]),
                 null,
                 opers,
                 null);

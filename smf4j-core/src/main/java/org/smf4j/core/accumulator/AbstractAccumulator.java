@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.smf4j.Mutator;
 
 /**
  *
@@ -31,16 +32,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractAccumulator implements Accumulator {
 
     private volatile boolean on;
-    private final ThreadLocal<AtomicLongValue> threadLocal;
+    private final ThreadLocal<Mutator> threadLocal;
     private final ConcurrentMap<Long, AccumulatorThread> participatingThreads;
 
-    protected AbstractAccumulator() {
+    protected AbstractAccumulator(final MutatorFactory mutatorFactory) {
         this.participatingThreads =
                 new ConcurrentHashMap<Long, AccumulatorThread>();
-        this.threadLocal = new ThreadLocal<AtomicLongValue>() {
+        this.threadLocal = new ThreadLocal<Mutator>() {
             @Override
-            protected final AtomicLongValue initialValue() {
-                AtomicLongValue threadLocalInst = new AtomicLongValue();
+            protected final Mutator initialValue() {
+                Mutator threadLocalInst = mutatorFactory.createMutator();
                 Thread cur = Thread.currentThread();
                 participatingThreads.put(cur.getId(), new AccumulatorThread(cur,
                         threadLocalInst));
@@ -59,12 +60,16 @@ public abstract class AbstractAccumulator implements Accumulator {
         this.on = on;
     }
 
-    protected final AtomicLongValue getInst() {
+    public final Mutator getMutator() {
+        if(!isOn()) {
+            return Mutator.NOOP;
+        }
+
         return threadLocal.get();
     }
 
     @Override
-    public final long getValue() {
+    public final long get() {
         List<Map.Entry<Long, AccumulatorThread>> deadThreads =
                 new ArrayList<Map.Entry<Long, AccumulatorThread>>();
 
@@ -103,10 +108,10 @@ public abstract class AbstractAccumulator implements Accumulator {
 
     static final class AccumulatorThread {
         final WeakReference<Thread> threadRef;
-        final AtomicLongValue threadLocalInst;
+        final Mutator threadLocalInst;
         final AtomicBoolean scavenged;
 
-        AccumulatorThread(Thread thread, AtomicLongValue threadLocalInst) {
+        AccumulatorThread(Thread thread, Mutator threadLocalInst) {
             this.threadRef = new WeakReference<Thread>(thread);
             this.threadLocalInst = threadLocalInst;
             this.scavenged = new AtomicBoolean();

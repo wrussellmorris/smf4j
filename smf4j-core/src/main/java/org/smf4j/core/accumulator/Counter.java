@@ -26,20 +26,8 @@ public final class Counter extends AbstractAccumulator {
     final AtomicLong scavengedValue;
 
     public Counter() {
+        super(CounterMutator.MUTATOR_FACTORY);
         this.scavengedValue = new AtomicLong();
-    }
-
-    public void add() {
-        add(1);
-    }
-
-    @Override
-    public final void add(long delta) {
-        if(!isOn()) {
-            return;
-        }
-
-        getInst().incr(delta);
     }
 
     @Override

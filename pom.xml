@@ -21,13 +21,14 @@
 
     <modules>
         <module>smf4j-api</module>
+        <module>smf4j-api-hack</module>
+        <module>smf4j-core</module>
         <module>smf4j-spring</module>
+        <module>smf4j-standalone</module>
         <module>smf4j-to-slf4j</module>
         <module>smf4j-to-csv</module>
-        <module>smf4j-core</module>
-        <module>smf4j-standalone</module>
-    <module>smf4j-to-jmx</module>
-  </modules>
+        <module>smf4j-to-jmx</module>
+    </modules>
 
     <build>
         <pluginManagement>
@@ -84,18 +85,17 @@
                         </reportPlugins>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1.1</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
@@ -139,10 +139,16 @@
             </dependency>
 
             <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${spring.version}</version>
-				<scope>test</scope>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

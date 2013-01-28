@@ -13,7 +13,6 @@ import org.smf4j.RegistrarFactory;
 import org.smf4j.core.accumulator.Counter;
 import org.smf4j.core.accumulator.MaxCounter;
 import org.smf4j.core.accumulator.MinCounter;
-import org.smf4j.core.accumulator.MinOrMaxCounter;
 import org.smf4j.core.accumulator.WindowedCounter;
 import org.smf4j.to.jmx.JmxRegistrarPublisher;
 
@@ -118,10 +117,10 @@ public class App
         runners.add(new NullTestRunner(testIterations));
 
         // Plain synchronized block
-        //runners.add(new SyncTestRunner(testIterations));
+        runners.add(new SyncTestRunner(testIterations));
 
         // Plain AtomicLong
-        //runners.add(new AtomicLongTestRunner(testIterations));
+        runners.add(new AtomicLongTestRunner(testIterations));
 
         // Counter
         runners.add(new AccTestRunner(testIterations, "Counter", new Counter()));
@@ -132,21 +131,11 @@ public class App
         // WindowedCounter (powers of two)
         runners.add(new AccTestRunner(testIterations, "Windowed_2s", new WindowedCounter(28, 5, true)));
 
-        // MinMax (min)
-        MinOrMaxCounter min = new MinOrMaxCounter();
-        min.setMax(false);
-        //runners.add(new AccTestRunner(testIterations, "MinOrMaxCounter_min", min));
-
-        // MinMax (min)
-        MinOrMaxCounter max = new MinOrMaxCounter();
-        max.setMax(true);
-        //runners.add(new AccTestRunner(testIterations, "MinOrMaxCounter_max", max));
-
         // MinCounter
-        //runners.add(new AccTestRunner(testIterations, "MinCounter", new MinCounter()));
+        runners.add(new AccTestRunner(testIterations, "MinCounter", new MinCounter()));
 
         // MaxCounter
-        //runners.add(new AccTestRunner(testIterations, "MaxCounter", new MaxCounter()));
+        runners.add(new AccTestRunner(testIterations, "MaxCounter", new MaxCounter()));
         return runners;
     }
 
@@ -178,7 +167,7 @@ public class App
 
     public static void main( String[] args ) throws IOException, InterruptedException
     {
-        final long iterations = 100000000L;
+        final long iterations = 10000000L;
         final int threads = Runtime.getRuntime().availableProcessors();
         App app = new App();
         app.go(iterations, threads);

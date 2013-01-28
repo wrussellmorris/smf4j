@@ -20,18 +20,9 @@ package org.smf4j.core.accumulator;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class MaxCounter extends AbstractAccumulator {
-    @Override
-    public final void add(long val) {
-        if(!isOn()) {
-            return;
-        }
 
-        // Check for new bound
-        AtomicLongValue inst = getInst();
-        long current = inst.localGet();
-        if(val > current) {
-            inst.set(val);
-        }
+    public MaxCounter() {
+        super(MaxMutator.MUTATOR_FACTORY);
     }
 
     @Override

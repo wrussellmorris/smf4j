@@ -21,6 +21,7 @@ import static org.smf4j.core.accumulator.TestUtils.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.smf4j.Mutator;
 
 /**
  * {@code WindowedCounterTest} tests the {@link WindowedCounter} class with
@@ -68,7 +69,7 @@ public class WindowedCounterTest {
 
         replay(t, intervals, strategy);
         counter.setOn(true);
-        assertEquals(15, counter.getValue());
+        assertEquals(15, counter.get());
         verify(t, intervals, strategy);
     }
 
@@ -76,54 +77,25 @@ public class WindowedCounterTest {
     public void getValueOffTest() {
         counter.setOn(false);
         replay(t, intervals, strategy);
-        assertEquals(0L, counter.getValue());
+        assertEquals(0L, counter.get());
         verify(t, intervals, strategy);
     }
 
     @Test
-    public void addOnTest() {
-        long nanos = 0L;
-        long delta = 1234L;
-
-        expect(t.nanos()).andReturn(nanos);
-        intervals.incr(nanos,delta);
-        expectLastCall();
-
-        replay(t, intervals, strategy);
+    public void getMutatorIsOnTest() {
+        Mutator mockMutator = createMock(Mutator.class);
         counter.setOn(true);
-        counter.add(delta);
-        verify(t, intervals, strategy);
+        expect(intervals.getMutator()).andReturn(mockMutator);
+        replay(intervals);
+        assertEquals(mockMutator, counter.getMutator());
+        verify(intervals);
     }
 
     @Test
-    public void addOffTest() {
-        long delta = 1234L;
-
-        replay(t, intervals, strategy);
+    public void getMutatorIsOffTest() {
         counter.setOn(false);
-        counter.add(delta);
-        verify(t, intervals, strategy);
-    }
-
-    @Test
-    public void incrOnTest() {
-        long nanos = 0L;
-
-        expect(t.nanos()).andReturn(nanos);
-        intervals.incr(nanos, 1);
-        expectLastCall();
-
-        replay(t, intervals, strategy);
-        counter.setOn(true);
-        counter.add();
-        verify(t, intervals, strategy);
-    }
-
-    @Test
-    public void incrOffTest() {
-        replay(t, intervals, strategy);
-        counter.setOn(false);
-        counter.add();
-        verify(t, intervals, strategy);
+        replay(intervals);
+        assertEquals(Mutator.NOOP, counter.getMutator());
+        verify(intervals);
     }
 }
