@@ -36,7 +36,7 @@ public class RangeGroupCalculator implements Calculator {
     }
 
     @Override
-    public Object calculate(Map<String, Long> values,
+    public String calculate(Map<String, Long> values,
         Map<String, Accumulator> accumulators) {
         Long val = values.get(getAccumulator());
         if(val == null) {

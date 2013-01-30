@@ -82,8 +82,7 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
         // bufferIntervals must be less than intervals
         if(reportedIntervals <= 0) {
             throw new IllegalArgumentException(
-                    "2^(timeWindowExp - intervalExp)-bufferIntervals must "
-                    + "be > 0");
+                    "2^(intervalExp)-bufferIntervals must be > 0");
         }
 
         // reportedWindowInNanos takes into account intervals reserved

@@ -29,16 +29,19 @@ public class Ratio implements Calculator {
     private String denominator;
 
     @Override
-    public Object calculate(Map<String, Long> values,
+    public Double calculate(Map<String, Long> values,
         Map<String, Accumulator> accumulators) {
 
         Long num = values.get(numerator);
         Long den = values.get(denominator);
-        if(num == null || den == null || den == 0L) {
+        if(num == null) {
+            return 0.0d;
+        }
+        if(den == null || den == 0L) {
             return Double.NaN;
         }
 
-        return num / den;
+        return (double)num / (double)den;
     }
 
     public String getDenominator() {

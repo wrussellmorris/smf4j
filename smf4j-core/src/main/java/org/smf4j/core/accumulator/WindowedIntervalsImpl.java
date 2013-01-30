@@ -19,8 +19,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.smf4j.Mutator;
 
 /**
@@ -29,28 +27,23 @@ import org.smf4j.Mutator;
  */
 public final class WindowedIntervalsImpl implements WindowedIntervals {
 
-    private final ThreadLocal<Intervals> threadLocalBuckets;
-    private final ConcurrentMap<Long, WeakReference<Intervals>> registry;
+    private final MutatorRegistry mutatorRegistry;
     private final int intervals;
 
     public WindowedIntervalsImpl(final IntervalStrategy strategy,
             final TimeReporter timeReporter) {
         this.intervals = strategy.intervals();
-        this.registry = new ConcurrentHashMap<Long, WeakReference<Intervals>>();
-        this.threadLocalBuckets = new ThreadLocal<Intervals>() {
+        this.mutatorRegistry = new MutatorRegistry( new MutatorFactory() {
             @Override
-            protected Intervals initialValue() {
-                Intervals tlb = new Intervals(strategy, timeReporter);
-                registry.put(Thread.currentThread().getId(),
-                        new WeakReference(tlb));
-                return tlb;
+            public Mutator createMutator() {
+                return new Intervals(strategy, timeReporter);
             }
-        };
+        });
     }
 
     @Override
     public Mutator getMutator() {
-        return threadLocalBuckets.get();
+        return mutatorRegistry.get();
     }
 
     @Override
@@ -59,44 +52,39 @@ public final class WindowedIntervalsImpl implements WindowedIntervals {
         long[] ret = new long[intervals];
 
         // Iterate over active buckets contained in our registry
-        for(Intervals tlb : getActiveBuckets()) {
-            long[] values = tlb.buckets(nanos);
-            for(int i=0; i<intervals; i++) {
-                ret[i] += values[i];
+        for(MutatorRegistry.Registration registration : mutatorRegistry) {
+            Intervals cur = (Intervals)registration.getMutator();
+            if(registration.isDead() && cur.allBucketsStale(nanos)) {
+                // If this thread is null AND all of its buckets are stale,
+                // let's try to unregister it now.
+                mutatorRegistry.unregister(registration);
+            } else {
+                long[] values = cur.buckets(nanos);
+                for(int i=0; i<intervals; i++) {
+                    ret[i] += values[i];
+                }
             }
         }
 
         return ret;
     }
 
-    public List<Intervals> getActiveBuckets() {
-        List<Intervals> activeBuckets = new ArrayList<Intervals>();
-
-        // A list of apparently-dead registry entries
-        List<Map.Entry<Long, WeakReference<Intervals>>> toRemove =
-            new ArrayList<Map.Entry<Long, WeakReference<Intervals>>>();
+    @Override
+    public long get(long nanos) {
+        long value = 0L;
 
         // Iterate over all bucket contains in our registry
-        for(Map.Entry<Long, WeakReference<Intervals>> entry
-                : registry.entrySet()) {
-
-            WeakReference<Intervals> ref = entry.getValue();
-            Intervals tlb = ref.get();
-            if(tlb == null) {
-                // If tlb is null, we'll consider this entry dead
-                toRemove.add(entry);
-                continue;
+        for(MutatorRegistry.Registration registration : mutatorRegistry) {
+            Intervals cur = (Intervals)registration.getMutator();
+            if(registration.isDead() && cur.allBucketsStale(nanos)) {
+                // If this thread is null AND all of its buckets are stale,
+                // let's try to unregister it now.
+                mutatorRegistry.unregister(registration);
+            } else {
+                value += cur.syncGet();
             }
-            activeBuckets.add(tlb);
         }
 
-        // Before returning, we'll clean up our registry by removing dead
-        // registrations
-        for(int i=0; i<toRemove.size(); i++) {
-            Map.Entry<Long, WeakReference<Intervals>> entry = toRemove.get(i);
-            registry.remove(entry.getKey(), entry.getValue());
-        }
-
-        return activeBuckets;
+        return value;
     }
 }

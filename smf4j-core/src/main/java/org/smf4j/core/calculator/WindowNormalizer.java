@@ -15,9 +15,9 @@
  */
 package org.smf4j.core.calculator;
 
-import org.smf4j.Calculator;
 import java.util.Map;
 import org.smf4j.Accumulator;
+import org.smf4j.Calculator;
 import org.smf4j.core.accumulator.WindowedCounter;
 
 /**

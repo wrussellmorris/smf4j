@@ -38,6 +38,6 @@ public class AtomicLongTestRunner extends TestRunner {
             counter.incrementAndGet();
             localCount++;
         }
-        duration.getAndSet(System.currentTimeMillis() - start);
+        durations.offer(System.currentTimeMillis() - start);
     }
 }

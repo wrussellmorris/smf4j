@@ -61,11 +61,10 @@ public class WindowedCounterTest {
 
     @Test
     public void getValueOnTest() {
-        long[] result = array(1,2,3,4,5);
         long nanos = 0L;
 
         expect(t.nanos()).andReturn(nanos);
-        expect(intervals.buckets(nanos)).andReturn(result);
+        expect(intervals.get(nanos)).andReturn(15L);
 
         replay(t, intervals, strategy);
         counter.setOn(true);

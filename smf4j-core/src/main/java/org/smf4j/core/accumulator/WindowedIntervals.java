@@ -25,5 +25,7 @@ public interface WindowedIntervals {
 
     public long[] buckets(long nanos);
 
+    public long get(long nanos);
+
     Mutator getMutator();
 }

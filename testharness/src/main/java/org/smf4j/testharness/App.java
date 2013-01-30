@@ -32,8 +32,6 @@ public class App
         JmxRegistrarPublisher publisher = new JmxRegistrarPublisher(r);
         publisher.publish();
 
-        tpe = Executors.newFixedThreadPool(numThreads);
-
         // Run one pass of lower-concurrency tests to prime the app
         System.out.println("Priming...");
         runLowConcurrencyTests(runners);
@@ -43,7 +41,6 @@ public class App
         runHighConcurrencyTests(runners, numThreads);
         runLowConcurrencyTests(runners);
 
-        tpe.shutdown();
         System.out.println("Done");
     }
 
@@ -96,9 +93,11 @@ public class App
         newLine();
     }
 
-    public void runHighConcurrencyTest(final TestRunner runner, int threads) throws InterruptedException, IOException {
+    public void runHighConcurrencyTest(final TestRunner runner, int numThreads) throws InterruptedException, IOException {
         List<Callable<Long>> runners = new ArrayList<Callable<Long>>();
-        for(int i=0; i<threads; i++) {
+        runner.prepare();
+        tpe = Executors.newFixedThreadPool(numThreads);
+        for(int i=0; i<numThreads; i++) {
             runners.add(new Callable<Long> () {
                 public Long call() throws Exception {
                     runner.run();
@@ -107,6 +106,7 @@ public class App
             });
         }
         tpe.invokeAll(runners);
+        tpe.shutdown();
         writeData(runner.getDuration());
     }
 

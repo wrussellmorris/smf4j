@@ -30,6 +30,8 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
 import org.smf4j.helpers.CalculatorHelper;
@@ -44,13 +46,24 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
 
     private static final String ATTR_ON = "On";
     private static final String OPER_CLEAR_ON = "clearOn";
+    private static final String ROOT_NAME = "[root]";
+    private static final String DEFAULT_DOMAIN = "smf4j";
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final String domain;
     private final RegistryNode registryNode;
     private final MBeanInfo mBeanInfo;
     private final ObjectName objectName;
+    private final String name;
 
     public RegistryNodeDynamicMBean(RegistryNode registryNode) {
+        this(DEFAULT_DOMAIN, registryNode);
+    }
+
+    public RegistryNodeDynamicMBean(String domain, RegistryNode registryNode) {
+        this.domain = valueOrDefault(domain, DEFAULT_DOMAIN);
         this.registryNode = registryNode;
+        this.name = valueOrDefault(registryNode.getName(), ROOT_NAME);
         this.mBeanInfo = buildMBeanInfo();
         this.objectName = buildObjectName();
     }
@@ -67,11 +80,17 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
             return acc.get();
         }
 
+        // Try to treat it like a value created by a registered Calcuator
+        // instance.
         try {
             Map<String, Object> snapshot = registryNode.snapshot();
             return CalculatorHelper.resolveValue(snapshot, attribute);
         } catch(UnsupportedOperationException e) {
+            log.error(String.format("An error occurred attempting to resolve "
+                    + "the Calculator-derived value '%s' in node '%s'.",
+                    attribute, name), e);
         }
+
         throw new AttributeNotFoundException();
     }
 
@@ -84,9 +103,10 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
                 registryNode.setOn((Boolean)obj);
                 return;
             }
-            throw new InvalidAttributeValueException();
+            throw new InvalidAttributeValueException(attribute.getName());
         }
-        throw new AttributeNotFoundException();
+
+        throw new AttributeNotFoundException(attribute.getName());
     }
 
     public AttributeList getAttributes(String[] attributes) {
@@ -99,8 +119,17 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
             try {
                 list.add(new Attribute(attribute, getAttribute(attribute)));
             } catch (AttributeNotFoundException ex) {
+                log.error(String.format("An error occurred attempting to "
+                        + "resolve the attribute '%s' in node '%s'.", attribute,
+                        name), ex);
             } catch (MBeanException ex) {
+                log.error(String.format("An error occurred attempting to "
+                        + "resolve the attribute '%s' in node '%s'.", attribute,
+                        name), ex);
             } catch (ReflectionException ex) {
+                log.error(String.format("An error occurred attempting to "
+                        + "resolve the attribute '%s' in node '%s'.", attribute,
+                        name), ex);
             }
         }
         return list;
@@ -127,11 +156,10 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
     }
 
     private ObjectName buildObjectName() {
-        String domain = "SMF4J-Registrar";
         try {
-            ObjectName objectName = new ObjectName(
-                    domain + ":type=RegistryNode,name=" + registryNode.getName());
-            return objectName;
+            ObjectName tmp =
+                    new ObjectName(domain + ":type=RegistryNode,name=" + name);
+            return tmp;
         } catch(MalformedObjectNameException e) {
             return null;
         }
@@ -139,44 +167,31 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
 
     private MBeanInfo buildMBeanInfo() {
         List<MBeanAttributeInfo> attrs = new ArrayList<MBeanAttributeInfo>();
-        attrs.add(new MBeanAttributeInfo(
-                ATTR_ON,
+        attrs.add(new MBeanAttributeInfo(ATTR_ON,
                 boolean.class.getCanonicalName(),
                 "Whether the node is off or on.",
-                true,
-                true,
-                true));
+                true, true, true));
 
         gatherAccumulatorAttributes(attrs);
         gatherCalculatorAttributes(attrs);
 
         MBeanOperationInfo[] opers = {
-            new MBeanOperationInfo(
-                OPER_CLEAR_ON,
-                "Forces the node to use its parent's off/on state.",
-                null,
+            new MBeanOperationInfo(OPER_CLEAR_ON,
+                "Forces the node to use its parent's off/on state.", null,
                 java.lang.Void.class.getCanonicalName(),
                 MBeanOperationInfo.ACTION)
         };
 
-        return new MBeanInfo(
-                getClass().getCanonicalName(),
-                registryNode.getName(),
-                attrs.toArray(new MBeanAttributeInfo[attrs.size()]),
-                null,
-                opers,
-                null);
+        return new MBeanInfo(getClass().getCanonicalName(), name,
+                attrs.toArray(new MBeanAttributeInfo[attrs.size()]), null,
+                opers, null);
     }
 
     private void gatherAccumulatorAttributes(List<MBeanAttributeInfo> attrs) {
-        for(String name : registryNode.getAccumulators().keySet()) {
-            attrs.add(new MBeanAttributeInfo(
-                    name,
-                    long.class.getCanonicalName(),
-                    "Accumulator " + name,
-                    false,
-                    false,
-                    false));
+        for(String accName : registryNode.getAccumulators().keySet()) {
+            attrs.add(new MBeanAttributeInfo(accName,
+                    long.class.getCanonicalName(), "Accumulator " + accName,
+                    false, false, false));
         }
     }
 
@@ -187,14 +202,17 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
                     CalculatorHelper.getCalculatorAttributes(entry.getKey(),
                     entry.getValue().getClass());
             for(CalculatorAttribute cattr : cattrs) {
-                attrs.add(new MBeanAttributeInfo(
-                        cattr.name,
+                attrs.add(new MBeanAttributeInfo(cattr.name,
                         long.class.getCanonicalName(),
-                        "Calculation " + entry.getKey(),
-                        false,
-                        false,
-                        false));
+                        "Calculation " + entry.getKey(), false, false, false));
             }
         }
+    }
+
+    private String valueOrDefault(String value, String defaultValue) {
+        if(value == null || value.equals("")) {
+            return defaultValue;
+        }
+        return value;
     }
 }

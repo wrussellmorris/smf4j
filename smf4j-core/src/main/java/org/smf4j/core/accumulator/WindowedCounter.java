@@ -112,12 +112,7 @@ public final class WindowedCounter implements Accumulator {
             return 0L;
         }
 
-        long result = 0L;
-        long[] buckets = buckets();
-        for(int i=0; i<buckets.length; i++) {
-            result += buckets[i];
-        }
-        return result;
+        return windowedIntervals.get(timeReporter.nanos());
     }
 
     public long[] buckets() {

@@ -37,7 +37,7 @@ public class SyncTestRunner extends TestRunner {
             }
             localCount++;
         }
-        duration.getAndSet(System.currentTimeMillis() - start);
+        durations.offer(System.currentTimeMillis() - start);
     }
 
 }

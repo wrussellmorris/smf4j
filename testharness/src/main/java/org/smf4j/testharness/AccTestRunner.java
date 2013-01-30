@@ -62,7 +62,6 @@ public class AccTestRunner extends TestRunner {
             //accumulator.getMutator().add(1L);
             localCount++;
         }
-        duration.getAndSet(System.currentTimeMillis() - start);
+        durations.offer(System.currentTimeMillis() - start);
     }
-
 }

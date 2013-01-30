@@ -16,13 +16,6 @@
 package org.smf4j.core.accumulator;
 
 import org.smf4j.Accumulator;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.smf4j.Mutator;
 
 /**
@@ -32,22 +25,10 @@ import org.smf4j.Mutator;
 public abstract class AbstractAccumulator implements Accumulator {
 
     private volatile boolean on;
-    private final ThreadLocal<Mutator> threadLocal;
-    private final ConcurrentMap<Long, AccumulatorThread> participatingThreads;
+    protected final MutatorRegistry mutatorRegistry;
 
     protected AbstractAccumulator(final MutatorFactory mutatorFactory) {
-        this.participatingThreads =
-                new ConcurrentHashMap<Long, AccumulatorThread>();
-        this.threadLocal = new ThreadLocal<Mutator>() {
-            @Override
-            protected final Mutator initialValue() {
-                Mutator threadLocalInst = mutatorFactory.createMutator();
-                Thread cur = Thread.currentThread();
-                participatingThreads.put(cur.getId(), new AccumulatorThread(cur,
-                        threadLocalInst));
-                return threadLocalInst;
-            }
-        };
+        this.mutatorRegistry = new MutatorRegistry(mutatorFactory);
     }
 
     @Override
@@ -65,56 +46,6 @@ public abstract class AbstractAccumulator implements Accumulator {
             return Mutator.NOOP;
         }
 
-        return threadLocal.get();
-    }
-
-    @Override
-    public final long get() {
-        List<Map.Entry<Long, AccumulatorThread>> deadThreads =
-                new ArrayList<Map.Entry<Long, AccumulatorThread>>();
-
-        long nanos = System.nanoTime();
-        long value = 0;
-        for (Map.Entry<Long, AccumulatorThread> entry
-                : participatingThreads.entrySet()) {
-
-            AccumulatorThread accThread = entry.getValue();
-            Thread t = accThread.threadRef.get();
-            if(t == null || !t.isAlive()) {
-                // Thread's dead, baby.  Thread's dead...
-                if(participatingThreads.remove(entry.getKey(), accThread)) {
-                    deadThreads.add(entry);
-                }
-                continue;
-            }
-            value = combineValues(nanos, value, accThread, false);
-        }
-
-        // Scavenge values from now-dead threads
-        for(Map.Entry<Long, AccumulatorThread> entry : deadThreads) {
-            Long id = entry.getKey();
-            AccumulatorThread accThread = entry.getValue();
-            value = combineValues(nanos, value, accThread, true);
-            if(accThread.scavenged.get()) {
-                participatingThreads.remove(id, accThread);
-            }
-        }
-
-        return value;
-    }
-
-    abstract long combineValues(long nanos, long input,
-            AccumulatorThread accThread, boolean scavenging);
-
-    static final class AccumulatorThread {
-        final WeakReference<Thread> threadRef;
-        final Mutator threadLocalInst;
-        final AtomicBoolean scavenged;
-
-        AccumulatorThread(Thread thread, Mutator threadLocalInst) {
-            this.threadRef = new WeakReference<Thread>(thread);
-            this.threadLocalInst = threadLocalInst;
-            this.scavenged = new AtomicBoolean();
-        }
+        return mutatorRegistry.get();
     }
 }

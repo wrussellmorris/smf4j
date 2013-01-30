@@ -32,6 +32,6 @@ public class NullTestRunner extends TestRunner {
         while(localCount < testIterations) {
             localCount++;
         }
-        duration.getAndSet(System.currentTimeMillis() - start);
+        durations.offer(System.currentTimeMillis() - start);
     }
 }

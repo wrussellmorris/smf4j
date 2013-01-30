@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class Counter extends AbstractAccumulator {
 
-    final AtomicLong scavengedValue;
+    private final AtomicLong scavengedValue;
 
     public Counter() {
         super(CounterMutator.MUTATOR_FACTORY);
@@ -31,25 +31,23 @@ public final class Counter extends AbstractAccumulator {
     }
 
     @Override
-    final long combineValues(long nanos, long input, AccumulatorThread accThread,
-            boolean scavenging) {
-        long combined = input;
-        long newValue = accThread.threadLocalInst.syncGet();
-        if(!scavenging) {
-            combined = combined + newValue;
-        } else if(scavenging) {
-            while(true) {
-                if(!accThread.scavenged.get()) {
-                    if(accThread.scavenged.compareAndSet(false, true)) {
-                        scavengedValue.addAndGet(newValue);
-                        break;
-                    }
-                } else {
-                    break;
-                }
+    public final long get() {
+        long value = 0;
+        for (MutatorRegistry.Registration registration : mutatorRegistry) {
+            // Grab this mutator's current value
+            long tmp = registration.getMutator().syncGet();
+            if(registration.isDead() &&
+                    mutatorRegistry.unregister(registration)) {
+                // If this mutator was unregistered because it's owning thread
+                // has gone away, add it to our scavenged value.
+                scavengedValue.addAndGet(tmp);
+            } else {
+                // Otherwise, add it to our sum
+                value += tmp;
             }
         }
 
-        return combined + scavengedValue.get();
+        // Return the sum of the active registrations plus our scavenged value.
+        return value + scavengedValue.get();
     }
 }

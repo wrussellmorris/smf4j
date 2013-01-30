@@ -15,6 +15,7 @@
  */
 package org.smf4j.testharness;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -23,13 +24,17 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public abstract class TestRunner implements Runnable {
     private final String name;
-    final AtomicLong duration;
+    final ConcurrentLinkedQueue<Long> durations;
     final long testIterations;
 
     public TestRunner(long testIterations, String name) {
         this.testIterations = testIterations;
         this.name = name;
-        this.duration = new AtomicLong();
+        this.durations = new ConcurrentLinkedQueue<Long>();
+    }
+
+    public void prepare() {
+        durations.clear();
     }
 
     public String getName() {
@@ -37,6 +42,12 @@ public abstract class TestRunner implements Runnable {
     }
 
     public final long getDuration() {
-        return duration.get();
+        double result = 0d;
+        int i = 1;
+        for(Long duration : durations) {
+            result += ((double)duration - result) / (double)i;
+            i++;
+        }
+        return (long)result;
     }
 }
