@@ -15,7 +15,7 @@
  */
 package org.smf4j.core.accumulator;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.smf4j.Mutator;
 
 /**
  *
@@ -23,31 +23,19 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class Counter extends AbstractAccumulator {
 
-    private final AtomicLong scavengedValue;
-
     public Counter() {
         super(CounterMutator.MUTATOR_FACTORY);
-        this.scavengedValue = new AtomicLong();
     }
 
     @Override
     public final long get() {
         long value = 0;
-        for (MutatorRegistry.Registration registration : mutatorRegistry) {
-            // Grab this mutator's current value
-            long tmp = registration.getMutator().syncGet();
-            if(registration.isDead() &&
-                    mutatorRegistry.unregister(registration)) {
-                // If this mutator was unregistered because it's owning thread
-                // has gone away, add it to our scavenged value.
-                scavengedValue.addAndGet(tmp);
-            } else {
-                // Otherwise, add it to our sum
-                value += tmp;
-            }
+
+        // Sum up all of the active mutators
+        for (Mutator mutator : mutatorRegistry) {
+            value += mutator.syncGet();
         }
 
-        // Return the sum of the active registrations plus our scavenged value.
-        return value + scavengedValue.get();
+        return value;
     }
 }

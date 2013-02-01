@@ -17,35 +17,45 @@ package org.smf4j.core.accumulator;
 
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class MutatorRegistry
-        implements Iterable<MutatorRegistry.Registration> {
+public final class MutatorRegistry implements Iterable<Mutator>{
 
-    private static final Object DUMMY = new Object();
     private final ThreadLocal<Mutator> threadLocal;
-    private final ConcurrentMap<Registration, Object> inUse
-            = new ConcurrentHashMap<Registration, Object>();
+    private final Queue<Registration> registrations
+            = new ConcurrentLinkedQueue<Registration>();
 
     public MutatorRegistry(final MutatorFactory mutatorFactory) {
         this.threadLocal = new ThreadLocal<Mutator>() {
             @Override
             protected Mutator initialValue() {
-                Mutator mutator = mutatorFactory.createMutator();
-
-                // Try to re-use an existing, but unused, registration
                 Thread thread = Thread.currentThread();
-                Registration next = new Registration(thread, mutator);
-                inUse.put(next, DUMMY);
+                Registration next = null;
+                for(Registration r : registrations) {
+                    if(r.isDead() &&
+                            r.available.compareAndSet(false, true)) {
+                        // Now this one is ours!
+                        r.threadRef = new WeakReference<Thread>(thread);
+                        r.available.set(false);
+                        next = r;
+                    }
+                }
+
+                if(next == null) {
+                    Mutator mutator = mutatorFactory.createMutator();
+                    next = new Registration(thread, mutator);
+                    registrations.offer(next);
+                }
 
                 // Return the registerd mutator
-                return mutator;
+                return next.mutator;
             }
         };
     }
@@ -54,44 +64,45 @@ public final class MutatorRegistry
         return threadLocal.get();
     }
 
-    public Iterator<Registration> iterator() {
-        return inUse.keySet().iterator();
+    public Iterator<Mutator> iterator() {
+        return new Iter(registrations.iterator());
     }
 
-    public boolean unregister(Registration registration) {
-        // The thread that owned this mutator is dead, so now we'll try
-        // to remove it from the in-use set and signal the caller that it's
-        // value (which they should have read immediately before this call)
-        // can be safely scavenged.
-        if(inUse.remove(registration) == DUMMY) {
-            return true;
-        }
-
-        // We did not successfully remove the registration, so we assume
-        // that somebody else got to it first.
-        return false;
-    }
-
-    public static final class Registration {
-        private final WeakReference<Thread> threadRef;
+    private static final class Registration {
+        private volatile WeakReference<Thread> threadRef;
         private final Mutator mutator;
+        private final AtomicBoolean available;
 
         private Registration(Thread thread, Mutator mutator) {
             this.threadRef = new WeakReference<Thread>(thread);
             this.mutator = mutator;
+            this.available = new AtomicBoolean(false);
         }
 
-        public Thread getThread() {
-            return threadRef.get();
-        }
-
-        public Mutator getMutator() {
-            return mutator;
-        }
-
-        public boolean isDead() {
+        private boolean isDead() {
             Thread thread = threadRef.get();
             return thread == null || !thread.isAlive();
         }
+    }
+
+    private static final class Iter implements Iterator<Mutator> {
+        private final Iterator<Registration> inner;
+
+        Iter(Iterator<Registration> inner) {
+            this.inner = inner;
+        }
+
+        public boolean hasNext() {
+            return inner.hasNext();
+        }
+
+        public Mutator next() {
+            return inner.next().mutator;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
     }
 }

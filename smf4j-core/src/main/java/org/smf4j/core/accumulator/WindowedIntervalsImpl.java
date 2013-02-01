@@ -15,10 +15,6 @@
  */
 package org.smf4j.core.accumulator;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.smf4j.Mutator;
 
 /**
@@ -52,17 +48,11 @@ public final class WindowedIntervalsImpl implements WindowedIntervals {
         long[] ret = new long[intervals];
 
         // Iterate over active buckets contained in our registry
-        for(MutatorRegistry.Registration registration : mutatorRegistry) {
-            Intervals cur = (Intervals)registration.getMutator();
-            if(registration.isDead() && cur.allBucketsStale(nanos)) {
-                // If this thread is null AND all of its buckets are stale,
-                // let's try to unregister it now.
-                mutatorRegistry.unregister(registration);
-            } else {
-                long[] values = cur.buckets(nanos);
-                for(int i=0; i<intervals; i++) {
-                    ret[i] += values[i];
-                }
+        for(Mutator mutator : mutatorRegistry) {
+            Intervals cur = (Intervals)mutator;
+            long[] values = cur.buckets(nanos);
+            for(int i=0; i<intervals; i++) {
+                ret[i] += values[i];
             }
         }
 
@@ -74,15 +64,9 @@ public final class WindowedIntervalsImpl implements WindowedIntervals {
         long value = 0L;
 
         // Iterate over all bucket contains in our registry
-        for(MutatorRegistry.Registration registration : mutatorRegistry) {
-            Intervals cur = (Intervals)registration.getMutator();
-            if(registration.isDead() && cur.allBucketsStale(nanos)) {
-                // If this thread is null AND all of its buckets are stale,
-                // let's try to unregister it now.
-                mutatorRegistry.unregister(registration);
-            } else {
-                value += cur.syncGet();
-            }
+        for(Mutator mutator : mutatorRegistry) {
+            Intervals cur = (Intervals)mutator;
+            value += cur.syncGet();
         }
 
         return value;

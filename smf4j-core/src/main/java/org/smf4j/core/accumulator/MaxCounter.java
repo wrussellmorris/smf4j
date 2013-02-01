@@ -15,7 +15,7 @@
  */
 package org.smf4j.core.accumulator;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.smf4j.Mutator;
 
 /**
  *
@@ -23,43 +23,20 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public final class MaxCounter extends AbstractAccumulator {
 
-    private final AtomicLong scavengedValue;
-
     public MaxCounter() {
         super(MaxMutator.MUTATOR_FACTORY);
-        this.scavengedValue = new AtomicLong(Long.MIN_VALUE);
     }
 
     @Override
     public final long get() {
+        boolean hasMutators = false;
         long value = Long.MIN_VALUE;
-        for (MutatorRegistry.Registration registration : mutatorRegistry) {
+        for (Mutator mutator : mutatorRegistry) {
             // Grab this mutator's current value
-            long tmp = registration.getMutator().syncGet();
-            if(registration.isDead() &&
-                    mutatorRegistry.unregister(registration)) {
-                // If this mutator was unregistered because it's owning thread
-                // has gone away, combine it with our scavenged value
-                while(true) {
-                    long cur = scavengedValue.get();
-                    if(tmp > cur) {
-                        // Try to set the new max scavenged value
-                        if(scavengedValue.compareAndSet(cur, tmp)) {
-                            break;
-                        }
-                    } else {
-                        // tmp <= cur, so no need to attempt to set
-                        break;
-                    }
-                }
-            } else {
-                // Otherwise, combine it with the other values we've gathered
-                // from the active threads
-                value = Math.max(value, tmp);
-            }
+            value = Math.max(value, mutator.syncGet());
+            hasMutators = true;
         }
 
-        // Return the sum of the active registrations plus our scavenged value.
-        return Math.max(value, scavengedValue.get());
+        return hasMutators ? value : 0L;
     }
 }
