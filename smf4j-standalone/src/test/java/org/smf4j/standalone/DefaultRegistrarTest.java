@@ -15,7 +15,6 @@
  */
 package org.smf4j.standalone;
 
-import org.smf4j.InvalidNodeNameException;
 import org.smf4j.RegistryNode;
 import org.smf4j.Accumulator;
 import static org.junit.Assert.*;
@@ -47,9 +46,7 @@ public class DefaultRegistrarTest {
     private void hierarchyTrial(boolean pass, String hierarchy, String message){
         DefaultRegistrar r = new DefaultRegistrar();
         boolean caught = false;
-        try {
-            r.splitFullNodeName(hierarchy);
-        } catch(InvalidNodeNameException e) {
+        if(null == r.splitFullNodeName(hierarchy)) {
             caught = true;
         }
         assertTrue(message, caught != pass);
@@ -77,10 +74,8 @@ public class DefaultRegistrarTest {
             String... parts) {
         DefaultRegistrar r = new DefaultRegistrar();
         boolean caught = false;
-        String[] results = null;
-        try {
-            results = r.splitFullNodeName(fullNodeName);
-        } catch(InvalidNodeNameException e) {
+        String[] results = r.splitFullNodeName(fullNodeName);
+        if(results == null) {
             caught = true;
         }
 
@@ -122,10 +117,10 @@ public class DefaultRegistrarTest {
         Accumulator three = createAcc();
         Accumulator four = createAcc();
 
-        a = r.register("a");
-        b = r.register("b");
-        a_first = r.register("a.first");
-        b_second = r.register("b.second");
+        a = r.getNode("a");
+        b = r.getNode("b");
+        a_first = r.getNode("a.first");
+        b_second = r.getNode("b.second");
 
         assertNotNull("Couldn't create a.first", a_first);
         assertNotNull("Couldn't create b.second", b_second);
@@ -196,6 +191,10 @@ public class DefaultRegistrarTest {
                     }
                 };
             }
+
+            public String getUnits() {
+                return null;
+            }
         };
     }
 
@@ -228,7 +227,7 @@ public class DefaultRegistrarTest {
     throws Exception {
         DefaultRegistrar r = new DefaultRegistrar();
         RegistryNode root = r.getRootNode();
-        RegistryNode first = r.register("first");
+        RegistryNode first = r.getNode("first");
 
         // Root node defaults to off
         assertFalse(root.isOn());
@@ -287,7 +286,7 @@ public class DefaultRegistrarTest {
         assertTrue(root.getAccumulator("one").isOn());
 
         // Node state set to parent node's state when created
-        first = r.register("first");
+        first = r.getNode("first");
         assertTrue(first.isOn());
 
         // Accumulator set to node state

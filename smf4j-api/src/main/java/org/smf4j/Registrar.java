@@ -21,28 +21,15 @@ package org.smf4j;
  */
 public interface Registrar {
 
-    String getName();
-
-    RegistryNode register(String fullNodeName)
-    throws InvalidNodeNameException;
-
-    RegistryNode unregister(String fullNodeName)
-    throws InvalidNodeNameException;
-
-    RegistryNode getNode(String fullNodeName)
-    throws InvalidNodeNameException;
+    RegistryNode getNode(String fullNodeName);
 
     RegistryNode getRootNode();
 
-    FilteredRegistrarListener createDynamicFilter(String pattern);
-    void removeDynamicFilter(FilteredRegistrarListener dynamicFilter);
+    void clear();
 
-    void setOn(String node, boolean on)
-    throws InvalidNodeNameException;
+    Iterable<RegistryNode> match(String globPattern);
 
-    void clearOn(String node)
-    throws InvalidNodeNameException;
+    void setOn(String fullNodeName, boolean on);
 
-    void initializationComplete();
-    void addRegistrationListener(RegistrarListener listener);
+    void clearOn(String fullNodeName);
 }

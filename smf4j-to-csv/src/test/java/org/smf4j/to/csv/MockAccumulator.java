@@ -59,4 +59,8 @@ public class MockAccumulator implements Accumulator, Mutator {
     public long syncGet() {
         return val;
     }
+
+    public String getUnits() {
+        return null;
+    }
 }

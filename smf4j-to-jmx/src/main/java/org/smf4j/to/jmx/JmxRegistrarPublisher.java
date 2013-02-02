@@ -26,7 +26,10 @@ import javax.management.MBeanServer;
 import javax.management.NotCompliantMBeanException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smf4j.Accumulator;
+import org.smf4j.Calculator;
 import org.smf4j.Registrar;
+import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
 
 /**
@@ -37,31 +40,27 @@ public class JmxRegistrarPublisher {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Registrar registrar;
-    private final AtomicBoolean registered;
+    private final AtomicBoolean published;
     private final MBeanServer server;
     private final Map<String, RegistryNodeDynamicMBean> registeredBeans;
 
-    public JmxRegistrarPublisher(Registrar registrar) {
-        this.registrar = registrar;
-        this.registered = new AtomicBoolean(false);
+    public JmxRegistrarPublisher() {
+        this.published = new AtomicBoolean(false);
         this.server = ManagementFactory.getPlatformMBeanServer();
         this.registeredBeans =
                 new ConcurrentHashMap<String, RegistryNodeDynamicMBean>();
+        this.registrar = RegistrarFactory.getRegistrar();
     }
 
     public void publish() {
-        while(!registered.get()) {
-            if(registered.compareAndSet(false, true)) {
-                registerNodes(registrar.getRootNode());
-            }
+        if(published.compareAndSet(false, true)) {
+            registerNodes(registrar.getRootNode());
         }
     }
 
     public void unpublish() {
-        while(registered.get()) {
-            if(registered.compareAndSet(true, false)) {
-                unregisterNodes(registrar.getRootNode());
-            }
+        if(published.compareAndSet(true, false)) {
+            unregisterNodes(registrar.getRootNode());
         }
     }
 
@@ -126,5 +125,33 @@ public class JmxRegistrarPublisher {
         for(RegistryNode child : node.getChildNodes().values()) {
             registerNodes(child);
         }
+    }
+
+    public void nodeAdded(RegistryNode registryNode) {
+        registerNodes(registryNode);
+    }
+
+    public void nodeRemoved(RegistryNode registryNode) {
+        unregisterNodes(registryNode);
+    }
+
+    public void accumulatorAdded(RegistryNode registryNode,
+            Accumulator accumulator) {
+        registerNodes(registryNode);
+    }
+
+    public void accumulatorRemoved(RegistryNode registryNode,
+            Accumulator accumulator) {
+        registerNodes(registryNode);
+    }
+
+    public void calculatorAdded(RegistryNode registryNode,
+            Calculator calculator) {
+        registerNodes(registryNode);
+    }
+
+    public void calculatorRemoved(RegistryNode registryNode,
+            Calculator calculator) {
+        registerNodes(registryNode);
     }
 }

@@ -16,7 +16,6 @@
 package org.smf4j.testharness;
 
 import org.smf4j.Accumulator;
-import org.smf4j.InvalidNodeNameException;
 import org.smf4j.Mutator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
@@ -38,17 +37,13 @@ public class AccTestRunner extends TestRunner {
         this.accumulator = accumulator;
 
         Registrar r = RegistrarFactory.getRegistrar();
-        try {
-            RegistryNode node = r.register(testName);
-            node.register("accumulator", accumulator);
-            if(accumulator instanceof WindowedCounter) {
-                WindowNormalizer wn = new WindowNormalizer();
-                wn.setFrequency(WindowNormalizer.Frequency.SECONDS);
-                wn.setWindowedCounter("accumulator");
-                node.register("normalized", wn);
-            }
-        } catch(InvalidNodeNameException e) {
-            e.printStackTrace();
+        RegistryNode node = r.getNode(testName);
+        node.register("accumulator", accumulator);
+        if(accumulator instanceof WindowedCounter) {
+            WindowNormalizer wn = new WindowNormalizer();
+            wn.setFrequency(WindowNormalizer.Frequency.SECONDS);
+            wn.setWindowedCounter("accumulator");
+            node.register("normalized", wn);
         }
     }
 

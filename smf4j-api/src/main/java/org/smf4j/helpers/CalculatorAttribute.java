@@ -21,11 +21,34 @@ package org.smf4j.helpers;
  */
 public final class CalculatorAttribute {
 
-    public final String name;
-    public final Class<?> clazz;
+    private final String units;
+    private final String name;
+    private final Class<?> type;
 
-    CalculatorAttribute(String name, Class<?> clazz) {
+    CalculatorAttribute(String name, String units, Class<?> type) {
         this.name = name;
-        this.clazz = clazz;
+        this.units = units;
+        this.type = type;
+    }
+
+    /**
+     * @return the units
+     */
+    public String getUnits() {
+        return units;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return the type
+     */
+    public Class<?> getType() {
+        return type;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.helpers;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface FilteredRegistrarListener extends Iterable<RegistryNode> {
-
-    void registerListener(DynamicFilterListener listener);
-
-    void unregisterListener(DynamicFilterListener listener);
+@Documented
+@Retention(value=RetentionPolicy.RUNTIME)
+@Target(value=ElementType.METHOD)
+public @interface Units {
+    String value();
 }

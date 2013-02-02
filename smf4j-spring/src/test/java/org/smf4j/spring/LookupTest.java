@@ -15,13 +15,11 @@
  */
 package org.smf4j.spring;
 
-import java.util.Set;
 import org.junit.After;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.smf4j.RegistrarFactory;
-import org.smf4j.RegistryNode;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -32,13 +30,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class LookupTest {
 
     @After
-    public void afterClass()
+    public void after()
     throws Exception {
-        RegistryNode rootNode = RegistrarFactory.getRegistrar().getRootNode();
-        Set<String> children = rootNode.getChildNodes().keySet();
-        for(String child : children) {
-            RegistrarFactory.getRegistrar().unregister(child);
-        }
+        RegistrarFactory.getRegistrar().clear();
     }
 
     @Test

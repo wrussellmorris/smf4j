@@ -44,6 +44,8 @@ public final class WindowedCounter implements Accumulator {
      */
     private final TimeReporter timeReporter;
 
+    private String units;
+
     public WindowedCounter(int timeWindow, int intervals) {
         this(timeWindow, intervals, false,
              SystemNanosTimeReporter.INSTANCE);
@@ -127,5 +129,14 @@ public final class WindowedCounter implements Accumulator {
     @Override
     public void setOn(boolean on) {
         this.on = on;
+    }
+
+    @Override
+    public String getUnits() {
+        return units;
+    }
+
+    public void setUnits(String units) {
+        this.units = units;
     }
 }

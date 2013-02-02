@@ -29,7 +29,7 @@ public class App
         List<TestRunner> runners = getTestRunners(testIterations);
         Registrar r = RegistrarFactory.getRegistrar();
         r.getRootNode().setOn(true);
-        JmxRegistrarPublisher publisher = new JmxRegistrarPublisher(r);
+        JmxRegistrarPublisher publisher = new JmxRegistrarPublisher();
         publisher.publish();
 
         // Run one pass of lower-concurrency tests to prime the app

@@ -28,4 +28,6 @@ public interface Accumulator {
     boolean isOn();
 
     void setOn(boolean on);
+
+    String getUnits();
 }

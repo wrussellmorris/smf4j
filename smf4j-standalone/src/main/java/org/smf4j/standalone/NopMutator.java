@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.standalone;
+
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface DynamicFilterListener {
+final class NopMutator implements Mutator {
 
-    void nodeAdded(RegistryNode registryNode);
+    public static final NopMutator INSTANCE = new NopMutator();
 
-    void nodeRemoved(RegistryNode registryNode);
+    private NopMutator() {
+    }
 
-    void accumulatorAdded(RegistryNode registryNode, Accumulator accumulator);
+    public void add(long delta) {
+    }
 
-    void accumulatorRemoved(RegistryNode registryNode, Accumulator accumulator);
+    public long localGet() {
+        return 0L;
+    }
 
-    void calculatorAdded(RegistryNode registryNode, Calculator calculator);
+    public long syncGet() {
+        return 0L;
+    }
 
-    void calculatorRemoved(RegistryNode registryNode, Calculator calculator);
 }

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smf4j.Calculator;
 
 /**
  *
@@ -61,21 +62,21 @@ public final class CalculatorHelper {
             new Comparator<CalculatorAttribute>() {
         public int compare(CalculatorAttribute o1, CalculatorAttribute o2) {
             if(o1 != null  && o2 != null) {
-                return o1.name.compareTo(o2.name);
+                return o1.getName().compareTo(o2.getName());
             }
             return 0;
         }
     };
 
     public static List<CalculatorAttribute> getCalculatorAttributes(
-            String rootName, Class<?> calculatorClass) {
+            String rootName, Calculator calculator) {
         List<CalculatorAttribute> attrs = new ArrayList<CalculatorAttribute>();
+        Class<?> calculatorClass = calculator.getClass();
 
-        // Get the return type of the calculate method
+        // Get the return type of the calculate() method
         Method m;
         try {
-            m = calculatorClass.getMethod("calculate", Map.class,
-                    Map.class);
+            m = calculatorClass.getMethod("calculate", Map.class, Map.class);
         } catch(Throwable t) {
             log.error(String.format(
                     "Failed to determine return value of the 'calculate' method"
@@ -84,11 +85,13 @@ public final class CalculatorHelper {
             return attrs;
         }
 
-        Class<?> calcResult = m.getReturnType();
-        if(leafTypes.contains(calcResult)) {
-            attrs.add(new CalculatorAttribute(rootName, calcResult));
+        Class<?> calculationClass = m.getReturnType();
+        if(leafTypes.contains(calculationClass)) {
+            // It's a leaf type.
+            attrs.add(new CalculatorAttribute(rootName,
+                    getUnitsString(calculatorClass), calculationClass));
         } else {
-            collectLeafProperties(rootName, calcResult, attrs);
+            collectLeafProperties(rootName, calculationClass, attrs);
         }
 
         Collections.sort(attrs, SORTER);
@@ -188,8 +191,11 @@ public final class CalculatorHelper {
                         !leafTypes.contains(pd.getPropertyType())) {
                     continue;
                 }
+
+                // Check to see if they've attached a Units hint...
+                Class<?> propertyType = pd.getPropertyType();
                 attrs.add(new CalculatorAttribute(rootName + "." + pd.getName(),
-                        pd.getPropertyType()));
+                        getUnitsString(propertyType), propertyType));
             }
         } catch(IntrospectionException e) {
             log.error(String.format(
@@ -197,5 +203,19 @@ public final class CalculatorHelper {
                     + "Calculator.calculate(..) return type class '%s'.",
                     calcResultClass.getCanonicalName()), e);
         }
+    }
+
+    private static String getUnitsString(Class<?> clazz) {
+        Units unitsAttr = clazz.getAnnotation(Units.class);
+        if(unitsAttr == null) {
+            return null;
+        }
+
+        String units = unitsAttr.value();
+        if("".equals(units)) {
+            return null;
+        }
+
+        return units;
     }
 }

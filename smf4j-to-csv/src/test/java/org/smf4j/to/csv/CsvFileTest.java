@@ -28,7 +28,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
-import org.smf4j.FilteredRegistrarListener;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
@@ -197,9 +196,9 @@ public class CsvFileTest {
     throws Exception {
         Registrar r = RegistrarFactory.getRegistrar();
 
-        RegistryNode totalsOne = r.register("totals.one");
-        RegistryNode totalsTwo = r.register("totals.two");
-        RegistryNode ratesOne = r.register("rate.one");
+        RegistryNode totalsOne = r.getNode("totals.one");
+        RegistryNode totalsTwo = r.getNode("totals.two");
+        RegistryNode ratesOne = r.getNode("rate.one");
 
         createTotalsNodeMembers(totalsOne, 1);
         createTotalsNodeMembers(totalsTwo, 2);
@@ -239,12 +238,16 @@ public class CsvFileTest {
             }
             return total;
         }
+
+        public String getUnits() {
+            return null;
+        }
     }
 
     CsvFileLayout createLayout(Registrar r) {
         CsvFileLayout layout = new CsvFileLayout();
-        List<FilteredRegistrarListener> filters = new ArrayList<FilteredRegistrarListener>();
-        filters.add(r.createDynamicFilter("**"));
+        List<String> filters = new ArrayList<String>();
+        filters.add("**");
         layout.setNodeFilters(filters);
         return layout;
     }

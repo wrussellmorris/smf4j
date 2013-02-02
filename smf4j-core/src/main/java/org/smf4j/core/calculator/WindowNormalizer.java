@@ -17,14 +17,13 @@ package org.smf4j.core.calculator;
 
 import java.util.Map;
 import org.smf4j.Accumulator;
-import org.smf4j.Calculator;
 import org.smf4j.core.accumulator.WindowedCounter;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class WindowNormalizer implements Calculator {
+public class WindowNormalizer extends AbstractCalculator {
 
     private String windowedCounter;
     private Frequency frequency = Frequency.SECONDS;
@@ -56,22 +55,32 @@ public class WindowNormalizer implements Calculator {
     }
 
     public void setFrequency(Frequency frequency) {
-        this.frequency = frequency;
+        if(frequency != null) {
+            this.frequency = frequency;
+        }
+    }
+
+    @Override
+    public String getUnits() {
+        return frequency.units;
     }
 
     public enum Frequency {
-        NANOS       (1),
-        MILLIS      (NANOS.getNanos() * 1000000L),
-        SECONDS     (MILLIS.getNanos() * 1000L),
-        MINUTES     (SECONDS.getNanos() * 60L),
-        HOURS       (MINUTES.getNanos() * 60L),
-        DAYS        (HOURS.getNanos() * 24L),
-        WEEKS       (DAYS.getNanos() * 7L);
+        NANOS       ("1/ns", 1),
+        MICROS      ("1/us", NANOS.getNanos() * 1000),
+        MILLIS      ("1/ms", MICROS.getNanos() * 1000L),
+        SECONDS     ("1/s", MILLIS.getNanos() * 1000L),
+        MINUTES     ("1/m", SECONDS.getNanos() * 60L),
+        HOURS       ("1/h", MINUTES.getNanos() * 60L),
+        DAYS        ("1/d", HOURS.getNanos() * 24L),
+        WEEKS       ("1/w", DAYS.getNanos() * 7L);
 
+        private final String units;
         private final long nanos;
 
-        Frequency(long nanos) {
+        Frequency(String units, long nanos) {
             this.nanos = nanos;
+            this.units = units;
         }
 
         public long getNanos() {

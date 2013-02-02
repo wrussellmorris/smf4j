@@ -17,22 +17,18 @@ package org.smf4j.spring;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import org.springframework.beans.factory.FactoryBean;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
 import org.smf4j.RegistrarFactory;
-import org.smf4j.InvalidNodeNameException;
 import org.smf4j.Registrar;
 import org.smf4j.RegistryNode;
-import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RegistrarFactoryBean implements FactoryBean<Registrar>,
-        DisposableBean {
+public class RegistrarFactoryBean implements FactoryBean<Registrar> {
 
     private boolean initialized;
     private Registrar registrar;
@@ -76,15 +72,7 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
         Registrar r = getRegistrar();
 
         for(RegistryNodeProxy nodeProxy : nodeProxies) {
-            RegistryNode node = null;
-            try {
-                node = r.register(nodeProxy.getName());
-            } catch (InvalidNodeNameException ex) {
-                throw new RuntimeException(String.format(
-                        "[Node: %s] Invalid node name.",
-                        nodeProxy.getName()), ex);
-            }
-
+            RegistryNode node = r.getNode(nodeProxy.getName());
             for(RegistryNodeChildProxy childProxy : nodeProxy.getChildren()) {
                 Object obj = childProxy.getChild();
 
@@ -99,29 +87,6 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
                             node.getName(),
                             childProxy.getName()));
                 }
-            }
-        }
-
-        r.initializationComplete();
-    }
-
-    public void destroy() throws Exception {
-        if(registrar != null) {
-            RegistryNode rootNode = registrar.getRootNode();
-            Set<String> rootNames =
-                    rootNode.getChildNodes().keySet();
-            Set<String> accNames =
-                    rootNode.getAccumulators().keySet();
-            Set<String> calcNames =
-                    rootNode.getCalculators().keySet();
-            for(String acc : accNames) {
-                rootNode.unregister(acc, rootNode.getAccumulator(acc));
-            }
-            for(String calc : calcNames) {
-                rootNode.unregister(calc, rootNode.getAccumulator(calc));
-            }
-            for(String node : rootNames) {
-                registrar.unregister(node);
             }
         }
     }

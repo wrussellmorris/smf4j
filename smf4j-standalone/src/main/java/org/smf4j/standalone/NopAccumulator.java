@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.standalone;
+
+import org.smf4j.Accumulator;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class InvalidNodeNameException extends Exception {
-    private final String hierarchy;
+final class NopAccumulator implements Accumulator {
 
-    public InvalidNodeNameException(String hierarchy) {
-        this(hierarchy, null);
+    public static final NopAccumulator INSTANCE = new NopAccumulator();
+
+    private NopAccumulator() {
     }
 
-    public InvalidNodeNameException(String hierarchy, String message) {
-        super(message);
-        this.hierarchy = hierarchy;
+    public Mutator getMutator() {
+        return NopMutator.INSTANCE;
     }
 
-    public String getHierarchy() {
-        return hierarchy;
+    public long get() {
+        return 0L;
+    }
+
+    public boolean isOn() {
+        return false;
+    }
+
+    public void setOn(boolean on) {
+    }
+
+    public String getUnits() {
+        return null;
     }
 }

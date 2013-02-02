@@ -15,7 +15,6 @@
  */
 package org.smf4j.core.calculator;
 
-import org.smf4j.Calculator;
 import java.util.*;
 import org.smf4j.Accumulator;
 
@@ -23,7 +22,7 @@ import org.smf4j.Accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RangeGroupCalculator implements Calculator {
+public class RangeGroupCalculator extends AbstractCalculator {
 
     private static final GroupingComparator sorter = new GroupingComparator();
 

@@ -25,6 +25,7 @@ import org.smf4j.Mutator;
 public abstract class AbstractAccumulator implements Accumulator {
 
     private volatile boolean on;
+    private String units;
     protected final MutatorRegistry mutatorRegistry;
 
     protected AbstractAccumulator(final MutatorFactory mutatorFactory) {
@@ -47,5 +48,13 @@ public abstract class AbstractAccumulator implements Accumulator {
         }
 
         return mutatorRegistry.get();
+    }
+
+    public final String getUnits() {
+        return units;
+    }
+
+    public final void setUnits(String units) {
+        this.units = units;
     }
 }

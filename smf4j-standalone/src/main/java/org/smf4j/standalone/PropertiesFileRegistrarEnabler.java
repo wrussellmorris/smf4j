@@ -15,7 +15,6 @@
  */
 package org.smf4j.standalone;
 
-import org.smf4j.InvalidNodeNameException;
 import org.smf4j.Registrar;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -113,23 +112,16 @@ public class PropertiesFileRegistrarEnabler {
             String node = entry.getKey().toString();
             String enablement = entry.getValue().toString();
             Boolean onOrOff = onOrOff(enablement);
-            try {
-                if(onOrOff != null) {
-                    registrar.setOn(node, onOrOff.booleanValue());
-                } else {
-                    log.warn("Unknown enablement setting '{}' for node '{}'.  "
-                            + "Valid values are one of 'true', 'false', 'osn', "
-                            + "or 'off'.",
-                            enablement,
-                            node);
-                }
-            } catch (InvalidNodeNameException ex) {
-                log.warn(String.format(
-                        "Could not set enablement for node '%s' because it is "
-                        + "an invalid node name.", node),
-                        ex);
+            if(onOrOff != null) {
+                registrar.setOn(node, onOrOff.booleanValue());
+            } else {
+                log.warn("Unknown enablement setting '{}' for node '{}'.  "
+                        + "Valid values are one of 'true', 'false', 'osn', "
+                        + "or 'off'.",
+                        enablement,
+                        node);
             }
-         }
+        }
     }
 
     protected Boolean onOrOff(String val) {

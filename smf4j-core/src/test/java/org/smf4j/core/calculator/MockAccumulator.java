@@ -62,4 +62,8 @@ public class MockAccumulator implements Accumulator, Mutator {
         return value;
     }
 
+    public String getUnits() {
+        return null;
+    }
+
 }

@@ -15,7 +15,6 @@
  */
 package org.smf4j.standalone;
 
-import org.smf4j.InvalidNodeNameException;
 import org.smf4j.RegistryNode;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,7 +94,6 @@ class DefaultRegistryNode implements RegistryNode {
     public boolean register(String name, Accumulator acc) {
         if(null == accumulators.putIfAbsent(name, acc)) {
             acc.setOn(isOn());
-            registrar.fireAccumulatorAdded(this, acc);
             return true;
         }
         return false;
@@ -104,7 +102,6 @@ class DefaultRegistryNode implements RegistryNode {
     @Override
     public boolean register(String name, Calculator calc) {
         if(null == calcuations.putIfAbsent(name, calc)) {
-            registrar.fireCalculatorAdded(this, calc);
             return true;
         }
         return false;
@@ -113,7 +110,6 @@ class DefaultRegistryNode implements RegistryNode {
     @Override
     public boolean unregister(String name, Accumulator acc) {
         if(accumulators.remove(name, acc)) {
-            registrar.fireAccumulatorRemoved(this, acc);
             return true;
         }
         return false;
@@ -122,7 +118,6 @@ class DefaultRegistryNode implements RegistryNode {
     @Override
     public boolean unregister(String name, Calculator calc) {
         if(calcuations.remove(name, calc)) {
-            registrar.fireCalculationRemoved(this, calc);
             return true;
         }
         return false;
@@ -167,20 +162,6 @@ class DefaultRegistryNode implements RegistryNode {
         } finally {
             registrar.stateLock.unlock();
         }
-    }
-
-    String validateAndCleanName(String name)
-    throws InvalidNodeNameException {
-        if(invalidNameChars.matcher(name).find()) {
-            throw new InvalidNodeNameException(name,
-                    "'*', '+', and '.' are not allowed in names.");
-        }
-
-        name = name.trim();
-        if(name.trim().length() == 0) {
-            throw new InvalidNodeNameException(name, "Names cannot be empty.");
-        }
-        return name;
     }
 
     @Override

@@ -15,8 +15,6 @@
  */
 package org.smf4j.to.csv;
 
-import org.smf4j.to.csv.CsvFileLayout;
-import org.smf4j.to.csv.CsvDataColumn;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -25,8 +23,6 @@ import java.util.List;
 import org.junit.BeforeClass;
 
 import org.junit.Test;
-import org.smf4j.FilteredRegistrarListener;
-import org.smf4j.DynamicFilterListener;
 import org.smf4j.RegistryNode;
 
 /**
@@ -36,45 +32,6 @@ import org.smf4j.RegistryNode;
 public class CsvFileLayoutTest {
 
     private static List<RegistryNode> nodes;
-
-    @Test
-    public void gatherNodes() {
-        List<RegistryNode> n = new ArrayList<RegistryNode>();
-        n.add(nodes.get(0));
-        n.add(nodes.get(1));
-        n.add(nodes.get(2));
-
-        List<RegistryNode> fn1 = new ArrayList<RegistryNode>();
-        fn1.add(nodes.get(2));
-        fn1.add(nodes.get(3));
-        FilteredRegistrarListener f1 = new StaticFilter(fn1);
-
-        List<RegistryNode> fn2 = new ArrayList<RegistryNode>();
-        fn2.add(nodes.get(3));
-        fn2.add(nodes.get(4));
-        FilteredRegistrarListener f2 = new StaticFilter(fn2);
-
-        List<FilteredRegistrarListener> f = new ArrayList<FilteredRegistrarListener>();
-        f.add(f1);
-        f.add(f2);
-
-        CsvFileLayout l = new CsvFileLayout();
-        l.setNodes(n);
-        l.setNodeFilters(f);
-
-        List<RegistryNode> collected = l.gatherAllNodes();
-        assertEquals(5, collected.size());
-        assertTrue(collected.contains(nodes.get(0)));
-        assertTrue(collected.contains(nodes.get(1)));
-        assertTrue(collected.contains(nodes.get(2)));
-        assertTrue(collected.contains(nodes.get(3)));
-        assertTrue(collected.contains(nodes.get(4)));
-        assertFalse(collected.contains(nodes.get(5)));
-        assertFalse(collected.contains(nodes.get(6)));
-        assertFalse(collected.contains(nodes.get(7)));
-        assertFalse(collected.contains(nodes.get(8)));
-        assertFalse(collected.contains(nodes.get(9)));
-    }
 
     @Test
     public void createColumnsNoneTest() {
@@ -154,29 +111,5 @@ public class CsvFileLayoutTest {
         mock.setName(nodeName);
 
         return mock;
-    }
-
-    static class StaticFilter implements FilteredRegistrarListener {
-
-        private final List<RegistryNode> nodes;
-
-        StaticFilter(List<RegistryNode> nodes) {
-            this.nodes = nodes;
-        }
-
-        @Override
-        public void registerListener(DynamicFilterListener listener) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void unregisterListener(DynamicFilterListener listener) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public Iterator<RegistryNode> iterator() {
-            return nodes.iterator();
-        }
     }
 }

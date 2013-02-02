@@ -35,13 +35,9 @@ import org.smf4j.RegistryNode;
 public class RegistrarTest {
 
     @After
-    public void afterClass()
+    public void after()
     throws Exception {
-        RegistryNode rootNode = RegistrarFactory.getRegistrar().getRootNode();
-        Set<String> children = rootNode.getChildNodes().keySet();
-        for(String child : children) {
-            RegistrarFactory.getRegistrar().unregister(child);
-        }
+        RegistrarFactory.getRegistrar().clear();
     }
 
     @Test
@@ -65,7 +61,7 @@ public class RegistrarTest {
         assertNotNull(foo);
         assertNotNull(bar);
         assertNotNull(baz);
-        assertNull(bot);
+        assertNotNull(bot);
 
         assertEquals(0, foo.getAccumulators().size());
         assertEquals(0, foo.getCalculators().size());
@@ -92,7 +88,7 @@ public class RegistrarTest {
         assertNotNull(eep);
         assertNotNull(op);
         assertNotNull(ork);
-        assertNull(aa);
+        assertNotNull(aa);
 
         assertEquals(0, eep.getAccumulators().size());
         assertEquals(0, eep.getCalculators().size());

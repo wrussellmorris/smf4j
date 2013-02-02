@@ -21,8 +21,10 @@ import java.util.Map;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
+import javax.management.Descriptor;
 import javax.management.DynamicMBean;
 import javax.management.InvalidAttributeValueException;
+import javax.management.JMX;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanException;
 import javax.management.MBeanInfo;
@@ -30,6 +32,7 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.management.modelmbean.DescriptorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Accumulator;
@@ -49,6 +52,8 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
     private static final String ROOT_NAME = "[root]";
     private static final String DEFAULT_DOMAIN = "smf4j";
 
+    private static final String JMX_DESC_KEY_UNITS = "units";
+
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final String domain;
     private final RegistryNode registryNode;
@@ -65,7 +70,7 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
         this.registryNode = registryNode;
         this.name = valueOrDefault(registryNode.getName(), ROOT_NAME);
         this.mBeanInfo = buildMBeanInfo();
-        this.objectName = buildObjectName();
+        this.objectName = buildObjectName(domain, name);
     }
 
     public Object getAttribute(String attribute)
@@ -155,7 +160,7 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
         return objectName;
     }
 
-    private ObjectName buildObjectName() {
+    static ObjectName buildObjectName(String domain, String name) {
         try {
             ObjectName tmp =
                     new ObjectName(domain + ":type=RegistryNode,name=" + name);
@@ -172,8 +177,8 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
                 "Whether the node is off or on.",
                 true, true, true));
 
-        gatherAccumulatorAttributes(attrs);
-        gatherCalculatorAttributes(attrs);
+        gatherAccumulatorAttributeInfos(attrs);
+        gatherCalculatorAttributeInfos(attrs);
 
         MBeanOperationInfo[] opers = {
             new MBeanOperationInfo(OPER_CLEAR_ON,
@@ -182,31 +187,63 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
                 MBeanOperationInfo.ACTION)
         };
 
+        DescriptorSupport desc = new DescriptorSupport();
+        desc.setField(JMX.IMMUTABLE_INFO_FIELD, Boolean.FALSE.toString());
+
         return new MBeanInfo(getClass().getCanonicalName(), name,
                 attrs.toArray(new MBeanAttributeInfo[attrs.size()]), null,
-                opers, null);
+                opers, null, desc);
     }
 
-    private void gatherAccumulatorAttributes(List<MBeanAttributeInfo> attrs) {
-        for(String accName : registryNode.getAccumulators().keySet()) {
-            attrs.add(new MBeanAttributeInfo(accName,
-                    long.class.getCanonicalName(), "Accumulator " + accName,
-                    false, false, false));
+    protected void gatherAccumulatorAttributeInfos(
+            List<MBeanAttributeInfo> attrs) {
+        for(Map.Entry<String, Accumulator> entry :
+                registryNode.getAccumulators().entrySet()) {
+            attrs.add(createAccumluatorAttributeInfo(entry.getKey(),
+                    entry.getValue()));
         }
     }
 
-    private void gatherCalculatorAttributes(List<MBeanAttributeInfo> attrs) {
+    protected MBeanAttributeInfo createAccumluatorAttributeInfo(
+            String accumulatorName, Accumulator accumulator) {
+        Descriptor desc = null;
+        String units = accumulator.getUnits();
+        if(units != null) {
+            // If the accumulator provides a units description we'll drop
+            // into our MBeanAttributeInfo
+            desc = new DescriptorSupport();
+            desc.setField(JMX_DESC_KEY_UNITS, units);
+        }
+
+        return new MBeanAttributeInfo(accumulatorName,
+                long.class.getCanonicalName(), accumulatorName, true, false,
+                false, desc);
+    }
+
+    protected void gatherCalculatorAttributeInfos(List<MBeanAttributeInfo> attrs) {
         for(Map.Entry<String, Calculator> entry :
                 registryNode.getCalculators().entrySet()) {
             List<CalculatorAttribute> cattrs =
                     CalculatorHelper.getCalculatorAttributes(entry.getKey(),
-                    entry.getValue().getClass());
+                    entry.getValue());
             for(CalculatorAttribute cattr : cattrs) {
-                attrs.add(new MBeanAttributeInfo(cattr.name,
-                        long.class.getCanonicalName(),
-                        "Calculation " + entry.getKey(), false, false, false));
+                attrs.add(createCalculatorAttributeInfo(cattr));
             }
         }
+    }
+
+    protected MBeanAttributeInfo createCalculatorAttributeInfo(
+            CalculatorAttribute cattr) {
+        Descriptor desc = null;
+        String units = cattr.getUnits();
+        if(units != null) {
+            desc = new DescriptorSupport();
+            desc.setField(JMX_DESC_KEY_UNITS, units);
+        }
+
+        return new MBeanAttributeInfo(cattr.getName(),
+                long.class.getCanonicalName(),
+                cattr.getName(), true, false, false, desc);
     }
 
     private String valueOrDefault(String value, String defaultValue) {

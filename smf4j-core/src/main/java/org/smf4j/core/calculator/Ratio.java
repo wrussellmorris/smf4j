@@ -15,7 +15,6 @@
  */
 package org.smf4j.core.calculator;
 
-import org.smf4j.Calculator;
 import java.util.Map;
 import org.smf4j.Accumulator;
 
@@ -23,7 +22,7 @@ import org.smf4j.Accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class Ratio implements Calculator {
+public class Ratio extends AbstractCalculator {
 
     private String numerator;
     private String denominator;

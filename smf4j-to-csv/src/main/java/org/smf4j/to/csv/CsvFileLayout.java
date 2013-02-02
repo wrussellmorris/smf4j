@@ -25,8 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
+import org.smf4j.Registrar;
+import org.smf4j.RegistrarFactory;
 import org.smf4j.helpers.CalculatorHelper;
-import org.smf4j.FilteredRegistrarListener;
 import org.smf4j.RegistryNode;
 import org.smf4j.helpers.CalculatorAttribute;
 
@@ -35,9 +36,8 @@ import org.smf4j.helpers.CalculatorAttribute;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class CsvFileLayout {
-
     private List<RegistryNode> nodes = new ArrayList<RegistryNode>();
-    private List<FilteredRegistrarListener> nodeFilters = new ArrayList<FilteredRegistrarListener>();
+    private List<String> nodeFilters = new ArrayList<String>();
     private List<CsvDataColumn> columns;
 
     public void prepare() {
@@ -78,10 +78,10 @@ public class CsvFileLayout {
             for(Map.Entry<String, Calculator> entry : calcs.entrySet()) {
                 List<CalculatorAttribute> attrs =
                         CalculatorHelper.getCalculatorAttributes(entry.getKey(),
-                        entry.getValue().getClass());
+                        entry.getValue());
 
                 for(CalculatorAttribute attr : attrs) {
-                    String calcName = attr.name;
+                    String calcName = attr.getName();
                     // Create column
                     CsvCalculatorColumn col =
                             new CsvCalculatorColumn(node, calcName);
@@ -113,8 +113,9 @@ public class CsvFileLayout {
         Set<RegistryNode> all = new HashSet<RegistryNode>();
 
         all.addAll(nodes);
-        for(FilteredRegistrarListener nodeFilter : nodeFilters) {
-            for(RegistryNode node : nodeFilter) {
+        for(String nodeFilter : nodeFilters) {
+            for(RegistryNode node :
+                    RegistrarFactory.getRegistrar().match(nodeFilter)) {
                 all.add(node);
             }
         }
@@ -140,11 +141,14 @@ public class CsvFileLayout {
         this.nodes = nodes;
     }
 
-    public List<FilteredRegistrarListener> getNodeFilters() {
+    public List<String> getNodeFilters() {
         return nodeFilters;
     }
 
-    public void setNodeFilters(List<FilteredRegistrarListener> nodeFilters) {
+    public void setNodeFilters(List<String> nodeFilters) {
+        if(nodeFilters == null) {
+            nodeFilters = new ArrayList<String>();
+        }
         this.nodeFilters = nodeFilters;
     }
 }

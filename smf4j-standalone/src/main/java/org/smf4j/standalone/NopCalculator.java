@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.to.csv;
+package org.smf4j.standalone;
 
 import java.util.Map;
 import org.smf4j.Accumulator;
@@ -23,39 +23,19 @@ import org.smf4j.Calculator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class MockCalculation implements Calculator {
+final class NopCalculator implements Calculator {
+    public static final NopCalculator INSTANCE = new NopCalculator();
 
-    private final Result result;
-
-    public MockCalculation(int intVal, String stringVal) {
-        this.result = new Result(intVal, stringVal);
+    private NopCalculator() {
     }
 
-    @Override
-    public Result calculate(Map<String, Long> values,
-        Map<String, Accumulator> accumulators) {
-        return result;
+    public Object calculate(Map<String, Long> values,
+            Map<String, Accumulator> accumulators) {
+        return null;
     }
 
     public String getUnits() {
         return null;
     }
 
-    public static final class Result {
-        private final int intProperty;
-        private final String stringProperty;
-
-        public Result(int intProperty, String stringProperty) {
-            this.intProperty = intProperty;
-            this.stringProperty = stringProperty;
-        }
-
-        public int getIntProperty() {
-            return intProperty;
-        }
-
-        public String getStringProperty() {
-            return stringProperty;
-        }
-    }
 }

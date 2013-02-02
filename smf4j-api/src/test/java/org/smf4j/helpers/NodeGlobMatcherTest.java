@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.helpers;
 
 import java.util.regex.Pattern;
 import static org.junit.Assert.*;
@@ -24,7 +24,7 @@ import org.junit.Test;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class DefaultDynamicFilterTest {
+public class NodeGlobMatcherTest {
 
     @Test
     public void patterMatching() {
@@ -59,7 +59,7 @@ public class DefaultDynamicFilterTest {
     }
 
     private boolean matches(String pattern, String test) {
-        Pattern p = DefaultFilteredRegistrarListener.createPattern(pattern);
+        Pattern p = NodeGlobMatcher.createPattern(pattern);
         return p.matcher(test).matches();
     }
 }

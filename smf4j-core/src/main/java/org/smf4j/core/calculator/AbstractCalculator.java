@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.core.calculator;
 
-import java.util.Map;
+import org.smf4j.Calculator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface Calculator {
+public abstract class AbstractCalculator implements Calculator {
+    private String units;
 
-    Object calculate(Map<String, Long> values,
-            Map<String, Accumulator> accumulators);
+    public String getUnits() {
+        return units;
+    }
 
-    String getUnits();
+    public void setUnits(String units) {
+        this.units = units;
+    }
 }
