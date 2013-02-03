@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>smf4j-standalone</artifactId>
+            <artifactId>smf4j-from-standalone</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

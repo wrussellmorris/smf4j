@@ -16,10 +16,12 @@
 package org.smf4j.standalone;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smf4j.helpers.NopRegistryNode;
 import org.smf4j.RegistryNode;
 import org.smf4j.Registrar;
 import org.smf4j.helpers.NodeGlobMatcher;
@@ -139,17 +141,27 @@ public class DefaultRegistrar implements Registrar {
     public Iterable<RegistryNode> match(String globPattern) {
         final ArrayList<RegistryNode> list = new ArrayList<RegistryNode>();
         final NodeGlobMatcher matcher = new NodeGlobMatcher(globPattern);
-        dfs(root, new RegistryNodeCall() {
-            public void call(RegistryNode node) {
-                if(matcher.match(node)) {
-                    list.add(node);
-                }
-            }
-        });
+        dfs(root, new MatcherCall(list, matcher));
         return list;
     }
 
     interface RegistryNodeCall {
         void call(RegistryNode node);
+    }
+
+    static class MatcherCall implements RegistryNodeCall {
+        private final List<RegistryNode> list;
+        private final NodeGlobMatcher matcher;
+
+        public MatcherCall(List<RegistryNode> list, NodeGlobMatcher matcher) {
+            this.list = list;
+            this.matcher = matcher;
+        }
+
+        public void call(RegistryNode node) {
+            if(matcher.match(node)) {
+                list.add(node);
+            }
+        }
     }
 }

@@ -13,29 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.helpers;
 
-import java.util.Map;
 import org.smf4j.Accumulator;
-import org.smf4j.Calculator;
+import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-final class NopCalculator implements Calculator {
-    public static final NopCalculator INSTANCE = new NopCalculator();
+public class NopAccumulator implements Accumulator, Mutator {
 
-    private NopCalculator() {
+    public static final Accumulator INSTANCE = new NopAccumulator();
+
+    public Mutator getMutator() {
+        return this;
     }
 
-    public Object calculate(Map<String, Long> values,
-            Map<String, Accumulator> accumulators) {
-        return null;
+    public long get() {
+        return 0L;
+    }
+
+    public boolean isOn() {
+        return false;
+    }
+
+    public void setOn(boolean on) {
     }
 
     public String getUnits() {
         return null;
     }
 
+    public long getTimeWindow() {
+        return 0L;
+    }
+
+    public int getIntervals() {
+        return 0;
+    }
+
+    public void put(long delta) {
+    }
+
+    public long combine(long other) {
+        return 0L;
+    }
 }

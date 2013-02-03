@@ -15,11 +15,11 @@
  */
 package org.smf4j.spring;
 
-import org.junit.After;
+import org.junit.Before;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.smf4j.RegistrarFactory;
+import org.smf4j.RegistrarFactoryForUnitTests;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -29,10 +29,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class LookupTest {
 
-    @After
-    public void after()
+    @Before
+    public void before()
     throws Exception {
-        RegistrarFactory.getRegistrar().clear();
+        RegistrarFactoryForUnitTests.reset(true);
     }
 
     @Test

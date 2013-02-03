@@ -15,7 +15,6 @@
  */
 package org.smf4j.to.csv;
 
-import org.smf4j.to.csv.CountingOutputStream;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;

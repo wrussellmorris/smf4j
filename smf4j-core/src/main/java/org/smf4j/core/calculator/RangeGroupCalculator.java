@@ -71,7 +71,7 @@ public class RangeGroupCalculator extends AbstractCalculator {
      */
     public void setGroupings(List<Grouping> groupings) {
         if(groupings == null) {
-            this.groupings = new ArrayList<Grouping>();
+            groupings = new ArrayList<Grouping>();
         }
 
         Collections.sort(groupings, sorter);

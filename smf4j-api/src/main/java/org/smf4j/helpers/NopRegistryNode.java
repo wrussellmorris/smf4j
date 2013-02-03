@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.helpers;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,22 +25,20 @@ import org.smf4j.RegistryNode;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-final class NopRegistryNode implements RegistryNode {
-    public static final NopRegistryNode INSTANCE = new NopRegistryNode();
-    private static final Map<String, Accumulator> EMPTY_ACC_MAP =
-            Collections.emptyMap();
-    private static final Map<String, Calculator> EMPTY_CALC_MAP =
-            Collections.emptyMap();
-    private static final Map<String, Object> EMPTY_SNAPSHOT_MAP =
-            Collections.emptyMap();
-    private static final Map<String, RegistryNode> EMPTY_CHILD_NODES_MAP =
-            Collections.emptyMap();
+public class NopRegistryNode implements RegistryNode {
+    public static final RegistryNode INSTANCE = new NopRegistryNode();
 
-    private NopRegistryNode() {
-    }
+    private static final Map<String, Accumulator> emptyAccMap =
+            Collections.emptyMap();
+    private static final Map<String, Calculator> emptyCalcMap =
+            Collections.emptyMap();
+    private static final Map<String, Object> emptySnapshot =
+            Collections.emptyMap();
+    private static final Map<String, RegistryNode> emptyNodesMap =
+            Collections.emptyMap();
 
     public String getName() {
-        return "noop";
+        return "nop";
     }
 
     public boolean register(String name, Accumulator accumulator) {
@@ -60,11 +58,11 @@ final class NopRegistryNode implements RegistryNode {
     }
 
     public Map<String, Accumulator> getAccumulators() {
-        return EMPTY_ACC_MAP;
+        return emptyAccMap;
     }
 
     public Map<String, Calculator> getCalculators() {
-        return EMPTY_CALC_MAP;
+        return emptyCalcMap;
     }
 
     public Accumulator getAccumulator(String name) {
@@ -76,15 +74,15 @@ final class NopRegistryNode implements RegistryNode {
     }
 
     public Map<String, Object> snapshot() {
-        return EMPTY_SNAPSHOT_MAP;
+        return emptySnapshot;
     }
 
     public Map<String, RegistryNode> getChildNodes() {
-        return EMPTY_CHILD_NODES_MAP;
+        return emptyNodesMap;
     }
 
     public RegistryNode getChildNode(String name) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return INSTANCE;
     }
 
     public boolean isOn() {
@@ -96,4 +94,5 @@ final class NopRegistryNode implements RegistryNode {
 
     public void clearOn() {
     }
+
 }

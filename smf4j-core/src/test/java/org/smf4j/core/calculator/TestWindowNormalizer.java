@@ -29,7 +29,7 @@ import org.smf4j.Accumulator;
  */
 public class TestWindowNormalizer {
 
-    private final double epsilon = 0.0000001d;
+    private static final double epsilon = 0.0000001d;
     private MockAccumulator a;
     private WindowNormalizer n;
     private Map<String, Long> vals;

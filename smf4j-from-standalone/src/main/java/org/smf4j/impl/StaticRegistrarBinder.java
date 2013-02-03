@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.impl;
+
+import org.smf4j.spi.RegistrarProvider;
+import org.smf4j.spi.SingletonProvider;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface Mutator {
+public class StaticRegistrarBinder {
 
-    void put(long delta);
+    private static final RegistrarProvider provider = new SingletonProvider();
+    private static final StaticRegistrarBinder instance =
+            new StaticRegistrarBinder();
 
-    long combine(long other);
+    public static StaticRegistrarBinder getSingleton() {
+        return instance;
+    }
 
-    long get();
+    public Object getRegistrarProvider() {
+        return provider;
+    }
 }

@@ -13,46 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.helpers;
 
-import org.smf4j.Accumulator;
-import org.smf4j.Mutator;
+import java.util.Collections;
+import java.util.List;
+import org.smf4j.Registrar;
+import org.smf4j.RegistryNode;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-final class NopAccumulator implements Accumulator {
+public class NopRegistrar implements Registrar {
 
-    public static final NopAccumulator INSTANCE = new NopAccumulator();
+    public static final Registrar INSTANCE = new NopRegistrar();
+    public static final List<RegistryNode> empty = Collections.emptyList();
 
-    private NopAccumulator() {
+    public RegistryNode getNode(String fullNodeName) {
+        return NopRegistryNode.INSTANCE;
     }
 
-    public Mutator getMutator() {
-        return NopMutator.INSTANCE;
+    public RegistryNode getRootNode() {
+        return NopRegistryNode.INSTANCE;
     }
 
-    public long get() {
-        return 0L;
+    public void clear() {
     }
 
-    public boolean isOn() {
-        return false;
+    public Iterable<RegistryNode> match(String globPattern) {
+        return empty;
     }
 
-    public void setOn(boolean on) {
+    public void setOn(String fullNodeName, boolean on) {
     }
 
-    public String getUnits() {
-        return null;
+    public void clearOn(String fullNodeName) {
     }
 
-    public long getTimeWindow() {
-        return 0L;
-    }
-
-    public int getIntervals() {
-        return 0;
-    }
 }

@@ -26,6 +26,7 @@ import org.smf4j.core.accumulator.hc.UnboundedAddMutator;
 import org.smf4j.core.accumulator.hc.UnboundedMaxMutator;
 import org.smf4j.core.accumulator.hc.UnboundedMinMutator;
 import org.smf4j.core.accumulator.hc.WindowedAddMutator;
+import org.smf4j.core.accumulator.hc.WindowedMaxMutator;
 import org.smf4j.core.accumulator.hc.WindowedMinMutator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -63,13 +64,6 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
     public static final String NAME_ATTR = "name";
     public static final String NODES_ATTR = "nodeProxies";
     public static final String REF_ATTR = "ref";
-
-    private static final String TIMEWINDOW_ATTR = "timewindow";
-    private static final String INTERVALS_ATTR = "intervals";
-    private static final String TIMEREPORTER_ATTR = "timereporter";
-    private static final String INTERVAL_ATTR = "intervalType";
-    private static final String INTERVAL_SECONDS = "seconds";
-    private static final String INTERVAL_POWERSOF2 = "powersof2";
 
     @Override
     protected String getBeanClassName(Element element) {
@@ -249,13 +243,25 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
         // We need to create unbounded mutators
         switch(config.getCounterType()) {
             case ADD:
-                mutatorFactoryClass = UnboundedAddMutator.Factory.class;
+                mutatorFactoryClass =
+                        (config.getConcurrencyType() == ConcurrencyType.HIGH) ?
+                        UnboundedAddMutator.Factory.class :
+                        org.smf4j.core.accumulator.lc.UnboundedAddMutator
+                        .Factory.class;
                 break;
             case MIN:
-                mutatorFactoryClass = UnboundedMinMutator.Factory.class;
+                mutatorFactoryClass =
+                        (config.getConcurrencyType() == ConcurrencyType.HIGH) ?
+                        UnboundedMinMutator.Factory.class :
+                        org.smf4j.core.accumulator.lc.UnboundedMinMutator
+                        .Factory.class;
                 break;
             case MAX:
-                mutatorFactoryClass = UnboundedMaxMutator.Factory.class;
+                mutatorFactoryClass =
+                        (config.getConcurrencyType() == ConcurrencyType.HIGH) ?
+                        UnboundedMaxMutator.Factory.class :
+                        org.smf4j.core.accumulator.lc.UnboundedMaxMutator
+                        .Factory.class;
                 break;
             default:
                 context.getReaderContext().error(
@@ -276,13 +282,25 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
         Class<?> mutatorFactoryClass;
         switch(config.getCounterType()) {
             case ADD:
-                mutatorFactoryClass = WindowedAddMutator.Factory.class;
+                mutatorFactoryClass =
+                        (config.getConcurrencyType() == ConcurrencyType.HIGH) ?
+                        WindowedAddMutator.Factory.class :
+                        org.smf4j.core.accumulator.lc.WindowedAddMutator
+                        .Factory.class;
                 break;
             case MIN:
-                mutatorFactoryClass = WindowedMinMutator.Factory.class;
+                mutatorFactoryClass =
+                        (config.getConcurrencyType() == ConcurrencyType.HIGH) ?
+                        WindowedMinMutator.Factory.class :
+                        org.smf4j.core.accumulator.lc.WindowedMinMutator
+                        .Factory.class;
                 break;
             case MAX:
-                mutatorFactoryClass = UnboundedMaxMutator.Factory.class;
+                mutatorFactoryClass =
+                        (config.getConcurrencyType() == ConcurrencyType.HIGH) ?
+                        WindowedMaxMutator.Factory.class :
+                        org.smf4j.core.accumulator.lc.WindowedMaxMutator
+                        .Factory.class;
                 break;
             default:
                 context.getReaderContext().error("Unexpected counter type.",

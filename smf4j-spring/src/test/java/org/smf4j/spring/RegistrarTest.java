@@ -15,8 +15,8 @@
  */
 package org.smf4j.spring;
 
-import org.junit.After;
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 import org.junit.Test;
 
@@ -24,8 +24,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.smf4j.Accumulator;
 import org.smf4j.Registrar;
-import org.smf4j.RegistrarFactory;
+import org.smf4j.RegistrarFactoryForUnitTests;
 import org.smf4j.RegistryNode;
+import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
+import org.smf4j.core.accumulator.lc.LowConcurrencyAccumulator;
 
 /**
  *
@@ -33,10 +35,10 @@ import org.smf4j.RegistryNode;
  */
 public class RegistrarTest {
 
-    @After
-    public void after()
+    @Before
+    public void before()
     throws Exception {
-        RegistrarFactory.getRegistrar().clear();
+        RegistrarFactoryForUnitTests.reset(true);
     }
 
     @Test
@@ -114,27 +116,36 @@ public class RegistrarTest {
         Registrar r1 = context.getBean("registrar-1", Registrar.class);
         assertNotNull(r1);
 
-        RegistryNode foobar = r1.getNode("foo.bar");
-        assertNotNull(foobar);
+        RegistryNode counters = r1.getNode("counters");
+        assertNotNull(counters);
 
-        Accumulator counter = foobar.getAccumulator("counter");
-        assertNotNull(counter);
-    }
+        Accumulator c;
+        c = counters.getAccumulator("c_");
+        assertCounterMakeup(c, true, false, false);
 
-    @Test
-    public void mincounter()
-    throws Exception {
-        ApplicationContext context = loadContext("registrar-mincounter.xml");
-        assertNotNull(context);
+        c = counters.getAccumulator("c_l");
+        assertCounterMakeup(c, false, false, false);
 
-        Registrar r1 = context.getBean("registrar-1", Registrar.class);
-        assertNotNull(r1);
+        c = counters.getAccumulator("c_h");
+        assertCounterMakeup(c, true, false, false);
 
-        RegistryNode foobar = r1.getNode("foo.bar");
-        assertNotNull(foobar);
+        c = counters.getAccumulator("c_l_u");
+        assertCounterMakeup(c, false, false, false);
 
-        Accumulator counter = foobar.getAccumulator("mincounter");
-        assertNotNull(counter);
+        c = counters.getAccumulator("c_l_w_s");
+        assertCounterMakeup(c, false, true, false);
+
+        c = counters.getAccumulator("c_l_w_2");
+        assertCounterMakeup(c, false, true, true);
+
+        c = counters.getAccumulator("c_h_u");
+        assertCounterMakeup(c, true, false, false);
+
+        c = counters.getAccumulator("c_h_w_s");
+        assertCounterMakeup(c, true, true, false);
+
+        c = counters.getAccumulator("c_h_w_2");
+        assertCounterMakeup(c, true, true, true);
     }
 
     @Test
@@ -146,11 +157,77 @@ public class RegistrarTest {
         Registrar r1 = context.getBean("registrar-1", Registrar.class);
         assertNotNull(r1);
 
-        RegistryNode foobar = r1.getNode("foo.bar");
-        assertNotNull(foobar);
+        RegistryNode counters = r1.getNode("counters");
+        assertNotNull(counters);
 
-        Accumulator counter = foobar.getAccumulator("maxcounter");
-        assertNotNull(counter);
+        Accumulator m;
+        m = counters.getAccumulator("m_");
+        assertMaxMakeup(m, true, false, false);
+
+        m = counters.getAccumulator("m_l");
+        assertMaxMakeup(m, false, false, false);
+
+        m = counters.getAccumulator("m_h");
+        assertMaxMakeup(m, true, false, false);
+
+        m = counters.getAccumulator("m_l_u");
+        assertMaxMakeup(m, false, false, false);
+
+        m = counters.getAccumulator("m_l_w_s");
+        assertMaxMakeup(m, false, true, false);
+
+        m = counters.getAccumulator("m_l_w_2");
+        assertMaxMakeup(m, false, true, true);
+
+        m = counters.getAccumulator("m_h_u");
+        assertMaxMakeup(m, true, false, false);
+
+        m = counters.getAccumulator("m_h_w_s");
+        assertMaxMakeup(m, true, true, false);
+
+        m = counters.getAccumulator("m_h_w_2");
+        assertMaxMakeup(m, true, true, true);
+    }
+
+    @Test
+    public void mincounter()
+    throws Exception {
+        ApplicationContext context = loadContext("registrar-mincounter.xml");
+        assertNotNull(context);
+
+        Registrar r1 = context.getBean("registrar-1", Registrar.class);
+        assertNotNull(r1);
+
+        RegistryNode counters = r1.getNode("counters");
+        assertNotNull(counters);
+
+        Accumulator m;
+        m = counters.getAccumulator("m_");
+        assertMinMakeup(m, true, false, false);
+
+        m = counters.getAccumulator("m_l");
+        assertMinMakeup(m, false, false, false);
+
+        m = counters.getAccumulator("m_h");
+        assertMinMakeup(m, true, false, false);
+
+        m = counters.getAccumulator("m_l_u");
+        assertMinMakeup(m, false, false, false);
+
+        m = counters.getAccumulator("m_l_w_s");
+        assertMinMakeup(m, false, true, false);
+
+        m = counters.getAccumulator("m_l_w_2");
+        assertMinMakeup(m, false, true, true);
+
+        m = counters.getAccumulator("m_h_u");
+        assertMinMakeup(m, true, false, false);
+
+        m = counters.getAccumulator("m_h_w_s");
+        assertMinMakeup(m, true, true, false);
+
+        m = counters.getAccumulator("m_h_w_2");
+        assertMinMakeup(m, true, true, true);
     }
 
     @Test
@@ -165,7 +242,8 @@ public class RegistrarTest {
         RegistryNode foobar = r1.getNode("foo.bar");
         assertNotNull(foobar);
 
-        Accumulator counter = context.getBean("customBeanId", Accumulator.class);
+        Accumulator counter = context
+                .getBean("customBeanId", Accumulator.class);
         assertNotNull(counter);
 
         Accumulator refAttr = foobar.getAccumulator("refAttr");
@@ -175,7 +253,8 @@ public class RegistrarTest {
         Accumulator beanTagWithId = foobar.getAccumulator("beanTagWithId");
         assertNotNull(beanTagWithId);
 
-        Accumulator beanTagWithoutId = foobar.getAccumulator("beanTagWithoutId");
+        Accumulator beanTagWithoutId = foobar
+                .getAccumulator("beanTagWithoutId");
         assertNotNull(beanTagWithoutId);
 
         Accumulator refTag = foobar.getAccumulator("refTag");
@@ -189,5 +268,128 @@ public class RegistrarTest {
 
     private ApplicationContext loadContext(String path) {
         return new ClassPathXmlApplicationContext(path, getClass());
+    }
+
+    private void assertCounterMakeup(Accumulator accumulator,
+            boolean highConcurrency, boolean windowed, boolean powersOfTwo) {
+        assertNotNull(accumulator);
+
+        if(highConcurrency) {
+            if(windowed) {
+                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.hc.WindowedAddMutator);
+                if(powersOfTwo) {
+                    assertEquals((1<<28)-(1<<24), accumulator.getTimeWindow());
+                    assertEquals((1<<5)-2, accumulator.getIntervals());
+                } else {
+                    assertEquals(1000000000L, accumulator.getTimeWindow());
+                    assertEquals(10, accumulator.getIntervals());
+                }
+            } else {
+                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.hc.UnboundedAddMutator);
+            }
+        } else {
+            if(windowed) {
+                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.lc.WindowedAddMutator);
+                if(powersOfTwo) {
+                    assertEquals((1<<28)-(1<<24), accumulator.getTimeWindow());
+                    assertEquals((1<<5)-2, accumulator.getIntervals());
+                } else {
+                    assertEquals(1000000000L, accumulator.getTimeWindow());
+                    assertEquals(10, accumulator.getIntervals());
+                }
+            } else {
+                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.lc.UnboundedAddMutator);
+            }
+        }
+    }
+
+    private void assertMaxMakeup(Accumulator accumulator,
+            boolean highConcurrency, boolean windowed, boolean powersOfTwo) {
+        assertNotNull(accumulator);
+
+        if(highConcurrency) {
+            if(windowed) {
+                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.hc.WindowedMaxMutator);
+                if(powersOfTwo) {
+                    assertEquals((1<<28)-(1<<24), accumulator.getTimeWindow());
+                    assertEquals((1<<5)-2, accumulator.getIntervals());
+                } else {
+                    assertEquals(1000000000L, accumulator.getTimeWindow());
+                    assertEquals(10, accumulator.getIntervals());
+                }
+            } else {
+                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.hc.UnboundedMaxMutator);
+            }
+        } else {
+            if(windowed) {
+                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.lc.WindowedMaxMutator);
+                if(powersOfTwo) {
+                    assertEquals((1<<28)-(1<<24), accumulator.getTimeWindow());
+                    assertEquals((1<<5)-2, accumulator.getIntervals());
+                } else {
+                    assertEquals(1000000000L, accumulator.getTimeWindow());
+                    assertEquals(10, accumulator.getIntervals());
+                }
+            } else {
+                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.lc.UnboundedMaxMutator);
+            }
+        }
+    }
+
+    private void assertMinMakeup(Accumulator accumulator,
+            boolean highConcurrency, boolean windowed, boolean powersOfTwo) {
+        assertNotNull(accumulator);
+
+        if(highConcurrency) {
+            if(windowed) {
+                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.hc.WindowedMinMutator);
+                if(powersOfTwo) {
+                    assertEquals((1<<28)-(1<<24), accumulator.getTimeWindow());
+                    assertEquals((1<<5)-2, accumulator.getIntervals());
+                } else {
+                    assertEquals(1000000000L, accumulator.getTimeWindow());
+                    assertEquals(10, accumulator.getIntervals());
+                }
+            } else {
+                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.hc.UnboundedMinMutator);
+            }
+        } else {
+            if(windowed) {
+                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.lc.WindowedMinMutator);
+                if(powersOfTwo) {
+                    assertEquals((1<<28)-(1<<24), accumulator.getTimeWindow());
+                    assertEquals((1<<5)-2, accumulator.getIntervals());
+                } else {
+                    assertEquals(1000000000L, accumulator.getTimeWindow());
+                    assertEquals(10, accumulator.getIntervals());
+                }
+            } else {
+                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator.getMutator() instanceof
+                        org.smf4j.core.accumulator.lc.UnboundedMinMutator);
+            }
+        }
     }
 }

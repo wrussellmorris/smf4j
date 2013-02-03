@@ -15,7 +15,6 @@
  */
 package org.smf4j.core.accumulator.lc;
 
-import org.smf4j.core.accumulator.hc.*;
 import java.util.concurrent.atomic.AtomicLongArray;
 import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.IntervalStrategy;

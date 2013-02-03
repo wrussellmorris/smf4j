@@ -15,9 +15,6 @@
  */
 package org.smf4j.to.csv;
 
-import org.smf4j.to.csv.CsvCalculatorColumn;
-import org.smf4j.to.csv.DataException;
-import org.smf4j.to.csv.CsvDataColumn;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 
@@ -37,7 +34,7 @@ public class CsvCalculatorColumnTest {
         String dataName = "";
 
         try {
-            new CsvCalculatorColumn(node, dataName).getClass();
+            new CsvCalculatorColumn(node, dataName);
             fail();
         } catch(DataException e) {
             // Success
@@ -47,7 +44,7 @@ public class CsvCalculatorColumnTest {
 
         dataName = "foo.bar";
         try {
-            new CsvCalculatorColumn(node, dataName).getClass();
+            new CsvCalculatorColumn(node, dataName);
         } catch(Throwable t) {
             fail("Caught unexpected exception " + t.toString());
         }
@@ -55,7 +52,7 @@ public class CsvCalculatorColumnTest {
 
         dataName = null;
         try {
-            new CsvCalculatorColumn(node, dataName).getClass();
+            new CsvCalculatorColumn(node, dataName);
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -65,7 +62,7 @@ public class CsvCalculatorColumnTest {
 
         node = null;
         try {
-            new CsvCalculatorColumn(node, dataName).getClass();
+            new CsvCalculatorColumn(node, dataName);
             fail();
         } catch(NullPointerException e) {
             // Success

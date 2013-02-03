@@ -164,7 +164,7 @@ class CounterConfig {
         NA          (null),
         UNKNOWN     (null),
         SECONDS     ("seconds"),
-        POWERSOFTWO ("nanos-powers-of-two");
+        POWERSOFTWO ("nanos-powers-of-2");
 
         public static final String ATTR_NAME = "intervals-type";
         private final String str;

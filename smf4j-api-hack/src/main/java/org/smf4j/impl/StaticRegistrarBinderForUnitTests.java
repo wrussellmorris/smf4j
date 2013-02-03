@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.impl;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface Mutator {
+public class StaticRegistrarBinderForUnitTests {
 
-    void put(long delta);
+    private StaticRegistrarBinderForUnitTests() {
+    }
 
-    long combine(long other);
+    public static StaticRegistrarBinderForUnitTests getSingleton() {
+        return null;
+    }
 
-    long get();
+    public Object getRegistrarProvider() {
+        return null;
+    }
 }

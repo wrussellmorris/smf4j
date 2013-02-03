@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.helpers;
+
+import java.util.Map;
+import org.smf4j.Accumulator;
+import org.smf4j.Calculator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface Mutator {
+public class NopCalculator implements Calculator {
 
-    void put(long delta);
+    public static final NopCalculator INSTANCE = new NopCalculator();
 
-    long combine(long other);
+    public Object calculate(Map<String, Long> values,
+            Map<String, Accumulator> accumulators) {
+        return null;
+    }
 
-    long get();
+    public String getUnits() {
+        return null;
+    }
 }

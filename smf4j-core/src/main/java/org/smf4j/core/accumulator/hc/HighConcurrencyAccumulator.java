@@ -18,6 +18,7 @@ package org.smf4j.core.accumulator.hc;
 import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.AbstractAccumulator;
 import org.smf4j.core.accumulator.MutatorFactory;
+import org.smf4j.helpers.NopMutator;
 
 /**
  *
@@ -25,7 +26,7 @@ import org.smf4j.core.accumulator.MutatorFactory;
  */
 public final class HighConcurrencyAccumulator extends AbstractAccumulator {
 
-    protected final MutatorRegistry mutatorRegistry;
+    private final MutatorRegistry mutatorRegistry;
     private final long timeWindow;
     private final int intervals;
 
@@ -37,7 +38,7 @@ public final class HighConcurrencyAccumulator extends AbstractAccumulator {
 
     public final Mutator getMutator() {
         if(!isOn()) {
-            return Mutator.NOP;
+            return NopMutator.INSTANCE;
         }
         return mutatorRegistry.get();
     }

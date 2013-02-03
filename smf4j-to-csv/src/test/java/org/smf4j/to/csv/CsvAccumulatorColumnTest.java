@@ -15,9 +15,6 @@
  */
 package org.smf4j.to.csv;
 
-import org.smf4j.to.csv.CsvAccumulatorColumn;
-import org.smf4j.to.csv.DataException;
-import org.smf4j.to.csv.CsvDataColumn;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.*;
@@ -37,7 +34,7 @@ public class CsvAccumulatorColumnTest {
         String dataName = "";
 
         try {
-            new CsvAccumulatorColumn(node, dataName).getClass();
+            new CsvAccumulatorColumn(node, dataName);
             fail();
         } catch(DataException e) {
             // Success
@@ -47,7 +44,7 @@ public class CsvAccumulatorColumnTest {
 
         dataName = "foo.bar";
         try {
-            new CsvAccumulatorColumn(node, dataName).getClass();
+            new CsvAccumulatorColumn(node, dataName);
             fail();
         } catch(DataException e) {
             // Success
@@ -58,7 +55,7 @@ public class CsvAccumulatorColumnTest {
 
         dataName = null;
         try {
-            new CsvAccumulatorColumn(node, dataName).getClass();
+            new CsvAccumulatorColumn(node, dataName);
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -68,7 +65,7 @@ public class CsvAccumulatorColumnTest {
 
         node = null;
         try {
-            new CsvAccumulatorColumn(node, dataName).getClass();
+            new CsvAccumulatorColumn(node, dataName);
             fail();
         } catch(NullPointerException e) {
             // Success

@@ -16,22 +16,27 @@
 package org.smf4j.impl;
 
 import org.smf4j.spi.RegistrarProvider;
-import org.smf4j.spi.SingletonProvider;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class StaticRegistrarBinder {
+public class StaticRegistrarBinderForUnitTests {
 
-    private static final RegistrarProvider provider = new SingletonProvider();
-    private static StaticRegistrarBinder instance = new StaticRegistrarBinder();
+    private static final StaticRegistrarBinderForUnitTests instance =
+            new StaticRegistrarBinderForUnitTests();
 
-    public static StaticRegistrarBinder getSingleton() {
+    private static final RegistrarProvider singleton =
+            new ThreadLocalRegistrarProvider();
+
+    private StaticRegistrarBinderForUnitTests() {
+    }
+
+    public static StaticRegistrarBinderForUnitTests getSingleton() {
         return instance;
     }
 
     public Object getRegistrarProvider() {
-        return provider;
+        return singleton;
     }
 }

@@ -15,8 +15,6 @@
  */
 package org.smf4j.to.csv;
 
-import org.smf4j.to.csv.DataException;
-import org.smf4j.to.csv.CsvDataColumn;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 
@@ -47,7 +45,7 @@ public class CsvDataColumnTest {
         String dataName = "";
 
         try {
-            new Stub(node, dataName).getClass();
+            new Stub(node, dataName);
             fail();
         } catch(DataException e) {
             // Success
@@ -57,7 +55,7 @@ public class CsvDataColumnTest {
 
         dataName = null;
         try {
-            new Stub(node, dataName).getClass();
+            new Stub(node, dataName);
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -67,7 +65,7 @@ public class CsvDataColumnTest {
 
         node = null;
         try {
-            new Stub(node, dataName).getClass();
+            new Stub(node, dataName);
             fail();
         } catch(NullPointerException e) {
             // Success

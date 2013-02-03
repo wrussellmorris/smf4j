@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.helpers;
 
 import org.smf4j.Mutator;
 
@@ -21,21 +21,14 @@ import org.smf4j.Mutator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-final class NopMutator implements Mutator {
+public class NopMutator implements Mutator {
 
-    public static final NopMutator INSTANCE = new NopMutator();
-
-    private NopMutator() {
-    }
+    public static final Mutator INSTANCE = new NopMutator();
 
     public void put(long delta) {
     }
 
     public long combine(long other) {
-        return 0L;
-    }
-
-    public long localGet() {
         return 0L;
     }
 

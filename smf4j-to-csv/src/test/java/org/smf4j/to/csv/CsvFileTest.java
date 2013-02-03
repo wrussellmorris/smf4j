@@ -25,11 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
+import org.smf4j.RegistrarFactoryForUnitTests;
 import org.smf4j.RegistryNode;
 import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
 import org.smf4j.core.accumulator.MutatorFactory;
@@ -44,6 +46,11 @@ import org.smf4j.core.calculator.WindowNormalizer;
 public class CsvFileTest {
 
     private CsvFile csvFile;
+
+    @Before
+    public void before() {
+        RegistrarFactoryForUnitTests.reset(true);
+    }
 
     @After
     public void after() {
@@ -163,7 +170,7 @@ public class CsvFileTest {
                 line = br.readLine();
                 if(line != null) {strs.add(line);}
             } while(line != null);
-            return strs.toArray(new String[0]);
+            return strs.toArray(new String[strs.size()]);
         } finally {
             try { if(r != null) {r.close();} } catch(Exception e) {}
             try { if(br != null) {br.close();} } catch(Exception e) {}
