@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.core.accumulator;
+package org.smf4j.core.accumulator.hc;
 
+import java.util.concurrent.atomic.AtomicLong;
 import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class MinCounter extends AbstractAccumulator {
+public abstract class AbstractUnboundedMutator implements Mutator {
+    protected long localValue;
+    protected final AtomicLong value;
 
-    public MinCounter() {
-        super(MinMutator.MUTATOR_FACTORY);
+    protected AbstractUnboundedMutator(long initialValue) {
+        localValue = initialValue;
+        value = new AtomicLong(initialValue);
     }
 
     @Override
     public final long get() {
-        boolean hasMutators = false;
-        long value = Long.MAX_VALUE;
-        for (Mutator mutator : mutatorRegistry) {
-            value = Math.min(value, mutator.syncGet());
-            hasMutators = true;
-        }
-
-        return hasMutators ? value : 0L;
+        return value.get();
     }
 }

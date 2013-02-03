@@ -15,7 +15,6 @@
  */
 package org.smf4j.spring;
 
-import java.util.Set;
 import org.junit.After;
 import static org.junit.Assert.*;
 
@@ -23,7 +22,7 @@ import org.junit.Test;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.smf4j.core.accumulator.Counter;
+import org.smf4j.Accumulator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
@@ -55,8 +54,8 @@ public class RegistrarTest {
         RegistryNode bar = r1.getNode("foo.bar");
         RegistryNode baz = r1.getNode("foo.bar.baz");
         RegistryNode bot = r1.getNode("foo.bar.baz.bot");
-        Counter counter_bar;
-        Counter counter_baz;
+        Accumulator counter_bar;
+        Accumulator counter_baz;
 
         assertNotNull(foo);
         assertNotNull(bar);
@@ -67,12 +66,12 @@ public class RegistrarTest {
         assertEquals(0, foo.getCalculators().size());
 
         assertEquals(1, bar.getAccumulators().size());
-        counter_bar = (Counter)bar.getAccumulator("counter_bar");
+        counter_bar = bar.getAccumulator("counter_bar");
         assertNotNull(counter_bar);
         assertEquals(0, bar.getCalculators().size());
 
         assertEquals(1, baz.getAccumulators().size());
-        counter_baz = (Counter)baz.getAccumulator("counter_baz");
+        counter_baz = baz.getAccumulator("counter_baz");
         assertNotNull(baz);
         assertEquals(0, baz.getCalculators().size());
 
@@ -82,8 +81,8 @@ public class RegistrarTest {
         RegistryNode op = r2.getNode("eep.op");
         RegistryNode ork = r2.getNode("eep.op.ork");
         RegistryNode aa = r2.getNode("eep.op.ork.aa");
-        Counter counter_op;
-        Counter counter_ork;
+        Accumulator counter_op;
+        Accumulator counter_ork;
 
         assertNotNull(eep);
         assertNotNull(op);
@@ -94,12 +93,12 @@ public class RegistrarTest {
         assertEquals(0, eep.getCalculators().size());
 
         assertEquals(1, op.getAccumulators().size());
-        counter_op = (Counter)op.getAccumulator("counter_op");
+        counter_op = op.getAccumulator("counter_op");
         assertNotNull(counter_op);
         assertEquals(0, op.getCalculators().size());
 
         assertEquals(1, ork.getAccumulators().size());
-        counter_ork = (Counter)ork.getAccumulator("counter_ork");
+        counter_ork = ork.getAccumulator("counter_ork");
         assertNotNull(ork);
         assertEquals(0, ork.getCalculators().size());
 
@@ -118,7 +117,7 @@ public class RegistrarTest {
         RegistryNode foobar = r1.getNode("foo.bar");
         assertNotNull(foobar);
 
-        Counter counter = (Counter)foobar.getAccumulator("counter");
+        Accumulator counter = foobar.getAccumulator("counter");
         assertNotNull(counter);
     }
 
@@ -134,7 +133,7 @@ public class RegistrarTest {
         RegistryNode foobar = r1.getNode("foo.bar");
         assertNotNull(foobar);
 
-        Counter counter = (Counter)foobar.getAccumulator("mincounter");
+        Accumulator counter = foobar.getAccumulator("mincounter");
         assertNotNull(counter);
     }
 
@@ -150,7 +149,7 @@ public class RegistrarTest {
         RegistryNode foobar = r1.getNode("foo.bar");
         assertNotNull(foobar);
 
-        Counter counter = (Counter)foobar.getAccumulator("maxcounter");
+        Accumulator counter = foobar.getAccumulator("maxcounter");
         assertNotNull(counter);
     }
 
@@ -166,25 +165,24 @@ public class RegistrarTest {
         RegistryNode foobar = r1.getNode("foo.bar");
         assertNotNull(foobar);
 
-        Counter counter = context.getBean("customBeanId", Counter.class);
+        Accumulator counter = context.getBean("customBeanId", Accumulator.class);
         assertNotNull(counter);
 
-        Counter refAttr = (Counter)foobar.getAccumulator("refAttr");
+        Accumulator refAttr = foobar.getAccumulator("refAttr");
         assertNotNull(refAttr);
         assertSame(counter, refAttr);
 
-        Counter beanTagWithId = (Counter)foobar.getAccumulator("beanTagWithId");
+        Accumulator beanTagWithId = foobar.getAccumulator("beanTagWithId");
         assertNotNull(beanTagWithId);
 
-        Counter beanTagWithoutId = (Counter)
-            foobar.getAccumulator("beanTagWithoutId");
+        Accumulator beanTagWithoutId = foobar.getAccumulator("beanTagWithoutId");
         assertNotNull(beanTagWithoutId);
 
-        Counter refTag = (Counter)foobar.getAccumulator("refTag");
+        Accumulator refTag = foobar.getAccumulator("refTag");
         assertNotNull(refTag);
         assertSame(counter, refTag);
 
-        Counter idrefTag = (Counter)foobar.getAccumulator("idrefTag");
+        Accumulator idrefTag = foobar.getAccumulator("idrefTag");
         assertNotNull(idrefTag);
         assertSame(counter, idrefTag);
     }

@@ -13,36 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.core.accumulator;
+package org.smf4j.core.accumulator.hc;
 
-import java.util.concurrent.atomic.AtomicLong;
 import org.smf4j.Mutator;
+import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
  *
  * @author rmorris
  */
-public final class CounterMutator implements Mutator {
+public final class UnboundedAddMutator extends AbstractUnboundedMutator {
 
-    static final MutatorFactory MUTATOR_FACTORY = new MutatorFactory() {
-        public Mutator createMutator() {
-            return new CounterMutator();
-        }
-    };
+    public static final MutatorFactory MUTATOR_FACTORY = new Factory();
 
-    private long localValue;
-    private final AtomicLong value = new AtomicLong();
+    public UnboundedAddMutator() {
+        super(0L);
+    }
 
-    public void add(long delta) {
+    @Override
+    public void put(long delta) {
         localValue += delta;
         value.lazySet(localValue);
     }
 
-    public long localGet() {
-        return localValue;
+    @Override
+    public long combine(long other) {
+        return value.get() + other;
     }
 
-    public long syncGet() {
-        return value.get();
+    public static final class Factory implements MutatorFactory {
+        public Mutator createMutator() {
+            return new UnboundedAddMutator();
+        }
+
+        public long getTimeWindow() {
+            return 0L;
+        }
+
+        public int getIntervals() {
+            return 0;
+        }
     }
 }

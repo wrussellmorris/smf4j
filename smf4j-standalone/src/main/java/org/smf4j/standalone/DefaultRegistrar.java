@@ -16,7 +16,6 @@
 package org.smf4j.standalone;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;

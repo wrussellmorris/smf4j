@@ -30,4 +30,8 @@ public interface Accumulator {
     void setOn(boolean on);
 
     String getUnits();
+
+    long getTimeWindow();
+
+    int getIntervals();
 }

@@ -28,15 +28,18 @@ final class NopMutator implements Mutator {
     private NopMutator() {
     }
 
-    public void add(long delta) {
+    public void put(long delta) {
+    }
+
+    public long combine(long other) {
+        return 0L;
     }
 
     public long localGet() {
         return 0L;
     }
 
-    public long syncGet() {
+    public long get() {
         return 0L;
     }
-
 }

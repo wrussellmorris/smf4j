@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.core.accumulator;
+package org.smf4j.core.accumulator.hc;
 
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
@@ -21,6 +21,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.smf4j.Mutator;
+import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
  *

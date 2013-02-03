@@ -24,35 +24,15 @@ import org.junit.Test;
  */
 public class PowersOfTwoIntervalTest {
 
-    private IntervalStrategy create(int windowExp, int intervalExp, int buf) {
-        return new PowersOfTwoIntervalStrategy(windowExp, intervalExp, buf);
+    private IntervalStrategy create(int windowExp, int intervalExp) {
+        return new PowersOfTwoIntervalStrategy(windowExp, intervalExp);
     }
 
     @Test
-    public void initNoBuff() {
+    public void init() {
         int windowExp = 10;
         int intervalExp = 4;
-        int buffer = 0;
-        IntervalStrategy interval = create(windowExp, intervalExp, buffer);
-
-        long expectedWindow = 1024;
-        long expectedIntervalRes = 64;
-        int expectedIntervals = 16;
-        int expectedBufferIntervals = 0;
-
-        assertEquals(expectedWindow, interval.timeWindowInNanos());
-        assertEquals(expectedIntervalRes, interval.intervalResolutionInNanos());
-        assertEquals(expectedIntervals, interval.intervals());
-        assertEquals(expectedBufferIntervals, interval.bufferIntervals());
-
-    }
-
-    @Test
-    public void initBuff() {
-        int windowExp = 10;
-        int intervalExp = 4;
-        int buffer = 2;
-        IntervalStrategy interval = create(windowExp, intervalExp, buffer);
+        IntervalStrategy interval = create(windowExp, intervalExp);
 
         long expectedIntervalRes = 64;
         int expectedIntervals = 14;
@@ -69,60 +49,32 @@ public class PowersOfTwoIntervalTest {
 
     @Test( expected = IllegalArgumentException.class )
     public void initZeroWindowExp() {
-        create(0, 1, 1);
+        create(0, 1);
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void initNegWindowExp() {
-        create(-1, 1, 1);
+        create(-1, 1);
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void initTooLargeIntervalExp() {
-        create(1, SecondsIntervalStrategy.MAX_INTERVALS + 1, 1);
+        create(1, PowersOfTwoIntervalStrategy.MAX_NUM_INTERVALS_EXP + 1);
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void initNegIntervalExp() {
-        create(1, -1, 1);
-    }
-
-    @Test( expected = IllegalArgumentException.class )
-    public void initTooLargeBuffers() {
-        create(1, 1, 3);
-    }
-
-    @Test( expected = IllegalArgumentException.class )
-    public void initNegBuffers() {
-        create(1, 1, -1);
+        create(1, -1);
     }
 
     @Test( expected = IllegalArgumentException.class )
     public void initTooManyIntervals() {
-        create(10, 10, 0);
+        create(10, 10);
     }
 
     @Test
-    public void indexWithoutBuffers() {
-        IntervalStrategy bi = create(10, 4, 0);
-
-        long intervalRes = bi.intervalResolutionInNanos();
-        long windowRes = bi.timeWindowInNanos();
-
-        int i=0;
-        for(long t=0; t<(5*windowRes); t+=intervalRes) {
-            assertEquals(i, bi.intervalIndex(t));
-            if(i < 15) {
-                i++;
-            } else {
-                i = 0;
-            }
-        }
-    }
-
-    @Test
-    public void indexWithBuffers() {
-        IntervalStrategy bi = create(10, 4, 2);
+    public void index() {
+        IntervalStrategy bi = create(10, 4);
 
         long intervalRes = bi.intervalResolutionInNanos();
         long windowRes = bi.timeWindowInNanos();

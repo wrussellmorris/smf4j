@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 rmorris.
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,38 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.core.accumulator;
+package org.smf4j.core.accumulator.lc;
 
 import java.util.concurrent.atomic.AtomicLong;
 import org.smf4j.Mutator;
 
 /**
  *
- * @author rmorris
+ * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class MaxMutator implements Mutator {
+public abstract class AbstractUnboundedMutator implements Mutator {
+    protected final AtomicLong value;
 
-    static final MutatorFactory MUTATOR_FACTORY = new MutatorFactory() {
-        public Mutator createMutator() {
-            return new MaxMutator();
-        }
-    };
-
-    private long localValue;
-    private final AtomicLong value = new AtomicLong();
-
-    public void add(final long delta) {
-        if(delta > localValue) {
-            localValue = delta;
-            value.lazySet(delta);
-        }
+    protected AbstractUnboundedMutator(long initialValue) {
+        value = new AtomicLong(initialValue);
     }
 
-    public long localGet() {
-        return localValue;
-    }
-
-    public long syncGet() {
+    @Override
+    public final long get() {
         return value.get();
     }
 }

@@ -13,46 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.core.accumulator.lc;
 
-import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
+import org.smf4j.core.accumulator.AbstractAccumulator;
+import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-final class NopAccumulator implements Accumulator {
+public final class LowConcurrencyAccumulator extends AbstractAccumulator {
 
-    public static final NopAccumulator INSTANCE = new NopAccumulator();
+    private final MutatorFactory mutatorFactory;
+    private final Mutator mutator;
 
-    private NopAccumulator() {
+    public LowConcurrencyAccumulator(MutatorFactory mutatorFactory) {
+        this.mutatorFactory = mutatorFactory;
+        this.mutator = mutatorFactory.createMutator();
     }
 
     public Mutator getMutator() {
-        return NopMutator.INSTANCE;
+        return mutator;
     }
 
     public long get() {
-        return 0L;
+        return mutator.get();
     }
 
-    public boolean isOn() {
-        return false;
-    }
-
-    public void setOn(boolean on) {
-    }
-
-    public String getUnits() {
-        return null;
-    }
-
+    @Override
     public long getTimeWindow() {
-        return 0L;
+        return mutatorFactory.getTimeWindow();
     }
 
+    @Override
     public int getIntervals() {
-        return 0;
+        return mutatorFactory.getIntervals();
     }
 }

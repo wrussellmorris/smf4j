@@ -20,7 +20,6 @@ import org.smf4j.Mutator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
-import org.smf4j.core.accumulator.WindowedCounter;
 import org.smf4j.core.calculator.WindowNormalizer;
 
 /**
@@ -39,7 +38,7 @@ public class AccTestRunner extends TestRunner {
         Registrar r = RegistrarFactory.getRegistrar();
         RegistryNode node = r.getNode(testName);
         node.register("accumulator", accumulator);
-        if(accumulator instanceof WindowedCounter) {
+        if(accumulator.getTimeWindow() > 0) {
             WindowNormalizer wn = new WindowNormalizer();
             wn.setFrequency(WindowNormalizer.Frequency.SECONDS);
             wn.setWindowedCounter("accumulator");
@@ -53,7 +52,7 @@ public class AccTestRunner extends TestRunner {
         Mutator mutator = accumulator.getMutator();
         long start = System.currentTimeMillis();
         while(localCount < testIterations) {
-            mutator.add(1L);
+            mutator.put(1L);
             //accumulator.getMutator().add(1L);
             localCount++;
         }

@@ -23,18 +23,14 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
 
     public static final long ONE_BILLION = 1000000000L;
     public static final int MAX_INTERVALS = 100;
-    public static final int MAX_BUFFER_INTERVALS = 2;
+    public static final int BUFFER_INTERVALS = 2;
 
     private final long timeWindowInNanos;
     private final int intervals;
-    private final int bufferIntervals;
     private final int totalIntervals;
     private final long intervalResolutionInNanos;
 
-    public SecondsIntervalStrategy(
-            int timeWindowInSeconds,
-            int intervals,
-            int bufferIntervals) {
+    public SecondsIntervalStrategy(int timeWindowInSeconds, int intervals) {
 
         if(timeWindowInSeconds <= 0) {
             throw new IllegalArgumentException(
@@ -46,15 +42,8 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
                     "intervals must be > 0 and < " + MAX_INTERVALS);
         }
 
-        if(bufferIntervals < 0 || bufferIntervals > MAX_BUFFER_INTERVALS) {
-            throw new IllegalArgumentException(
-                    "bufferIntervals must be > 0 and < "
-                    + MAX_BUFFER_INTERVALS);
-        }
-
         this.intervals = intervals;
-        this.bufferIntervals = bufferIntervals;
-        this.totalIntervals = intervals + bufferIntervals;
+        this.totalIntervals = intervals + BUFFER_INTERVALS;
 
         // Extend timeWindowInNanos so that it is evenly
         // divided by intervals
@@ -71,7 +60,7 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
 
     @Override
     public int bufferIntervals() {
-        return bufferIntervals;
+        return BUFFER_INTERVALS;
     }
 
     @Override

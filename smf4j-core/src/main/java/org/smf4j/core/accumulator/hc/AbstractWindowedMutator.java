@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.core.accumulator;
+package org.smf4j.core.accumulator.hc;
 
 import java.util.concurrent.atomic.AtomicLongArray;
 import org.smf4j.Mutator;
+import org.smf4j.core.accumulator.IntervalStrategy;
+import org.smf4j.core.accumulator.TimeReporter;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class Intervals implements Mutator {
+public abstract class AbstractWindowedMutator implements Mutator {
 
     private final TimeReporter timeReporter;
     private final int buckets;
@@ -34,8 +36,11 @@ public final class Intervals implements Mutator {
     private final long intervalResolutionInNanos;
     private final IntervalStrategy strategy;
     private final long staleWindowTimestampOffset;
+    private final long initialValue;
 
-    Intervals(IntervalStrategy strategy, TimeReporter timeReporter) {
+    protected AbstractWindowedMutator(long initialValue,
+            IntervalStrategy strategy, TimeReporter timeReporter) {
+        this.initialValue = initialValue;
         this.timeReporter = timeReporter;
         this.strategy = strategy;
         this.intervals = strategy.intervals();
@@ -49,7 +54,7 @@ public final class Intervals implements Mutator {
     }
 
     @Override
-    public void add(long delta) {
+    public final void put(long delta) {
         long nanos = timeReporter.nanos();
         int index = strategy.intervalIndex(nanos);
         long stale = nanos - intervalResolutionInNanos;
@@ -60,14 +65,16 @@ public final class Intervals implements Mutator {
             values.lazySet(index, delta);
         } else {
             // Bucket's still fresh...
-            values.lazySet(index, values.get(index) + delta);
+            values.lazySet(index, combine(values.get(index), delta));
         }
     }
 
+    public abstract long combine(long local, long delta);
+
     @Override
-    public long syncGet() {
+    public final long get() {
         long nanos = timeReporter.nanos();
-        long result = 0L;
+        long result = initialValue;
         int index = strategy.intervalIndex(nanos);
         long stale = nanos - staleWindowTimestampOffset;
         for(int count=0,i=parw(index-bufferIntervals);
@@ -76,33 +83,14 @@ public final class Intervals implements Mutator {
 
             long bucketTimestamp = timestamps.get(i);
             if(bucketTimestamp >= stale) {
-                result += values.get(i);
+                result = combine(result, values.get(i));
             }
         }
 
         return result;
     }
 
-    @Override
-    public long localGet() {
-        long nanos = timeReporter.nanos();
-        long result = 0L;
-        int index = strategy.intervalIndex(nanos);
-        long stale = nanos - staleWindowTimestampOffset;
-        for(int count=0,i=parw(index-bufferIntervals);
-            count<intervals;
-            i = parw(i-1),count++) {
-
-            long bucketTimestamp = localTimestamps[i];
-            if(bucketTimestamp >= stale) {
-                result += values.get(i);
-            }
-        }
-
-        return result;
-    }
-
-    public long[] buckets(long nanos) {
+    public final long[] buckets(long nanos) {
         int index = strategy.intervalIndex(nanos);
         long[] ret = new long[intervals];
         long stale = nanos - staleWindowTimestampOffset;
@@ -113,13 +101,15 @@ public final class Intervals implements Mutator {
             long bucketTimestamp = timestamps.get(i);
             if(bucketTimestamp >= stale) {
                 ret[count] = values.get(i);
+            } else {
+                ret[count] = initialValue;
             }
         }
 
         return ret;
     }
 
-    public boolean allBucketsStale(long nanos) {
+    public final boolean allBucketsStale(long nanos) {
         long stale = nanos - staleWindowTimestampOffset;
         for(int i=0; i<timestamps.length(); i++) {
             if(timestamps.get(i) >= stale) {

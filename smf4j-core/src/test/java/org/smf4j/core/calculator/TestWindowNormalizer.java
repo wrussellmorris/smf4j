@@ -22,7 +22,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.smf4j.Accumulator;
-import org.smf4j.core.accumulator.WindowedCounter;
 
 /**
  *
@@ -31,23 +30,25 @@ import org.smf4j.core.accumulator.WindowedCounter;
 public class TestWindowNormalizer {
 
     private final double epsilon = 0.0000001d;
-    private WindowedCounter w;
+    private MockAccumulator a;
     private WindowNormalizer n;
     private Map<String, Long> vals;
     private Map<String, Accumulator> as;
 
     @Before
     public void before() {
-        w = new WindowedCounter(1,1);
+        a = new MockAccumulator();
+        a.setTimeWindow(1000000000L);
+        a.setIntervals(1);
         n = new WindowNormalizer();
-        n.setWindowedCounter("w");
+        n.setWindowedCounter("a");
         as = new HashMap<String, Accumulator>();
-        as.put("w", w);
+        as.put("a", a);
         vals = new HashMap<String, Long>();
     }
 
     private void set(long val) {
-        vals.put("w", val);
+        vals.put("a", val);
     }
 
     @Test

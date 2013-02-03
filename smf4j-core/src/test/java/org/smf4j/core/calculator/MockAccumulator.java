@@ -26,6 +26,8 @@ public class MockAccumulator implements Accumulator, Mutator {
 
     long value;
     boolean on;
+    long timeWindow = 0L;
+    int intervals = 0;
 
     @Override
     public long get() {
@@ -46,24 +48,42 @@ public class MockAccumulator implements Accumulator, Mutator {
         this.on = on;
     }
 
-    public void add(long delta) {
+    @Override
+    public void put(long delta) {
         this.value = delta;
     }
 
+    @Override
     public Mutator getMutator() {
         return this;
     }
 
-    public long localGet() {
-        return value;
-    }
-
-    public long syncGet() {
-        return value;
-    }
-
+    @Override
     public String getUnits() {
         return null;
+    }
+
+    @Override
+    public long combine(long other) {
+        return other;
+    }
+
+    @Override
+    public long getTimeWindow() {
+        return timeWindow;
+    }
+
+    public void setTimeWindow(long timeWindow) {
+        this.timeWindow = timeWindow;
+    }
+
+    @Override
+    public int getIntervals() {
+        return intervals;
+    }
+
+    public void setIntervals(int intervals) {
+        this.intervals = intervals;
     }
 
 }

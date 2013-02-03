@@ -23,4 +23,8 @@ import org.smf4j.Mutator;
  */
 public interface MutatorFactory {
     Mutator createMutator();
+
+    long getTimeWindow();
+
+    int getIntervals();
 }

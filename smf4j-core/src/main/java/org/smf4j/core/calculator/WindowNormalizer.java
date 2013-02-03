@@ -17,7 +17,6 @@ package org.smf4j.core.calculator;
 
 import java.util.Map;
 import org.smf4j.Accumulator;
-import org.smf4j.core.accumulator.WindowedCounter;
 
 /**
  *
@@ -33,9 +32,13 @@ public class WindowNormalizer extends AbstractCalculator {
         Map<String, Accumulator> accumulators) {
 
         Long val = values.get(getWindowedCounter());
-        Object wc = accumulators.get(getWindowedCounter());
-        if(wc instanceof WindowedCounter && val != null ) {
-            double window = ((WindowedCounter)wc).getTimeWindow();
+        Accumulator a = accumulators.get(getWindowedCounter());
+        if(a == null || val == null) {
+            return 0.0d;
+        }
+
+        double window = a.getTimeWindow();
+        if(window > 0.0d) {
             return (frequency.getNanos() / window) * val;
         }
 

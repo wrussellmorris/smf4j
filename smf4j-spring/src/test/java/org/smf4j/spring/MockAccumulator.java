@@ -13,30 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.core.accumulator;
+package org.smf4j.spring;
 
+import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class MaxCounter extends AbstractAccumulator {
+public class MockAccumulator implements Accumulator, Mutator {
 
-    public MaxCounter() {
-        super(MaxMutator.MUTATOR_FACTORY);
+    @Override
+    public Mutator getMutator() {
+        return this;
     }
 
     @Override
-    public final long get() {
-        boolean hasMutators = false;
-        long value = Long.MIN_VALUE;
-        for (Mutator mutator : mutatorRegistry) {
-            // Grab this mutator's current value
-            value = Math.max(value, mutator.syncGet());
-            hasMutators = true;
-        }
+    public long get() {
+        return 0L;
+    }
 
-        return hasMutators ? value : 0L;
+    @Override
+    public boolean isOn() {
+        return false;
+    }
+
+    @Override
+    public void setOn(boolean on) {
+    }
+
+    @Override
+    public String getUnits() {
+        return null;
+    }
+
+    @Override
+    public long getTimeWindow() {
+        return 0L;
+    }
+
+    @Override
+    public int getIntervals() {
+        return 0;
+    }
+
+    @Override
+    public void put(long delta) {
+    }
+
+    @Override
+    public long combine(long other) {
+        return 0L;
     }
 }

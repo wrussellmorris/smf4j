@@ -48,7 +48,7 @@ limitations under the License.
         <xsd:attribute name="name" use="required">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
-                    <xsd:pattern value="[a-zA-Z0-9\-_\.]+" />
+                    <xsd:pattern value="[a-zA-Z0-9_\.]+" />
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
@@ -61,11 +61,10 @@ limitations under the License.
                     <!-- Embedded nodes -->
                     <xsd:element ref="node" />
 
-                    <!-- Accumulators -->
-                    <xsd:element ref="counter" />
-                    <xsd:element ref="mincounter" />
-                    <xsd:element ref="maxcounter" />
-                    <xsd:element ref="windowedcounter" />
+                    <!-- Counters -->
+                    <xsd:element name="counter" type="core-accumulator-type" />
+                    <xsd:element name="min" type="core-accumulator-type" />
+                    <xsd:element name="max" type="core-accumulator-type" />
 
                     <!-- Calculators -->
 
@@ -77,44 +76,40 @@ limitations under the License.
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="counter">
-        <xsd:complexType>
-            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
-        </xsd:complexType>
-    </xsd:element>
+    <xsd:complexType name="core-accumulator-type" >
+        <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+        <xsd:attribute name="concurrency" use="optional" default="high">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="high" />
+                    <xsd:enumeration value="low" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="duration" use="optional" default="unbounded">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="unbounded" />
+                    <xsd:enumeration value="windowed" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="time-window" type="xsd:integer" use="optional" />
+        <xsd:attribute name="intervals" type="xsd:integer" use="optional" />
+        <xsd:attribute name="intervals-type" use="optional" default="seconds" >
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="seconds" />
+                    <xsd:enumeration value="nanos-powers-of-2" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="time-reporter" type="xsd:string" use="optional" />
+    </xsd:complexType>
 
-    <xsd:element name="mincounter">
-        <xsd:complexType>
-            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
-        </xsd:complexType>
-    </xsd:element>
+    <xsd:element name="custom" type="custom-type" />
 
-    <xsd:element name="maxcounter">
-        <xsd:complexType>
-            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
-        </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="windowedcounter">
-        <xsd:complexType>
-            <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
-            <xsd:attribute name="timewindow" type="xsd:integer" use="required" />
-            <xsd:attribute name="intervals" type="xsd:integer" use="required" />
-            <xsd:attribute name="intervalType" use="optional" >
-                <xsd:simpleType>
-                    <xsd:restriction base="xsd:string">
-                        <xsd:enumeration value="seconds" />
-                        <xsd:enumeration value="powersof2" />
-                    </xsd:restriction>
-                </xsd:simpleType>
-            </xsd:attribute>
-            <xsd:attribute name="timereporter" type="xsd:string" use="optional" />
-        </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="custom" type="customType" />
-
-    <xsd:complexType name="customType">
+    <xsd:complexType name="custom-type">
         <xsd:sequence>
             <xsd:choice minOccurs="0" maxOccurs="1">
                 <xsd:element ref="beans:bean"/>

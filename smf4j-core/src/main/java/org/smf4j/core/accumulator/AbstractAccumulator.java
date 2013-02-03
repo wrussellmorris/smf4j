@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,14 @@
 package org.smf4j.core.accumulator;
 
 import org.smf4j.Accumulator;
-import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public abstract class AbstractAccumulator implements Accumulator {
-
     private volatile boolean on;
     private String units;
-    protected final MutatorRegistry mutatorRegistry;
-
-    protected AbstractAccumulator(final MutatorFactory mutatorFactory) {
-        this.mutatorRegistry = new MutatorRegistry(mutatorFactory);
-    }
 
     @Override
     public final boolean isOn() {
@@ -42,14 +35,7 @@ public abstract class AbstractAccumulator implements Accumulator {
         this.on = on;
     }
 
-    public final Mutator getMutator() {
-        if(!isOn()) {
-            return Mutator.NOOP;
-        }
-
-        return mutatorRegistry.get();
-    }
-
+    @Override
     public final String getUnits() {
         return units;
     }

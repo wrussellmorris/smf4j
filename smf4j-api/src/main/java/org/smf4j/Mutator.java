@@ -21,20 +21,20 @@ package org.smf4j;
  */
 public interface Mutator {
 
-    public static final Mutator NOOP = new Mutator() {
-        public void add(long delta) {
+    public static final Mutator NOP = new Mutator() {
+        public void put(long delta) {
         }
-        public long localGet() {
+        public long combine(long other) {
             return 0L;
         }
-        public long syncGet() {
+        public long get() {
             return 0L;
         }
     };
 
-    void add(long delta);
+    void put(long delta);
 
-    long localGet();
+    long combine(long other);
 
-    long syncGet();
+    long get();
 }

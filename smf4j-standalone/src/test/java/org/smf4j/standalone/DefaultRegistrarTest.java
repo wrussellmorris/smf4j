@@ -171,29 +171,37 @@ public class DefaultRegistrarTest {
                 this.on = on;
             }
 
-            public void add(long delta) {
-            }
-
             public Mutator getMutator() {
                 return new Mutator() {
                     @Override
-                    public void add(long delta) {
+                    public void put(long delta) {
                     }
 
                     @Override
-                    public long localGet() {
+                    public long get() {
                         return 0L;
                     }
 
                     @Override
-                    public long syncGet() {
+                    public long combine(long other) {
                         return 0L;
                     }
                 };
             }
 
+            @Override
             public String getUnits() {
                 return null;
+            }
+
+            @Override
+            public long getTimeWindow() {
+                return 0L;
+            }
+
+            @Override
+            public int getIntervals() {
+                return 0;
             }
         };
     }

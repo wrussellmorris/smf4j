@@ -31,11 +31,6 @@ public class MockAccumulator implements Accumulator, Mutator {
     }
 
     @Override
-    public long get() {
-        return val;
-    }
-
-    @Override
     public boolean isOn() {
         return false;
     }
@@ -44,23 +39,38 @@ public class MockAccumulator implements Accumulator, Mutator {
     public void setOn(boolean on) {
     }
 
-    public void add(long delta) {
+    @Override
+    public void put(long delta) {
         this.val = delta;
     }
 
+    @Override
     public Mutator getMutator() {
         return this;
     }
 
-    public long localGet() {
+    @Override
+    public long get() {
         return val;
     }
 
-    public long syncGet() {
-        return val;
-    }
-
+    @Override
     public String getUnits() {
         return null;
+    }
+
+    @Override
+    public long getTimeWindow() {
+        return 0L;
+    }
+
+    @Override
+    public int getIntervals() {
+        return 0;
+    }
+
+    @Override
+    public long combine(long other) {
+        return 0L;
     }
 }

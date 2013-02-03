@@ -15,7 +15,18 @@
  */
 package org.smf4j.spring;
 
+import static org.smf4j.spring.CounterConfig.*;
+
 import java.util.List;
+import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
+import org.smf4j.core.accumulator.lc.LowConcurrencyAccumulator;
+import org.smf4j.core.accumulator.PowersOfTwoIntervalStrategy;
+import org.smf4j.core.accumulator.SecondsIntervalStrategy;
+import org.smf4j.core.accumulator.hc.UnboundedAddMutator;
+import org.smf4j.core.accumulator.hc.UnboundedMaxMutator;
+import org.smf4j.core.accumulator.hc.UnboundedMinMutator;
+import org.smf4j.core.accumulator.hc.WindowedAddMutator;
+import org.smf4j.core.accumulator.hc.WindowedMinMutator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanNameReference;
@@ -29,10 +40,6 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.smf4j.core.accumulator.Counter;
-import org.smf4j.core.accumulator.MinCounter;
-import org.smf4j.core.accumulator.MaxCounter;
-import org.smf4j.core.accumulator.WindowedCounter;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 
@@ -46,9 +53,8 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
 
     public static final String NODE_TAG = "node";
     public static final String COUNTER_TAG = "counter";
-    public static final String MINCOUNTER_TAG = "mincounter";
-    public static final String MAXCOUNTER_TAG = "maxcounter";
-    public static final String WINDOWEDCOUNTER_TAG = "windowedcounter";
+    public static final String MIN_TAG = "min";
+    public static final String MAX_TAG = "max";
     public static final String CUSTOM_TAG = "custom";
 
     public static final String CHILD_ATTR = "child";
@@ -131,13 +137,17 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
             if(NODE_TAG.equals(childTagName)) {
                 parseNode(context, owningName, child, nodeReferences);
             } else if(COUNTER_TAG.equals(childTagName)) {
-                childProxyId = parseCounter(context, child);
-            } else if(MINCOUNTER_TAG.equals(childTagName)) {
-                childProxyId = parseMinOrMaxCounter(context, child, false);
-            } else if(MAXCOUNTER_TAG.equals(childTagName)) {
-                childProxyId = parseMinOrMaxCounter(context, child, true);
-            } else if(WINDOWEDCOUNTER_TAG.equals(childTagName)) {
-                childProxyId = parseWindowedCounter(context, child);
+                CounterConfig config = new CounterConfig(CounterType.ADD,
+                        child);
+                childProxyId = createCounter(context, child, config);
+            } else if(MIN_TAG.equals(childTagName)) {
+                CounterConfig config = new CounterConfig(CounterType.MIN,
+                        child);
+                childProxyId = createCounter(context, child, config);
+            } else if(MAX_TAG.equals(childTagName)) {
+                CounterConfig config = new CounterConfig(CounterType.MAX,
+                        child);
+                childProxyId = createCounter(context, child, config);
             } else if(CUSTOM_TAG.equals(childTagName)) {
                 childProxyId = parseCustom(context, child,
                         builder.getRawBeanDefinition());
@@ -160,12 +170,67 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
         nodeReferences.add(new RuntimeBeanReference(nodeId));
     }
 
-    protected String parseCounter(ParserContext context, Element element) {
+    private String createCounter(ParserContext context, Element element,
+            CounterConfig config) {
         String name = getName(context, element);
 
+        if(config.getConcurrencyType() == ConcurrencyType.UNKNOWN) {
+            context.getReaderContext().error("Unknown concurrency type.",
+                    context.extractSource(element));
+            return null;
+        }
+        if(config.getDurationType() == DurationType.UNKNOWN) {
+            context.getReaderContext().error("Unknown duration type.",
+                    context.extractSource(element));
+            return null;
+        }
+        if(config.getIntervalsType() == IntervalsType.UNKNOWN) {
+            context.getReaderContext().error("Unknown intervals type.",
+                    context.extractSource(element));
+            return null;
+        }
+
+        // Create bean definition for the mutator factory
+        String mutatorFactoryId;
+        switch(config.getDurationType()) {
+            case NA:
+            case UNBOUNDED:
+                mutatorFactoryId = createUnboundedMutatorFactory(context,
+                        element, config);
+                break;
+            case WINDOWED:
+                mutatorFactoryId = createWindowedMutatorFactory(context,
+                        element, config);
+                break;
+            default:
+                context.getReaderContext().error("Unexpected duration type.",
+                        context.extractSource(element));
+                return null;
+        }
+
+        if(mutatorFactoryId == null) {
+            // Something went wrong creating the factory
+            return null;
+        }
+
         // Create bean definition for accumulator
+        Class<?> accumulatorClass;
+        switch(config.getConcurrencyType()) {
+            case HIGH:
+            case NA:
+                accumulatorClass = HighConcurrencyAccumulator.class;
+                break;
+            case LOW:
+                accumulatorClass = LowConcurrencyAccumulator.class;
+                break;
+            default:
+                context.getReaderContext().error("Unexpected concurrency type.",
+                        context.extractSource(element));
+                return null;
+        }
         BeanDefinitionBuilder accBdb =
-                BeanDefinitionBuilder.genericBeanDefinition(Counter.class);
+                BeanDefinitionBuilder.genericBeanDefinition(accumulatorClass);
+        accBdb.addConstructorArgReference(mutatorFactoryId);
         String accBeanId = context.getReaderContext()
                 .registerWithGeneratedName(accBdb.getBeanDefinition());
 
@@ -178,77 +243,97 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
                 .registerWithGeneratedName(accProxyBdb.getBeanDefinition());
     }
 
-    protected String parseMinOrMaxCounter(ParserContext context,
-            Element element, boolean max) {
-        String name = getName(context, element);
-
-        // Create bean definition for accumulator
-        BeanDefinitionBuilder accBdb = BeanDefinitionBuilder
-                .genericBeanDefinition(max ?
-                MaxCounter.class : MinCounter.class);
-        accBdb.addPropertyValue(MAX_ATTR, max);
-        String accBeanId = context.getReaderContext()
-                .registerWithGeneratedName(accBdb.getBeanDefinition());
-
-        // Create proxy that carries name
-        BeanDefinitionBuilder accProxyBdb = BeanDefinitionBuilder.
-            genericBeanDefinition(RegistryNodeChildProxy.class);
-        accProxyBdb.addPropertyValue(NAME_ATTR, name);
-        accProxyBdb.addPropertyReference(CHILD_ATTR, accBeanId);
-        return context.getReaderContext()
-                .registerWithGeneratedName(accProxyBdb.getBeanDefinition());
+    private String createUnboundedMutatorFactory(
+            ParserContext context, Element element, CounterConfig config) {
+        Class<?> mutatorFactoryClass;
+        // We need to create unbounded mutators
+        switch(config.getCounterType()) {
+            case ADD:
+                mutatorFactoryClass = UnboundedAddMutator.Factory.class;
+                break;
+            case MIN:
+                mutatorFactoryClass = UnboundedMinMutator.Factory.class;
+                break;
+            case MAX:
+                mutatorFactoryClass = UnboundedMaxMutator.Factory.class;
+                break;
+            default:
+                context.getReaderContext().error(
+                        "Unexpected counter type.",
+                        context.extractSource(element));
+                return null;
+        }
+        BeanDefinitionBuilder mutatorFactoryBdb = BeanDefinitionBuilder
+                .genericBeanDefinition(mutatorFactoryClass);
+        return context.getReaderContext().registerWithGeneratedName(
+                mutatorFactoryBdb.getBeanDefinition());
     }
 
-    protected String parseWindowedCounter(ParserContext context,
-            Element element) {
-        String name = getName(context, element);
+    private String createWindowedMutatorFactory(
+            ParserContext context, Element element, CounterConfig config) {
 
-        // Create bean definition for accumulator
-        BeanDefinitionBuilder accBdb = BeanDefinitionBuilder
-                .genericBeanDefinition(WindowedCounter.class);
-
-        // Parse time window parameters
-        String timewindow = element.getAttribute(TIMEWINDOW_ATTR);
-        if(!StringUtils.hasText(timewindow)) {
-            context.getReaderContext().error(
-                    "timewindow is required.",
-                    element);
+        // Find the mutator factory class for this type of windowed counter
+        Class<?> mutatorFactoryClass;
+        switch(config.getCounterType()) {
+            case ADD:
+                mutatorFactoryClass = WindowedAddMutator.Factory.class;
+                break;
+            case MIN:
+                mutatorFactoryClass = WindowedMinMutator.Factory.class;
+                break;
+            case MAX:
+                mutatorFactoryClass = UnboundedMaxMutator.Factory.class;
+                break;
+            default:
+                context.getReaderContext().error("Unexpected counter type.",
+                        context.extractSource(element));
+                return null;
         }
 
-        String intervals = element.getAttribute(INTERVALS_ATTR);
-        if(!StringUtils.hasText(intervals)) {
-            context.getReaderContext().error(
-                    "intervals is required.",
-                    element);
+        // Find the interval strategy class for this kind of interval
+        Class<?> intervalStrategyClass;
+        switch(config.getIntervalsType()) {
+            case SECONDS:
+            case NA: // Seconds is the default
+                intervalStrategyClass = SecondsIntervalStrategy.class;
+                break;
+            case POWERSOFTWO:
+                intervalStrategyClass = PowersOfTwoIntervalStrategy.class;
+                break;
+            default:
+                context.getReaderContext().error("Unexpected 'intervals' type.",
+                        context.extractSource(element));
+                return null;
         }
 
-        accBdb.addConstructorArgValue(timewindow);
-        accBdb.addConstructorArgValue(intervals);
-
-        String interval = element.getAttribute(INTERVAL_ATTR);
-        if(StringUtils.hasText(interval)) {
-            if(interval.equals(INTERVAL_POWERSOF2)) {
-                accBdb.addConstructorArgValue(true);
-            } else if(interval.equals(INTERVAL_SECONDS)) {
-                accBdb.addConstructorArgValue(false);
-            }
+        // Make sure the timewindow and interval are specified correctly
+        if(config.getTimeWindow() == null) {
+            context.getReaderContext().error("'windowed' counters must "
+                    + "specify a valid 'time-window'.",
+                    context.extractSource(element));
+            return null;
+        }
+        if(config.getNumIntervals() == null) {
+            context.getReaderContext().error("'windowed' counters must "
+                    + "specify an 'intervals'.",
+                    context.extractSource(element));
+            return null;
         }
 
-        String timeReporter = element.getAttribute(TIMEREPORTER_ATTR);
-        if(StringUtils.hasText(timeReporter)) {
-            accBdb.addConstructorArgReference(timeReporter);
-        }
+        // Create a strategy instance for the strategy selected
+        BeanDefinitionBuilder strategyBdb = BeanDefinitionBuilder
+                .genericBeanDefinition(intervalStrategyClass);
+        strategyBdb.addConstructorArgValue(config.getTimeWindow());
+        strategyBdb.addConstructorArgValue(config.getNumIntervals());
+        String strategyBeanId = context.getReaderContext()
+                .registerWithGeneratedName(strategyBdb.getBeanDefinition());
 
-        String accBeanId = context.getReaderContext()
-                .registerWithGeneratedName(accBdb.getBeanDefinition());
-
-        // Create proxy that carries name
-        BeanDefinitionBuilder accProxyBdb = BeanDefinitionBuilder.
-            genericBeanDefinition(RegistryNodeChildProxy.class);
-        accProxyBdb.addPropertyValue(NAME_ATTR, name);
-        accProxyBdb.addPropertyReference(CHILD_ATTR, accBeanId);
-        return context.getReaderContext()
-                .registerWithGeneratedName(accProxyBdb.getBeanDefinition());
+        // Create a mutator factory referring to the strategy
+        BeanDefinitionBuilder mutatorFactoryBdb = BeanDefinitionBuilder
+                .genericBeanDefinition(mutatorFactoryClass);
+        mutatorFactoryBdb.addConstructorArgReference(strategyBeanId);
+        return context.getReaderContext().registerWithGeneratedName(
+                mutatorFactoryBdb.getBeanDefinition());
     }
 
     protected String parseCustom(ParserContext context, Element element,
@@ -344,4 +429,5 @@ public class RegistrarBeanDefinitionParser extends AbstractSingleBeanDefinitionP
         }
         return id;
     }
+
 }
