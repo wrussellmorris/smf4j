@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.spi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import org.smf4j.helpers.NodeGlobMatcher;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class DefaultRegistrar implements Registrar {
+class DefaultRegistrar implements Registrar {
     private static final Pattern validPartChars =
             Pattern.compile("[a-zA-Z0-9_]+");
     private volatile DefaultRegistryNode root;
@@ -38,14 +38,9 @@ public class DefaultRegistrar implements Registrar {
     private final Logger log = LoggerFactory.getLogger(DefaultRegistrar.class);
     final ReentrantLock stateLock;
 
-    public DefaultRegistrar() {
+    DefaultRegistrar() {
         this.stateLock = new ReentrantLock();
         this.root = new DefaultRegistryNode(this, null, "");
-    }
-
-    @Override
-    public void clear() {
-        root = new DefaultRegistryNode(this, null, "");
     }
 
     @Override
@@ -113,10 +108,10 @@ public class DefaultRegistrar implements Registrar {
         }
 
         if(parts.length == 1 && parts[0].length() == 0) {
-            return root;
+            return getRootNode();
         }
 
-        DefaultRegistryNode cur = root;
+        DefaultRegistryNode cur = (DefaultRegistryNode)getRootNode();
         for(String part : parts) {
             DefaultRegistryNode node = (DefaultRegistryNode)
                     cur.getChildNode(part);
@@ -141,7 +136,7 @@ public class DefaultRegistrar implements Registrar {
     public Iterable<RegistryNode> match(String globPattern) {
         final ArrayList<RegistryNode> list = new ArrayList<RegistryNode>();
         final NodeGlobMatcher matcher = new NodeGlobMatcher(globPattern);
-        dfs(root, new MatcherCall(list, matcher));
+        dfs(getRootNode(), new MatcherCall(list, matcher));
         return list;
     }
 

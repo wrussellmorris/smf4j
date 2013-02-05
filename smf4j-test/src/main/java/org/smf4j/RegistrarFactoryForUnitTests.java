@@ -6,6 +6,7 @@ package org.smf4j;
 
 import org.smf4j.impl.StaticRegistrarBinderForUnitTests;
 import org.smf4j.spi.RegistrarProvider;
+import org.smf4j.spi.TestableRegistrar;
 
 /**
  *
@@ -21,7 +22,7 @@ public class RegistrarFactoryForUnitTests {
     }
 
     public static void reset(boolean rootNodeOn) {
-        Registrar r = getRegistrar();
+        TestableRegistrar r = (TestableRegistrar)getRegistrar();
         r.clear();
         r.getRootNode().setOn(rootNodeOn);
     }

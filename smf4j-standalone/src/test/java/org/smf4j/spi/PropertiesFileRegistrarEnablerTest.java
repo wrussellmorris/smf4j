@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.standalone;
+package org.smf4j.spi;
 
+import org.smf4j.spi.PropertiesFileRegistrarEnabler;
 import org.smf4j.Registrar;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;

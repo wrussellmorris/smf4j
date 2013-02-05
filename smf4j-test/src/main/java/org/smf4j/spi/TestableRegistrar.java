@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.impl;
+package org.smf4j.spi;
 
-import org.smf4j.spi.ThreadLocalRegistrarProvider;
-import org.smf4j.spi.RegistrarProvider;
+import org.smf4j.RegistryNode;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class StaticRegistrarBinderForUnitTests {
+public class TestableRegistrar extends DefaultRegistrar {
+    private volatile DefaultRegistryNode root;
 
-    private static final StaticRegistrarBinderForUnitTests instance =
-            new StaticRegistrarBinderForUnitTests();
-
-    private static final RegistrarProvider singleton =
-            new ThreadLocalRegistrarProvider();
-
-    private StaticRegistrarBinderForUnitTests() {
+    TestableRegistrar() {
+        root = new DefaultRegistryNode(this, null, "");
     }
 
-    public static StaticRegistrarBinderForUnitTests getSingleton() {
-        return instance;
+    public void clear() {
+        root = new DefaultRegistryNode(this, null, "");
     }
 
-    public Object getRegistrarProvider() {
-        return singleton;
+    @Override
+    public RegistryNode getRootNode() {
+        return root;
     }
 }

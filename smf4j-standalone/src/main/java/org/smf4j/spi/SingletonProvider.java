@@ -17,7 +17,6 @@ package org.smf4j.spi;
 
 import java.util.concurrent.atomic.AtomicReference;
 import org.smf4j.Registrar;
-import org.smf4j.standalone.DefaultRegistrar;
 
 /**
  *

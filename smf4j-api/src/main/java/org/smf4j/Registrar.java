@@ -25,8 +25,6 @@ public interface Registrar {
 
     RegistryNode getRootNode();
 
-    void clear();
-
     Iterable<RegistryNode> match(String globPattern);
 
     void setOn(String fullNodeName, boolean on);

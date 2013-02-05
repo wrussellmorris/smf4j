@@ -2,11 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.smf4j.impl;
+package org.smf4j.spi;
 
 import org.smf4j.Registrar;
-import org.smf4j.spi.RegistrarProvider;
-import org.smf4j.standalone.DefaultRegistrar;
 
 /**
  *
@@ -14,11 +12,11 @@ import org.smf4j.standalone.DefaultRegistrar;
  */
 public class ThreadLocalRegistrarProvider implements RegistrarProvider{
 
-    private static final ThreadLocal<Registrar> registrars =
+    private final ThreadLocal<Registrar> registrars =
             new ThreadLocal<Registrar>() {
                 @Override
                 protected Registrar initialValue() {
-                    return new DefaultRegistrar();
+                    return new TestableRegistrar();
                 }
             };
 
