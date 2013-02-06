@@ -23,8 +23,10 @@ public final class Stopwatch {
     static final int START = 0;
     static final int LAP = 1;
 
-    private final TimeSliceStack slices = new TimeSliceStack();
     private final TimeReporter timeReporter;
+    private long total = 0L;
+    private long laps = 0L;
+    private long mark = 0L;
 
     public Stopwatch() {
         this(SystemNanosTimeReporter.INSTANCE);
@@ -35,28 +37,56 @@ public final class Stopwatch {
     }
 
     public void start() {
-        slices.push(START, timeReporter.nanos());
+        mark = timeReporter.nanos();
+        total = 0L;
+        laps = 0L;
     }
 
     public long lap() {
-        long nanos = timeReporter.nanos();
-        TimeSliceStack.TimeSlice last = slices.peek();
-        if(last == null) {
+        if(mark == 0L) {
             return 0L;
         }
-        slices.push(LAP, nanos);
-        return nanos - last.value;
+
+        long nanos = timeReporter.nanos();
+        long delta = nanos - mark;
+        mark = nanos;
+        total += delta;
+        laps++;
+        return delta;
     }
 
-    public long end() {
-        long nanos = timeReporter.nanos();
-        TimeSliceStack.TimeSlice slice;
-        do {
-            slice = slices.pop();
-            if(slice != null && slice.state == START) {
-                return nanos - slice.value;
-            }
-        } while(slice != null);
-        return 0L;
+    public long stop() {
+        if(mark == 0L) {
+            return 0L;
+        }
+
+        long delta = timeReporter.nanos() - mark;
+        total += delta;
+        laps++;
+        mark = 0L;
+        return delta;
+    }
+
+    public long pause() {
+        if(mark == 0L) {
+            return 0L;
+        }
+
+        long delta = timeReporter.nanos() - mark;
+        total += delta;
+        mark = 0L;
+        return delta;
+    }
+
+    public void resume() {
+        mark = timeReporter.nanos();
+    }
+
+    public long getLaps() {
+        return laps;
+    }
+
+    public long getTotal() {
+        return total;
     }
 }

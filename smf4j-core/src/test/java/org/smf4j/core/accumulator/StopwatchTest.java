@@ -36,43 +36,53 @@ public class StopwatchTest {
 
     @Test
     public void startStopTest() {
-        t.set(100);
-        w.start();
-        t.set(500);
-        assertEquals(400L, w.end());
+        t.set(100); w.start();
+        t.set(500); assertEquals(400L, w.stop());
+
+        assertEquals(1L, w.getLaps());
+        assertEquals(400L, w.getTotal());
     }
 
     @Test
     public void startLapsStopTest() {
-        t.set(100);
-        w.start();
-        t.set(200);
-        assertEquals(100L, w.lap());
-        t.set(500);
-        assertEquals(300L, w.lap());
-        t.set(600);
-        assertEquals(500L, w.end());
+        t.set(100); w.start();
+        t.set(200); assertEquals(100L, w.lap());
+        t.set(500); assertEquals(300L, w.lap());
+        t.set(600); assertEquals(100L, w.stop());
+
+        assertEquals(3L, w.getLaps());
+        assertEquals(500L, w.getTotal());
     }
 
     @Test
     public void startLapsStopStartStopTest() {
-        t.set(100);
-        w.start();
-        t.set(200);
-        assertEquals(100L, w.lap());
-        t.set(500);
-        assertEquals(300L, w.lap());
-        t.set(600);
-        assertEquals(500L, w.end());
+        t.set(100); w.start();
+        t.set(200); assertEquals(100L, w.lap());
+        t.set(500); assertEquals(300L, w.lap());
+        t.set(600); assertEquals(100L, w.stop());
 
-        t.set(1000);
-        w.start();
-        t.set(1030);
-        assertEquals(30L, w.lap());
-        t.set(1100);
-        assertEquals(70L, w.lap());
-        t.set(1200);
-        assertEquals(200L, w.end());
+        assertEquals(3L, w.getLaps());
+        assertEquals(500L, w.getTotal());
+
+        t.set(1000); w.start();
+        t.set(1030); assertEquals(30L, w.lap());
+        t.set(1100); assertEquals(70L, w.lap());
+        t.set(1200); assertEquals(100L, w.stop());
+
+        assertEquals(3L, w.getLaps());
+        assertEquals(200L, w.getTotal());
+    }
+
+    @Test
+    public void startLapPauseResumeLapStopTest() {
+        t.set(100); w.start();
+        t.set(200); assertEquals(100L, w.lap());
+        t.set(300); assertEquals(100L, w.pause());
+        t.set(500); w.resume();
+        t.set(600); assertEquals(100L, w.stop());
+
+        assertEquals(2L, w.getLaps());
+        assertEquals(300L, w.getTotal());
     }
 
     @Test
@@ -82,7 +92,7 @@ public class StopwatchTest {
 
     @Test
     public void badEnd() {
-        assertEquals(0L, w.end());
+        assertEquals(0L, w.stop());
     }
 
 }
