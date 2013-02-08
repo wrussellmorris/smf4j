@@ -22,17 +22,17 @@ import org.smf4j.Accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class WindowNormalizer extends AbstractCalculator {
+public class Normalizer extends AbstractCalculator {
 
-    private String windowedCounter;
+    private String accumulator;
     private Frequency frequency = Frequency.SECONDS;
 
     @Override
     public Double calculate(Map<String, Long> values,
         Map<String, Accumulator> accumulators) {
 
-        Long val = values.get(getWindowedCounter());
-        Accumulator a = accumulators.get(getWindowedCounter());
+        Long val = values.get(getAccumulator());
+        Accumulator a = accumulators.get(getAccumulator());
         if(a == null || val == null) {
             return 0.0d;
         }
@@ -45,12 +45,12 @@ public class WindowNormalizer extends AbstractCalculator {
         return 0.0d;
     }
 
-    public String getWindowedCounter() {
-        return windowedCounter;
+    public String getAccumulator() {
+        return accumulator;
     }
 
-    public void setWindowedCounter(String windowedCounter) {
-        this.windowedCounter = windowedCounter;
+    public void setAccumulator(String accumulator) {
+        this.accumulator = accumulator;
     }
 
     public Frequency getFrequency() {
@@ -65,29 +65,6 @@ public class WindowNormalizer extends AbstractCalculator {
 
     @Override
     public String getUnits() {
-        return frequency.units;
-    }
-
-    public enum Frequency {
-        NANOS       ("1/ns", 1),
-        MICROS      ("1/us", NANOS.getNanos() * 1000),
-        MILLIS      ("1/ms", MICROS.getNanos() * 1000L),
-        SECONDS     ("1/s", MILLIS.getNanos() * 1000L),
-        MINUTES     ("1/m", SECONDS.getNanos() * 60L),
-        HOURS       ("1/h", MINUTES.getNanos() * 60L),
-        DAYS        ("1/d", HOURS.getNanos() * 24L),
-        WEEKS       ("1/w", DAYS.getNanos() * 7L);
-
-        private final String units;
-        private final long nanos;
-
-        Frequency(String units, long nanos) {
-            this.nanos = nanos;
-            this.units = units;
-        }
-
-        public long getNanos() {
-            return nanos;
-        }
+        return frequency.getUnits();
     }
 }

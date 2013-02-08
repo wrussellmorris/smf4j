@@ -35,7 +35,7 @@ limitations under the License.
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:attributeGroup name="acc-or-calc-name-attribute">
+    <xsd:attributeGroup name="acc-or-calc-attributes">
         <xsd:attribute name="name" use="required">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
@@ -43,6 +43,7 @@ limitations under the License.
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
+        <xsd:attribute name="units" type="xsd:string" use="optional" />
     </xsd:attributeGroup>
 
     <xsd:attributeGroup name="node-name-attribute">
@@ -60,19 +61,22 @@ limitations under the License.
     <xsd:complexType name="node-type" >
         <xsd:sequence>
             <xsd:choice minOccurs="0" maxOccurs="unbounded">
-                <!-- Embedded nodes -->
+                <!-- Embedded node and node template refs -->
                 <xsd:element name="node" type="node-type" />
                 <xsd:element name="node-template" type="node-template-ref-type" />
 
-                <!-- Counters -->
+                <!-- Core Accumulators -->
                 <xsd:element name="counter" type="core-accumulator-type" />
                 <xsd:element name="min" type="core-accumulator-type" />
                 <xsd:element name="max" type="core-accumulator-type" />
 
-                <!-- Calculators -->
+                <!-- Core Calculators -->
+                <xsd:element name="normalize" type="core-normalize-type" />
+                <xsd:element name="ratio" type="core-ratio-type" />
+                <xsd:element name="range-group" type="core-range-group-type" />
 
                 <!-- Random Beans -->
-                <xsd:element ref="custom" />
+                <xsd:element name="custom" type="custom-type" />
             </xsd:choice>
         </xsd:sequence>
         <xsd:attributeGroup ref="node-name-attribute" />
@@ -91,7 +95,7 @@ limitations under the License.
     </xsd:complexType>
 
     <xsd:complexType name="core-accumulator-type" >
-        <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+        <xsd:attributeGroup ref="acc-or-calc-attributes" />
         <xsd:attribute name="concurrency" use="optional" default="high">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
@@ -121,8 +125,6 @@ limitations under the License.
         <xsd:attribute name="time-reporter" type="xsd:string" use="optional" />
     </xsd:complexType>
 
-    <xsd:element name="custom" type="custom-type" />
-
     <xsd:complexType name="custom-type">
         <xsd:sequence>
             <xsd:choice minOccurs="0" maxOccurs="1">
@@ -131,9 +133,52 @@ limitations under the License.
                 <xsd:element ref="beans:idref"/>
             </xsd:choice>
         </xsd:sequence>
-        <xsd:attributeGroup ref="acc-or-calc-name-attribute" />
+        <xsd:attributeGroup ref="acc-or-calc-attributes" />
         <xsd:attribute name="ref" type="xsd:string" />
     </xsd:complexType>
+
+    <xsd:complexType name="core-normalize-type" >
+        <xsd:attributeGroup ref="acc-or-calc-attributes" />
+        <xsd:attribute name="accumulator" type="xsd:string" use="required" />
+        <xsd:attribute name="frequency" type="core-frequency-type" use="optional" default="seconds" />
+    </xsd:complexType>
+
+    <xsd:complexType name="core-ratio-type" >
+        <xsd:attributeGroup ref="acc-or-calc-attributes" />
+        <xsd:attribute name="numerator" type="xsd:string" use="required" />
+        <xsd:attribute name="denominator" type="xsd:string" use="required" />
+    </xsd:complexType>
+
+    <xsd:complexType name="core-range-group-type" >
+        <xsd:attributeGroup ref="acc-or-calc-attributes" />
+        <xsd:attribute name="accumulator" type="xsd:string" use="required" />
+        <xsd:attribute name="ranges" type="xsd:string" use="optional" />
+        <xsd:attribute name="suffixes" type="xsd:string" use="optional" />
+        <xsd:attribute name="threshold" use="optional" default="0.85" >
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                    <xsd:maxInclusive value="1.0" />
+                    <xsd:minExclusive value="0.0" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="normalize" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="frequency" type="core-frequency-type" use="optional" default="seconds" />
+        <xsd:attribute name="format" type="xsd:string" use="optional" />
+    </xsd:complexType>
+
+    <xsd:simpleType name="core-frequency-type">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="nanos" />
+            <xsd:enumeration value="micros" />
+            <xsd:enumeration value="millis" />
+            <xsd:enumeration value="seconds" />
+            <xsd:enumeration value="minutes" />
+            <xsd:enumeration value="hours" />
+            <xsd:enumeration value="days" />
+            <xsd:enumeration value="weeks" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
     <xsd:element name="lookup">
         <xsd:complexType>

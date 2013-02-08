@@ -20,7 +20,8 @@ import org.smf4j.Mutator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
-import org.smf4j.core.calculator.WindowNormalizer;
+import org.smf4j.core.calculator.Frequency;
+import org.smf4j.core.calculator.Normalizer;
 
 /**
  *
@@ -39,9 +40,9 @@ public class AccTestRunner extends TestRunner {
         RegistryNode node = r.getNode(testName);
         node.register("accumulator", accumulator);
         if(accumulator.getTimeWindow() > 0) {
-            WindowNormalizer wn = new WindowNormalizer();
-            wn.setFrequency(WindowNormalizer.Frequency.SECONDS);
-            wn.setWindowedCounter("accumulator");
+            Normalizer wn = new Normalizer();
+            wn.setFrequency(Frequency.SECONDS);
+            wn.setAccumulator("accumulator");
             node.register("normalized", wn);
         }
     }

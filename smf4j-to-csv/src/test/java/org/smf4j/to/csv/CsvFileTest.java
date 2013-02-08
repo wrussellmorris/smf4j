@@ -37,7 +37,8 @@ import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
 import org.smf4j.core.accumulator.MutatorFactory;
 import org.smf4j.core.accumulator.SecondsIntervalStrategy;
 import org.smf4j.core.accumulator.hc.WindowedAddMutator;
-import org.smf4j.core.calculator.WindowNormalizer;
+import org.smf4j.core.calculator.Frequency;
+import org.smf4j.core.calculator.Normalizer;
 
 /**
  *
@@ -230,14 +231,14 @@ public class CsvFileTest {
         node.register("x", new HighConcurrencyAccumulator(mf));
         node.register("y", new HighConcurrencyAccumulator(mf));
 
-        WindowNormalizer x_per_second = new WindowNormalizer();
-        x_per_second.setWindowedCounter("x");
-        x_per_second.setFrequency(WindowNormalizer.Frequency.SECONDS);
+        Normalizer x_per_second = new Normalizer();
+        x_per_second.setAccumulator("x");
+        x_per_second.setFrequency(Frequency.SECONDS);
         node.register("x_per_second", x_per_second);
 
-        WindowNormalizer y_per_second = new WindowNormalizer();
-        y_per_second.setWindowedCounter("y");
-        y_per_second.setFrequency(WindowNormalizer.Frequency.SECONDS);
+        Normalizer y_per_second = new Normalizer();
+        y_per_second.setAccumulator("y");
+        y_per_second.setFrequency(Frequency.SECONDS);
         node.register("y_per_second", y_per_second);
     }
 

@@ -23,11 +23,16 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.smf4j.Accumulator;
+import org.smf4j.Calculator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactoryForUnitTests;
 import org.smf4j.RegistryNode;
 import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
 import org.smf4j.core.accumulator.lc.LowConcurrencyAccumulator;
+import org.smf4j.core.calculator.Frequency;
+import org.smf4j.core.calculator.Normalizer;
+import org.smf4j.core.calculator.RangeGroupCalculator;
+import org.smf4j.core.calculator.Ratio;
 
 /**
  *
@@ -361,6 +366,43 @@ public class RegistrarTest {
         Accumulator idrefTag = foobar.getAccumulator("idrefTag");
         assertNotNull(idrefTag);
         assertSame(counter, idrefTag);
+    }
+
+    @Test
+    public void calculators()
+    throws Exception {
+        ApplicationContext context = loadContext("registrar-calculators.xml");
+        assertNotNull(context);
+
+        Registrar r = context.getBean("registrar-1", Registrar.class);
+        assertNotNull(r);
+
+        RegistryNode foobar = r.getNode("foo.bar");
+        assertNotNull(foobar);
+
+        Accumulator test = foobar.getAccumulator("test");
+        assertNotNull(test);
+
+        Normalizer normalize = (Normalizer)foobar.getCalculator("normalize");
+        assertNotNull(normalize);
+        assertEquals("test", normalize.getAccumulator());
+        assertEquals(Frequency.MILLIS, normalize.getFrequency());
+
+        Ratio ratio = (Ratio)foobar.getCalculator("ratio");
+        assertNotNull(ratio);
+        assertEquals("units", ratio.getUnits());
+        assertEquals("test", ratio.getNumerator());
+        assertEquals("test", ratio.getDenominator());
+
+        RangeGroupCalculator rg = (RangeGroupCalculator)
+                foobar.getCalculator("rangegroup");
+        assertNotNull(rg);
+        assertEquals("test", rg.getAccumulator());
+        assertEquals(0.75d, rg.getThreshold(), 0.00001d);
+        assertEquals("units", rg.getUnits());
+        assertTrue(rg.isNormalize());
+        assertEquals(Frequency.MILLIS, rg.getFrequency());
+        assertEquals("%.3f%s", rg.getFormatString());
     }
 
     private ApplicationContext loadContext(String path) {

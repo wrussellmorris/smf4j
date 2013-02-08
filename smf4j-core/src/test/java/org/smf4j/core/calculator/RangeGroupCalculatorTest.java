@@ -113,8 +113,8 @@ public class RangeGroupCalculatorTest {
 
     private RangeGroupCalculator.Grouping createGroup(String label, long mult) {
         RangeGroupCalculator.Grouping g = new RangeGroupCalculator.Grouping();
-        g.setLabel(label);
-        g.setMultiple(mult);
+        g.setSuffix(label);
+        g.setRange(mult);
         return g;
     }
 }

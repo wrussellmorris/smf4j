@@ -27,11 +27,11 @@ import org.smf4j.Accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class TestWindowNormalizer {
+public class TestNormalizer {
 
     private static final double epsilon = 0.0000001d;
     private MockAccumulator a;
-    private WindowNormalizer n;
+    private Normalizer n;
     private Map<String, Long> vals;
     private Map<String, Accumulator> as;
 
@@ -40,8 +40,8 @@ public class TestWindowNormalizer {
         a = new MockAccumulator();
         a.setTimeWindow(1000000000L);
         a.setIntervals(1);
-        n = new WindowNormalizer();
-        n.setWindowedCounter("a");
+        n = new Normalizer();
+        n.setAccumulator("a");
         as = new HashMap<String, Accumulator>();
         as.put("a", a);
         vals = new HashMap<String, Long>();
@@ -53,7 +53,7 @@ public class TestWindowNormalizer {
 
     @Test
     public void nanos() {
-        n.setFrequency(WindowNormalizer.Frequency.NANOS);
+        n.setFrequency(Frequency.NANOS);
 
         set(0L);
         assertEquals(0.0d, n.calculate(vals, as), epsilon);
@@ -70,7 +70,7 @@ public class TestWindowNormalizer {
 
     @Test
     public void millis() {
-        n.setFrequency(WindowNormalizer.Frequency.MILLIS);
+        n.setFrequency(Frequency.MILLIS);
 
         set(0L);
         assertEquals(0.0d, n.calculate(vals, as), epsilon);
@@ -88,7 +88,7 @@ public class TestWindowNormalizer {
 
     @Test
     public void seconds() {
-        n.setFrequency(WindowNormalizer.Frequency.SECONDS);
+        n.setFrequency(Frequency.SECONDS);
 
         set(0L);
         assertEquals(0.0d, n.calculate(vals, as), epsilon);
@@ -105,7 +105,7 @@ public class TestWindowNormalizer {
 
     @Test
     public void minutes() {
-        n.setFrequency(WindowNormalizer.Frequency.MINUTES);
+        n.setFrequency(Frequency.MINUTES);
 
         set(0L);
         assertEquals(0.0d, n.calculate(vals, as), epsilon);
@@ -122,7 +122,7 @@ public class TestWindowNormalizer {
 
     @Test
     public void hours() {
-        n.setFrequency(WindowNormalizer.Frequency.HOURS);
+        n.setFrequency(Frequency.HOURS);
 
         set(0L);
         assertEquals(0.0d, n.calculate(vals, as), epsilon);
@@ -139,7 +139,7 @@ public class TestWindowNormalizer {
 
     @Test
     public void days() {
-        n.setFrequency(WindowNormalizer.Frequency.DAYS);
+        n.setFrequency(Frequency.DAYS);
 
         set(0L);
         assertEquals(0.0d, n.calculate(vals, as), epsilon);
@@ -156,7 +156,7 @@ public class TestWindowNormalizer {
 
     @Test
     public void weeks() {
-        n.setFrequency(WindowNormalizer.Frequency.WEEKS);
+        n.setFrequency(Frequency.WEEKS);
 
         set(0L);
         assertEquals(0.0d, n.calculate(vals, as), epsilon);

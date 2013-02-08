@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:smf4j="http://www.smf4j.org/schema/spring/smf4j"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.smf4j.org/schema/spring/smf4j http://www.smf4j.org/schema/spring/smf4j-spring-1.0.xsd
+">
+
+    <smf4j:registrar id="registrar-1">
+        <smf4j:node name="foo.bar">
+            <smf4j:counter name="test" />
+
+            <smf4j:normalize name="normalize" units="units" accumulator="test" frequency="millis" />
+            <smf4j:ratio name="ratio" units="units" numerator="test" denominator="test" />
+            <smf4j:range-group name="rangegroup" units="units" ranges="1,1000,1000000" suffixes="B,KB,MB" accumulator="test" normalize="true" frequency="millis" format="%.3f%s" threshold="0.75" />
+        </smf4j:node>
+    </smf4j:registrar>
+
+</beans>

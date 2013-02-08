@@ -26,6 +26,10 @@ import org.smf4j.core.accumulator.hc.WindowedAddMutator;
 import org.smf4j.core.accumulator.hc.WindowedMaxMutator;
 import org.smf4j.core.accumulator.hc.WindowedMinMutator;
 import org.smf4j.core.accumulator.lc.LowConcurrencyAccumulator;
+import org.smf4j.core.calculator.Frequency;
+import org.smf4j.core.calculator.Normalizer;
+import org.smf4j.core.calculator.RangeGroupCalculator;
+import org.smf4j.core.calculator.Ratio;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanNameReference;
@@ -54,6 +58,9 @@ public class RegistryNodeTemplateDefinitionParser extends
     public static final String COUNTER_TAG = "counter";
     public static final String MIN_TAG = "min";
     public static final String MAX_TAG = "max";
+    public static final String NORMALIZE_TAG = "normalize";
+    public static final String RATIO_TAG = "ratio";
+    public static final String RANGEGROUP_TAG = "range-group";
     public static final String CUSTOM_TAG = "custom";
 
     public static final String CHILD_ATTR = "child";
@@ -62,6 +69,20 @@ public class RegistryNodeTemplateDefinitionParser extends
     public static final String NAME_ATTR = "name";
     public static final String NODES_ATTR = "nodeProxies";
     public static final String REF_ATTR = "ref";
+    public static final String UNITS_ATTR = "units";
+    public static final String FREQUENCY_ATTR = "frequency";
+    public static final String ACCUMULATOR_ATTR = "accumulator";
+    public static final String NUMERATOR_ATTR = "numerator";
+    public static final String DENOMINATOR_ATTR = "denominator";
+    public static final String NORMALIZE_ATTR = "normalize";
+    public static final String GROUPINGS_ATTR = "groupings";
+    public static final String RANGES_ATTR = "ranges";
+    public static final String SUFFIXES_ATTR = "suffixes";
+    public static final String RANGE_ATTR = "range";
+    public static final String SUFFIX_ATTR = "suffix";
+    public static final String THRESHOLD_ATTR = "threshold";
+    public static final String FORMAT_ATTR = "format";
+    public static final String FORMATSTRING_ATTR = "formatString";
 
     private final boolean createPrototype;
 
@@ -135,6 +156,12 @@ public class RegistryNodeTemplateDefinitionParser extends
             } else if(CUSTOM_TAG.equals(childTagName)) {
                 childProxyId = parseCustom(context, child,
                         builder.getRawBeanDefinition());
+            } else if(NORMALIZE_TAG.equals(childTagName)) {
+                childProxyId = createNormalize(context, child);
+            } else if(RATIO_TAG.equals(childTagName)) {
+                childProxyId = createRatio(context, child);
+            } else if(RANGEGROUP_TAG.equals(childTagName)) {
+                childProxyId = createRangeGroup(context, child);
             } else {
                 context.getReaderContext().error("Unknown tag", child);
             }
@@ -410,6 +437,149 @@ public class RegistryNodeTemplateDefinitionParser extends
 
         return context.getReaderContext()
                 .registerWithGeneratedName(accProxyBdb.getBeanDefinition());
+    }
+
+    protected String createNormalize(ParserContext context, Element element) {
+        String name = getName(context, element);
+        String accumulator = element.getAttribute(ACCUMULATOR_ATTR);
+        String units = element.getAttribute(UNITS_ATTR);
+        String freq = element.getAttribute(FREQUENCY_ATTR);
+        Frequency frequency = null;
+        if(StringUtils.hasLength(freq)) {
+            try {
+                frequency = Enum.valueOf(Frequency.class, freq.toUpperCase());
+            } catch(IllegalArgumentException e) {
+                context.getReaderContext().error(
+                        "Unknown frequency '" + freq + "'",
+                        context.extractSource(element));
+            }
+        }
+
+        BeanDefinitionBuilder bdb = getBdb(Normalizer.class);
+        bdb.addPropertyValue(UNITS_ATTR, units);
+        bdb.addPropertyValue(FREQUENCY_ATTR, frequency);
+        bdb.addPropertyValue(ACCUMULATOR_ATTR, accumulator);
+        String normId = context.getReaderContext().registerWithGeneratedName(
+                bdb.getBeanDefinition());
+
+        // Create proxy that carries name
+        BeanDefinitionBuilder calcProxyBdb =
+                getBdb(RegistryNodeChildProxy.class);
+        calcProxyBdb.addPropertyValue(NAME_ATTR, name);
+        calcProxyBdb.addPropertyValue(CHILD_ATTR, normId);
+        return context.getReaderContext()
+                .registerWithGeneratedName(calcProxyBdb.getBeanDefinition());
+    }
+
+    protected String createRatio(ParserContext context, Element element) {
+        String name = getName(context, element);
+        String numerator = element.getAttribute(NUMERATOR_ATTR);
+        String denominator = element.getAttribute(DENOMINATOR_ATTR);
+        String units = element.getAttribute(UNITS_ATTR);
+
+        BeanDefinitionBuilder bdb = getBdb(Ratio.class);
+        bdb.addPropertyValue(UNITS_ATTR, units);
+        bdb.addPropertyValue(NUMERATOR_ATTR, numerator);
+        bdb.addPropertyValue(DENOMINATOR_ATTR, denominator);
+        String ratioId = context.getReaderContext().registerWithGeneratedName(
+                bdb.getBeanDefinition());
+
+        // Create proxy that carries name
+        BeanDefinitionBuilder calcProxyBdb =
+                getBdb(RegistryNodeChildProxy.class);
+        calcProxyBdb.addPropertyValue(NAME_ATTR, name);
+        calcProxyBdb.addPropertyValue(CHILD_ATTR, ratioId);
+        return context.getReaderContext()
+                .registerWithGeneratedName(calcProxyBdb.getBeanDefinition());
+    }
+
+    protected String createRangeGroup(ParserContext context, Element element) {
+        String name = getName(context, element);
+        String accumulator = element.getAttribute(ACCUMULATOR_ATTR);
+        String units = element.getAttribute(UNITS_ATTR);
+        String ranges = element.getAttribute(RANGES_ATTR);
+        String suffixes = element.getAttribute(SUFFIXES_ATTR);
+        String norm = element.getAttribute(NORMALIZE_ATTR);
+        String freq = element.getAttribute(FREQUENCY_ATTR);
+        String threshold = element.getAttribute(THRESHOLD_ATTR);
+        String format = element.getAttribute(FORMAT_ATTR);
+
+        ManagedList<RuntimeBeanReference> groupings =
+                createGroupings(context, element, ranges, suffixes);
+        if(groupings == null) {
+            return null;
+        }
+
+        boolean normalize = false;
+        if(StringUtils.hasLength(norm)) {
+            normalize = Boolean.parseBoolean(norm);
+        }
+
+        Frequency frequency = null;
+        if(normalize) {
+            if(StringUtils.hasLength(freq)) {
+                try {
+                    frequency = Enum.valueOf(Frequency.class,
+                            freq.toUpperCase());
+                } catch(IllegalArgumentException e) {
+                    context.getReaderContext().error(
+                            "Unknown frequency '" + freq + "'",
+                            context.extractSource(element));
+                    return null;
+                }
+            }
+        }
+
+        BeanDefinitionBuilder bdb = getBdb(RangeGroupCalculator.class);
+        bdb.addPropertyValue(UNITS_ATTR, units);
+        bdb.addPropertyValue(GROUPINGS_ATTR, groupings);
+        bdb.addPropertyValue(NORMALIZE_ATTR, normalize);
+        bdb.addPropertyValue(FREQUENCY_ATTR, frequency);
+        bdb.addPropertyValue(ACCUMULATOR_ATTR, accumulator);
+        bdb.addPropertyValue(THRESHOLD_ATTR, threshold);
+        bdb.addPropertyValue(FORMATSTRING_ATTR, format);
+
+        String grpId = context.getReaderContext().registerWithGeneratedName(
+                bdb.getBeanDefinition());
+
+        // Create proxy that carries name
+        BeanDefinitionBuilder calcProxyBdb =
+                getBdb(RegistryNodeChildProxy.class);
+        calcProxyBdb.addPropertyValue(NAME_ATTR, name);
+        calcProxyBdb.addPropertyValue(CHILD_ATTR, grpId);
+        return context.getReaderContext()
+                .registerWithGeneratedName(calcProxyBdb.getBeanDefinition());
+    }
+
+    protected ManagedList<RuntimeBeanReference> createGroupings(
+            ParserContext context, Element element, String ranges,
+            String suffixes) {
+        ManagedList<RuntimeBeanReference> groupings =
+                new ManagedList<RuntimeBeanReference>();
+        String[] rangeArray =
+                StringUtils.commaDelimitedListToStringArray(ranges);
+        String[] suffixArray =
+                StringUtils.commaDelimitedListToStringArray(suffixes);
+
+        if(rangeArray.length != suffixArray.length) {
+            context.getReaderContext().error(
+                    "'ranges' and 'suffixes' must have the same number of "
+                    + "elements", context.extractSource(element));
+            return null;
+        }
+
+        for(int i=0; i<rangeArray.length; i++) {
+            String range = rangeArray[i];
+            String suffix = suffixArray[i];
+            BeanDefinitionBuilder bdb = getBdb(
+                    RangeGroupCalculator.Grouping.class);
+            bdb.addPropertyValue(RANGE_ATTR, range);
+            bdb.addPropertyValue(SUFFIX_ATTR, suffix);
+            String groupId = context.getReaderContext()
+                    .registerWithGeneratedName(bdb.getBeanDefinition());
+            groupings.add(new RuntimeBeanReference(groupId));
+        }
+        return groupings;
     }
 
     protected String getName(ParserContext context, Element element) {
