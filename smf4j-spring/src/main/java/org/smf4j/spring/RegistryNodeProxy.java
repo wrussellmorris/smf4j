@@ -15,16 +15,17 @@
  */
 package org.smf4j.spring;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RegistryNodeProxy {
+public class RegistryNodeProxy implements RegistryProxy {
 
     private String name;
-    private List<RegistryNodeChildProxy> children;
+    private List<RegistryProxy> children = Collections.emptyList();
 
     public String getName() {
         return name;
@@ -34,11 +35,11 @@ public class RegistryNodeProxy {
         this.name = name;
     }
 
-    public List<RegistryNodeChildProxy> getChildren() {
+    public List<RegistryProxy> getChildren() {
         return children;
     }
 
-    public void setChildren(List<RegistryNodeChildProxy> children) {
+    public void setChildren(List<RegistryProxy> children) {
         this.children = children;
     }
 

@@ -27,7 +27,8 @@ limitations under the License.
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:choice minOccurs="0" maxOccurs="unbounded">
-                    <xsd:element ref="node" minOccurs="0" maxOccurs="unbounded" />
+                    <xsd:element name="node" type="node-type" minOccurs="0" maxOccurs="unbounded" />
+                    <xsd:element name="node-template" type="node-template-ref-type" minOccurs="0" maxOccurs="unbounded" />
                 </xsd:choice>
             </xsd:sequence>
             <xsd:attribute name="id" type="xsd:ID" use="optional" />
@@ -54,27 +55,40 @@ limitations under the License.
         </xsd:attribute>
     </xsd:attributeGroup>
 
-    <xsd:element name="node">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:choice minOccurs="0" maxOccurs="unbounded" >
-                    <!-- Embedded nodes -->
-                    <xsd:element ref="node" />
+    <xsd:element name="node-template" type="node-template-type" />
 
-                    <!-- Counters -->
-                    <xsd:element name="counter" type="core-accumulator-type" />
-                    <xsd:element name="min" type="core-accumulator-type" />
-                    <xsd:element name="max" type="core-accumulator-type" />
+    <xsd:complexType name="node-type" >
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <!-- Embedded nodes -->
+                <xsd:element name="node" type="node-type" />
+                <xsd:element name="node-template" type="node-template-ref-type" />
 
-                    <!-- Calculators -->
+                <!-- Counters -->
+                <xsd:element name="counter" type="core-accumulator-type" />
+                <xsd:element name="min" type="core-accumulator-type" />
+                <xsd:element name="max" type="core-accumulator-type" />
 
-                    <!-- Random Beans -->
-                    <xsd:element ref="custom" />
-                </xsd:choice>
-            </xsd:sequence>
-            <xsd:attributeGroup ref="node-name-attribute" />
-        </xsd:complexType>
-    </xsd:element>
+                <!-- Calculators -->
+
+                <!-- Random Beans -->
+                <xsd:element ref="custom" />
+            </xsd:choice>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="node-name-attribute" />
+    </xsd:complexType>
+
+    <xsd:complexType name="node-template-type">
+        <xsd:complexContent>
+            <xsd:extension base="node-type">
+                <xsd:attribute name="id" type="xsd:ID" use="required" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="node-template-ref-type">
+        <xsd:attribute name="ref" type="xsd:string" use="required" />
+    </xsd:complexType>
 
     <xsd:complexType name="core-accumulator-type" >
         <xsd:attributeGroup ref="acc-or-calc-name-attribute" />

@@ -22,14 +22,20 @@ import org.smf4j.Accumulator;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.Registrar;
 import org.smf4j.RegistryNode;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.StringUtils;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RegistrarFactoryBean implements FactoryBean<Registrar> {
+public class RegistrarFactoryBean implements FactoryBean<Registrar>,
+        ApplicationContextAware{
 
+    private ApplicationContext applicationContext;
     private boolean initialized;
     private Registrar registrar;
     private List<RegistryNodeProxy> nodeProxies = Collections.emptyList();
@@ -69,25 +75,51 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar> {
 
     protected void initialize() {
         initialized = true;
-        Registrar r = getRegistrar();
+        Registrar r = RegistrarFactory.getRegistrar();
 
         for(RegistryNodeProxy nodeProxy : nodeProxies) {
-            RegistryNode node = r.getNode(nodeProxy.getName());
-            for(RegistryNodeChildProxy childProxy : nodeProxy.getChildren()) {
-                Object obj = childProxy.getChild();
+            registerProxy(r, nodeProxy, "");
+        }
+    }
 
+    protected void registerProxy(Registrar r, RegistryNodeProxy nodeProxy,
+            String parentName) {
+        String name = nodeProxy.getName();
+        if(StringUtils.hasLength(parentName)) {
+            name = parentName + "." + name;
+        }
+
+        for(RegistryProxy proxy : nodeProxy.getChildren()) {
+            if(proxy instanceof RegistryNodeChildProxy) {
+                RegistryNodeChildProxy childProxy =
+                        (RegistryNodeChildProxy) proxy;
+                String beanRef = childProxy.getChild();
+                Object obj = applicationContext.getBean(beanRef);
                 if(obj instanceof Accumulator) {
+                    // An accumulator
+                    RegistryNode node = r.getNode(name);
                     node.register(childProxy.getName(),(Accumulator)obj);
                 } else if(obj instanceof Calculator) {
+                    // A Caclulator
+                    RegistryNode node = r.getNode(name);
                     node.register(childProxy.getName(),(Calculator)obj);
+                } else if(obj instanceof RegistryNodeProxy) {
                 } else {
                     throw new RuntimeException(String.format(
                             "[Node: %s, Child: %s] Node child "
-                            + "proxy is neither Accumulator nor Calculation.",
-                            node.getName(),
-                            childProxy.getName()));
+                            + "proxy is neither template, Accumulator, nor "
+                            + "Calculator.", name, childProxy.getName()));
                 }
+            } else if(proxy instanceof RegistryNodeProxy) {
+                // An embedded node
+                r.getNode(name);
+                registerProxy(r, (RegistryNodeProxy)proxy, name);
             }
         }
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
