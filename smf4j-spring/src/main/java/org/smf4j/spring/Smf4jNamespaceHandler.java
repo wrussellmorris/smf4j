@@ -31,5 +31,8 @@ public class Smf4jNamespaceHandler extends NamespaceHandlerSupport {
         this.registerBeanDefinitionParser(
                 "lookup",
                 new LookupBeanDefinitionParser());
+        this.registerBeanDefinitionParser(
+                "node-template",
+                new RegistryNodeTemplateDefinitionParser());
     }
 }

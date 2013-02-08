@@ -108,6 +108,103 @@ public class RegistrarTest {
     }
 
     @Test
+    public void nodeTemplates()
+    throws Exception {
+        ApplicationContext context = loadContext("registration-template.xml");
+        assertNotNull(context);
+
+        Registrar r = context.getBean("registrar", Registrar.class);
+        assertNotNull(r);
+
+        RegistryNode foo = r.getNode("foo");
+        RegistryNode bar = r.getNode("foo.bar");
+        RegistryNode baz = r.getNode("foo.bar.baz");
+        RegistryNode bot = r.getNode("foo.bar.baz.bot");
+        RegistryNode p_foo = r.getNode("parent.foo");
+        RegistryNode p_bar = r.getNode("parent.foo.bar");
+        RegistryNode p_baz = r.getNode("parent.foo.bar.baz");
+        RegistryNode p_bot = r.getNode("parent.foo.bar.baz.bot");
+        Accumulator counter_foo;
+        Accumulator counter_bar;
+        Accumulator counter_baz;
+        Accumulator p_counter_foo;
+        Accumulator p_counter_bar;
+        Accumulator p_counter_baz;
+
+        assertNotNull(foo);
+        assertNotNull(bar);
+        assertNotNull(baz);
+        assertNotNull(bot);
+        assertNotNull(p_foo);
+        assertNotNull(p_bar);
+        assertNotNull(p_baz);
+        assertNotNull(p_bot);
+
+        assertEquals(1, foo.getAccumulators().size());
+        counter_foo = foo.getAccumulator("counter_foo");
+        assertNotNull(counter_foo);
+        assertEquals(0, foo.getCalculators().size());
+
+        assertEquals(1, bar.getAccumulators().size());
+        counter_bar = bar.getAccumulator("counter_bar");
+        assertNotNull(counter_bar);
+        assertEquals(0, bar.getCalculators().size());
+
+        assertEquals(1, baz.getAccumulators().size());
+        counter_baz = baz.getAccumulator("counter_baz");
+        assertNotNull(baz);
+        assertEquals(0, baz.getCalculators().size());
+
+        assertEquals(1, p_foo.getAccumulators().size());
+        p_counter_foo = p_foo.getAccumulator("counter_foo");
+        assertNotNull(p_counter_foo);
+        assertEquals(0, p_foo.getCalculators().size());
+
+        assertEquals(1, p_bar.getAccumulators().size());
+        p_counter_bar = p_bar.getAccumulator("counter_bar");
+        assertNotNull(p_counter_bar);
+        assertEquals(0, p_bar.getCalculators().size());
+
+        assertEquals(1, p_baz.getAccumulators().size());
+        p_counter_baz = p_baz.getAccumulator("counter_baz");
+        assertNotNull(p_counter_baz);
+        assertEquals(0, p_baz.getCalculators().size());
+
+        assertNotSame(context, p_baz);
+
+        RegistryNode eep = r.getNode("eep");
+        RegistryNode op = r.getNode("eep.op");
+        RegistryNode ork = r.getNode("eep.op.ork");
+        RegistryNode aa = r.getNode("eep.op.ork.aa");
+        assertNotSame(counter_bar, counter_baz);
+
+        Accumulator counter_op;
+        Accumulator counter_ork;
+
+        assertNotNull(eep);
+        assertNotNull(op);
+        assertNotNull(ork);
+        assertNotNull(aa);
+
+        assertEquals(0, eep.getAccumulators().size());
+        assertEquals(0, eep.getCalculators().size());
+
+        assertEquals(1, op.getAccumulators().size());
+        counter_op = op.getAccumulator("counter_op");
+        assertNotNull(counter_op);
+        assertEquals(0, op.getCalculators().size());
+
+        assertEquals(1, ork.getAccumulators().size());
+        counter_ork = ork.getAccumulator("counter_ork");
+        assertNotNull(counter_ork);
+        assertEquals(0, ork.getCalculators().size());
+
+        assertNotSame(counter_foo, p_counter_foo);
+        assertNotSame(counter_bar, p_counter_bar);
+        assertNotSame(counter_baz, p_counter_bar);
+    }
+
+    @Test
     public void counter()
     throws Exception {
         ApplicationContext context = loadContext("registrar-counter.xml");

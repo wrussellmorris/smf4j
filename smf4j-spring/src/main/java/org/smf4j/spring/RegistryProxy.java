@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +19,8 @@ package org.smf4j.spring;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RegistryNodeChildProxy implements RegistryProxy {
+public interface RegistryProxy {
+    public String getName();
 
-    private String name;
-    private String beanRef;
-
-    public String getChild() {
-        return beanRef;
-    }
-
-    public void setChild(String beanRef) {
-        this.beanRef = beanRef;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setName(String name);
 }
