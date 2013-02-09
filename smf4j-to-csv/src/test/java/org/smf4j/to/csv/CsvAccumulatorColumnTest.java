@@ -34,7 +34,7 @@ public class CsvAccumulatorColumnTest {
         String dataName = "";
 
         try {
-            new CsvAccumulatorColumn(node, dataName);
+            new CsvAccumulatorColumn(node, dataName, "");
             fail();
         } catch(DataException e) {
             // Success
@@ -44,7 +44,7 @@ public class CsvAccumulatorColumnTest {
 
         dataName = "foo.bar";
         try {
-            new CsvAccumulatorColumn(node, dataName);
+            new CsvAccumulatorColumn(node, dataName, "");
             fail();
         } catch(DataException e) {
             // Success
@@ -55,7 +55,7 @@ public class CsvAccumulatorColumnTest {
 
         dataName = null;
         try {
-            new CsvAccumulatorColumn(node, dataName);
+            new CsvAccumulatorColumn(node, dataName, "");
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -65,7 +65,7 @@ public class CsvAccumulatorColumnTest {
 
         node = null;
         try {
-            new CsvAccumulatorColumn(node, dataName);
+            new CsvAccumulatorColumn(node, dataName, "");
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -83,10 +83,10 @@ public class CsvAccumulatorColumnTest {
         Map<String, Object> snapshot = new HashMap<String, Object>();
         snapshot.put(dataName, val);
 
-        CsvDataColumn c = new CsvAccumulatorColumn(node, dataName);
+        CsvDataColumn c = new CsvAccumulatorColumn(node, dataName, "");
         assertEquals(val, c.getDatum(snapshot));
 
-        c = new CsvAccumulatorColumn(node, "foo");
+        c = new CsvAccumulatorColumn(node, "foo", "");
         assertNull(c.getDatum(snapshot));
     }
 }

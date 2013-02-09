@@ -39,14 +39,15 @@ public class CsvCalculatorColumn extends CsvDataColumn {
     private final String calcName;
     private final List<String> path;
 
-    public CsvCalculatorColumn(RegistryNode node, String dataName) {
-        super(node, dataName);
+    public CsvCalculatorColumn(RegistryNode node, String dataName,
+            String units) {
+        super(node, dataName, units);
 
         String[] parts = dataName.split("\\.");
         for(String part : parts) {
             if(part.length() == 0) {
                 throw new DataException(String.format(
-                        "Calculation '%s' of node '%s' has a data path "
+                        "Calculator '%s' of node '%s' has a data path "
                         + "that contains an empty path part.",
                         dataName, node.getName()));
             }

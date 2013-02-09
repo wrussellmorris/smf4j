@@ -28,8 +28,9 @@ public class CsvAccumulatorColumn extends CsvDataColumn {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public CsvAccumulatorColumn(RegistryNode node, String dataName) {
-        super(node, dataName);
+    public CsvAccumulatorColumn(RegistryNode node, String dataName,
+            String units) {
+        super(node, dataName, units);
         if(dataName.contains(".")) {
             throw new DataException(String.format(
                     "Accumulator name '%s' contains illegal character '.' .",

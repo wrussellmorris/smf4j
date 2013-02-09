@@ -105,7 +105,7 @@ public class CsvFileLayoutTest {
             mock.register(accNames[i], new MockAccumulator(0));
         }
         for(int i=0; i<calcNames.length; i++) {
-            mock.register(calcNames[i], new MockCalculation(0, "A String"));
+            mock.register(calcNames[i], new MockCalculator(0, "A String"));
         }
         mock.setName(nodeName);
 

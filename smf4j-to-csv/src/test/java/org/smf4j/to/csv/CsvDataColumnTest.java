@@ -29,8 +29,8 @@ import org.smf4j.RegistryNode;
 public class CsvDataColumnTest {
 
     static class Stub extends CsvDataColumn {
-        Stub(RegistryNode node, String dataName) {
-            super(node, dataName);
+        Stub(RegistryNode node, String dataName, String units) {
+            super(node, dataName, units);
         }
 
         @Override
@@ -43,9 +43,10 @@ public class CsvDataColumnTest {
     public void ctorParams() {
         RegistryNode node = createNiceMock(RegistryNode.class);
         String dataName = "";
+        String units = "units";
 
         try {
-            new Stub(node, dataName);
+            new Stub(node, dataName, units);
             fail();
         } catch(DataException e) {
             // Success
@@ -55,7 +56,7 @@ public class CsvDataColumnTest {
 
         dataName = null;
         try {
-            new Stub(node, dataName);
+            new Stub(node, dataName, units);
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -65,7 +66,7 @@ public class CsvDataColumnTest {
 
         node = null;
         try {
-            new Stub(node, dataName);
+            new Stub(node, dataName, units);
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -78,20 +79,26 @@ public class CsvDataColumnTest {
     public void getters() {
         RegistryNode node = createNiceMock(RegistryNode.class);
         String dataName = "dataName";
+        String units = "units";
 
-        Stub stub = new Stub(node, dataName);
+        Stub stub = new Stub(node, dataName, units);
         assertEquals(dataName, stub.getDataName());
         assertEquals(node, stub.getNode());
         assertFalse(stub.isUseFullName());
+        assertEquals(units, stub.getUnits());
     }
 
     @Test
     public void shortName() {
         RegistryNode node = createNiceMock(RegistryNode.class);
         String dataName = "dataName.data";
+        String units = "units";
 
-        Stub stub = new Stub(node, dataName);
+        Stub stub = new Stub(node, dataName, "");
         assertEquals(dataName, stub.getColumnName());
+
+        stub = new Stub(node, dataName, units);
+        assertEquals(dataName + " (units)", stub.getColumnName());
     }
 
     @Test
@@ -99,12 +106,18 @@ public class CsvDataColumnTest {
         RegistryNode node = createNiceMock(RegistryNode.class);
         String nodeName = "a.node.name";
         String dataName = "dataName.data";
+        String units = "units";
 
         expect(node.getName()).andStubReturn(nodeName);
         replay(node);
 
-        Stub stub = new Stub(node, dataName);
+        Stub stub = new Stub(node, dataName, "");
         stub.setUseFullName(true);
         assertEquals(nodeName + "." + dataName, stub.getColumnName());
+
+        stub = new Stub(node, dataName, units);
+        stub.setUseFullName(true);
+        assertEquals(nodeName + "." + dataName + " (units)",
+                stub.getColumnName());
     }
 }

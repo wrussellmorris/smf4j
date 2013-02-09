@@ -23,25 +23,28 @@ import org.smf4j.RegistryNode;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public abstract class CsvDataColumn {
-    private RegistryNode node;
+
+    private final RegistryNode node;
+    private final String dataName;
+    private final String units;
     private boolean useFullName;
     private String shortName;
     private String fullName;
-    private String dataName;
 
-    public CsvDataColumn(RegistryNode node, String dataName) {
-        if(node == null) {
+    CsvDataColumn(RegistryNode node, String dataName, String units) {
+        if (node == null) {
             throw new NullPointerException("node");
         }
-        if(dataName == null) {
+        if (dataName == null) {
             throw new NullPointerException("dataName");
         }
-        if(dataName.length() == 0) {
+        if (dataName.length() == 0) {
             throw new DataException("dataName cannot be zero-length");
         }
 
         this.node = node;
         this.dataName = dataName;
+        this.units = units;
     }
 
     public RegistryNode getNode() {
@@ -67,15 +70,23 @@ public abstract class CsvDataColumn {
     public abstract Object getDatum(Map<String, Object> snapshot);
 
     protected String getFullName() {
-        if(fullName == null) {
+        if (fullName == null) {
             fullName = computeFullName();
+            String u = getUnits();
+            if (u != null && !u.equals("")) {
+                fullName += " (" + u + ")";
+            }
         }
         return fullName;
     }
 
     protected String getShortName() {
-        if(shortName == null) {
+        if (shortName == null) {
             shortName = computeShortName();
+            String u = getUnits();
+            if (u != null && !u.equals("")) {
+                shortName += " (" + u + ")";
+            }
         }
         return shortName;
     }
@@ -86,5 +97,12 @@ public abstract class CsvDataColumn {
 
     protected String computeShortName() {
         return dataName;
+    }
+
+    public String getUnits() {
+        if (units == null) {
+            return "";
+        }
+        return units;
     }
 }

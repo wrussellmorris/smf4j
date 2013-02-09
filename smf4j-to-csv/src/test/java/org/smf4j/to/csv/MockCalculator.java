@@ -23,11 +23,11 @@ import org.smf4j.Calculator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class MockCalculation implements Calculator {
+public class MockCalculator implements Calculator {
 
     private final Result result;
 
-    public MockCalculation(int intVal, String stringVal) {
+    public MockCalculator(int intVal, String stringVal) {
         this.result = new Result(intVal, stringVal);
     }
 

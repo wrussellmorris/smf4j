@@ -32,9 +32,10 @@ public class CsvCalculatorColumnTest {
     public void ctorParams() {
         RegistryNode node = createNiceMock(RegistryNode.class);
         String dataName = "";
+        String units = "units";
 
         try {
-            new CsvCalculatorColumn(node, dataName);
+            new CsvCalculatorColumn(node, dataName, units);
             fail();
         } catch(DataException e) {
             // Success
@@ -44,7 +45,7 @@ public class CsvCalculatorColumnTest {
 
         dataName = "foo.bar";
         try {
-            new CsvCalculatorColumn(node, dataName);
+            new CsvCalculatorColumn(node, dataName, units);
         } catch(Throwable t) {
             fail("Caught unexpected exception " + t.toString());
         }
@@ -52,7 +53,7 @@ public class CsvCalculatorColumnTest {
 
         dataName = null;
         try {
-            new CsvCalculatorColumn(node, dataName);
+            new CsvCalculatorColumn(node, dataName, units);
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -62,7 +63,7 @@ public class CsvCalculatorColumnTest {
 
         node = null;
         try {
-            new CsvCalculatorColumn(node, dataName);
+            new CsvCalculatorColumn(node, dataName, units);
             fail();
         } catch(NullPointerException e) {
             // Success
@@ -81,27 +82,27 @@ public class CsvCalculatorColumnTest {
 
         // Grab the root object
         String dataName = "smiley";
-        CsvDataColumn c = new CsvCalculatorColumn(node, dataName);
+        CsvDataColumn c = new CsvCalculatorColumn(node, dataName, "");
         assertEquals(smiley, c.getDatum(snapshot));
 
         // Grab property
         dataName = "smiley.name";
-        c = new CsvCalculatorColumn(node, dataName);
+        c = new CsvCalculatorColumn(node, dataName, "");
         assertEquals("Smiley", c.getDatum(snapshot));
 
         // Grab property of property
         dataName = "smiley.shape1.name";
-        c = new CsvCalculatorColumn(node, dataName);
+        c = new CsvCalculatorColumn(node, dataName, "");
         assertEquals("Eyes", c.getDatum(snapshot));
 
         // Grab property of property of property
         dataName = "smiley.shape1.shape1.name";
-        c = new CsvCalculatorColumn(node, dataName);
+        c = new CsvCalculatorColumn(node, dataName, "");
         assertEquals("Left", c.getDatum(snapshot));
 
         // Non-existant property
         dataName = "smiley.shape1.foo";
-        c = new CsvCalculatorColumn(node, dataName);
+        c = new CsvCalculatorColumn(node, dataName, "");
         assertNull(c.getDatum(snapshot));
     }
 

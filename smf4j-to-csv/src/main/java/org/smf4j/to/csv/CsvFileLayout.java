@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
+import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.helpers.CalculatorHelper;
 import org.smf4j.RegistryNode;
@@ -35,7 +36,6 @@ import org.smf4j.helpers.CalculatorAttribute;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class CsvFileLayout {
-    private List<RegistryNode> nodes = new ArrayList<RegistryNode>();
     private List<String> nodeFilters = new ArrayList<String>();
     private List<CsvDataColumn> columns;
 
@@ -60,7 +60,8 @@ public class CsvFileLayout {
                 String name = entry.getKey();
 
                 // Create column
-                CsvAccumulatorColumn col = new CsvAccumulatorColumn(node, name);
+                CsvAccumulatorColumn col = new CsvAccumulatorColumn(node,
+                        name, entry.getValue().getUnits());
 
                 // If collision, make sure everyone uses full names
                 if(names.containsKey(name)) {
@@ -83,7 +84,8 @@ public class CsvFileLayout {
                     String calcName = attr.getName();
                     // Create column
                     CsvCalculatorColumn col =
-                            new CsvCalculatorColumn(node, calcName);
+                            new CsvCalculatorColumn(node, calcName,
+                            attr.getUnits());
 
                     // If collision, make sure everyone uses full names
                     if(names.containsKey(calcName)) {
@@ -111,10 +113,9 @@ public class CsvFileLayout {
     protected List<RegistryNode> gatherAllNodes() {
         Set<RegistryNode> all = new HashSet<RegistryNode>();
 
-        all.addAll(nodes);
+        Registrar r = RegistrarFactory.getRegistrar();
         for(String nodeFilter : nodeFilters) {
-            for(RegistryNode node :
-                    RegistrarFactory.getRegistrar().match(nodeFilter)) {
+            for(RegistryNode node : r.match(nodeFilter)) {
                 all.add(node);
             }
         }
@@ -130,14 +131,6 @@ public class CsvFileLayout {
         });
 
         return list;
-    }
-
-    public List<RegistryNode> getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(List<RegistryNode> nodes) {
-        this.nodes = nodes;
     }
 
     public List<String> getNodeFilters() {
