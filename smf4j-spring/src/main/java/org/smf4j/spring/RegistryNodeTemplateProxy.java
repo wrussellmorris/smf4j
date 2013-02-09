@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,35 @@
  */
 package org.smf4j.spring;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RegistryNodeProxy implements RegistryProxy {
+public class RegistryNodeTemplateProxy extends RegistryNodeProxy {
 
-    private String name;
-    private List<RegistryProxy> children = Collections.emptyList();
+    private RegistryNodeProxy template;
 
+    @Override
     public String getName() {
+        String name = super.getName();
+        if(name == null) {
+            name = template.getName();
+        }
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    @Override
     public List<RegistryProxy> getChildren() {
-        return children;
+        return template.getChildren();
     }
 
-    public void setChildren(List<RegistryProxy> children) {
-        this.children = children;
+    public RegistryNodeProxy getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(RegistryNodeProxy template) {
+        this.template = template;
     }
 }

@@ -76,7 +76,7 @@ public class RegistrarBeanDefinitionParser extends
                         .genericBeanDefinition(RegistryNodeProxy.class);
                 childBeanId = p.parseNode(context, child, bdb);
             } else if(NODE_TEMPLATE_TAG.equals(NODE_TEMPLATE_TAG)) {
-                childBeanId = p.parseNodeTemplate(context, child);
+                childBeanId = p.createNodeTemplateRef(context, child);
             } else {
                 context.getReaderContext().error("Unknown tag", child);
             }

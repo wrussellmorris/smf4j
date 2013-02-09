@@ -26,6 +26,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class CsvFile implements Closeable {
+public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
     private static final String COMMA = ",";
     private static final String DEFAULT_QUOTE_CHARACTER = "\"";
     private static final String DEFAULT_FILE_TIMESTAMP_PATTERN =
@@ -403,5 +404,16 @@ public class CsvFile implements Closeable {
             timestampColumnHeader = DEFAULT_TIMESTAMP_COLUMN_HEADER;
         }
         this.timestampColumnHeader = timestampColumnHeader;
+    }
+
+    @Override
+    public void run() {
+        write();
+    }
+
+    @Override
+    public Boolean call() throws Exception {
+        write();
+        return initializationFailure;
     }
 }

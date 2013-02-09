@@ -21,7 +21,7 @@
         <smf4j:node-template ref="template-1" />
 
         <smf4j:node name="parent">
-            <smf4j:node-template ref="template-1" />
+            <smf4j:node-template ref="template-1" name="blah" />
         </smf4j:node>
 
         <smf4j:node name="eep.op">

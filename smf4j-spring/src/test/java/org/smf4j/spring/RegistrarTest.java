@@ -124,10 +124,10 @@ public class RegistrarTest {
         RegistryNode bar = r.getNode("foo.bar");
         RegistryNode baz = r.getNode("foo.bar.baz");
         RegistryNode bot = r.getNode("foo.bar.baz.bot");
-        RegistryNode p_foo = r.getNode("parent.foo");
-        RegistryNode p_bar = r.getNode("parent.foo.bar");
-        RegistryNode p_baz = r.getNode("parent.foo.bar.baz");
-        RegistryNode p_bot = r.getNode("parent.foo.bar.baz.bot");
+        RegistryNode p_foo = r.getNode("parent.blah");
+        RegistryNode p_bar = r.getNode("parent.blah.bar");
+        RegistryNode p_baz = r.getNode("parent.blah.bar.baz");
+        RegistryNode p_bot = r.getNode("parent.blah.bar.baz.bot");
         Accumulator counter_foo;
         Accumulator counter_bar;
         Accumulator counter_baz;

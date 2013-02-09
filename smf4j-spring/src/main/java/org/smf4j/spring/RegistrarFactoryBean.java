@@ -103,7 +103,6 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
                     // A Caclulator
                     RegistryNode node = r.getNode(name);
                     node.register(childProxy.getName(),(Calculator)obj);
-                } else if(obj instanceof RegistryNodeProxy) {
                 } else {
                     throw new RuntimeException(String.format(
                             "[Node: %s, Child: %s] Node child "

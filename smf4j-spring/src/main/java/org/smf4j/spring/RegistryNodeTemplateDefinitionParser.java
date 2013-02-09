@@ -83,6 +83,7 @@ public class RegistryNodeTemplateDefinitionParser extends
     public static final String THRESHOLD_ATTR = "threshold";
     public static final String FORMAT_ATTR = "format";
     public static final String FORMATSTRING_ATTR = "formatString";
+    public static final String TEMPLATE_ATTR = "template";
 
     private final boolean createPrototype;
 
@@ -105,7 +106,7 @@ public class RegistryNodeTemplateDefinitionParser extends
         parseNode(parserContext, element, builder);
     }
 
-    protected String parseNodeTemplate(ParserContext context, Element element) {
+    protected String createNodeTemplateRef(ParserContext context, Element element) {
         String id = element.getAttribute(REF_ATTR);
         if(!StringUtils.hasLength(id)) {
             context.getReaderContext().error(
@@ -114,7 +115,14 @@ public class RegistryNodeTemplateDefinitionParser extends
             return null;
         }
 
-        return id;
+        BeanDefinitionBuilder bdb = getBdb(RegistryNodeTemplateProxy.class);
+        String newName = element.getAttribute(NAME_ATTR);
+        if(StringUtils.hasLength(newName)) {
+            bdb.addPropertyValue(NAME_ATTR, newName);
+        }
+
+        bdb.addPropertyReference(TEMPLATE_ATTR, id);
+        return context.getReaderContext().registerWithGeneratedName(bdb.getBeanDefinition());
     }
 
     protected String parseNode(ParserContext context, Element element,
@@ -140,7 +148,7 @@ public class RegistryNodeTemplateDefinitionParser extends
                 BeanDefinitionBuilder bdb = getBdb(RegistryNodeProxy.class);
                 childProxyId = parseNode(context, child, bdb);
             } else if(NODE_TEMPLATE_TAG.equals(childTagName)) {
-                childProxyId = parseNodeTemplate(context, child);
+                childProxyId = createNodeTemplateRef(context, child);
             } else if(COUNTER_TAG.equals(childTagName)) {
                 CounterConfig config = new CounterConfig(
                         CounterConfig.CounterType.ADD, child);
