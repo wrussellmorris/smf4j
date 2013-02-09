@@ -39,7 +39,7 @@ import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
 import org.smf4j.helpers.CalculatorHelper;
 import org.smf4j.RegistryNode;
-import org.smf4j.helpers.CalculatorAttribute;
+import org.smf4j.helpers.CalculatorProperty;
 
 /**
  *
@@ -223,17 +223,17 @@ public class RegistryNodeDynamicMBean implements DynamicMBean {
     protected void gatherCalculatorAttributeInfos(List<MBeanAttributeInfo> attrs) {
         for(Map.Entry<String, Calculator> entry :
                 registryNode.getCalculators().entrySet()) {
-            List<CalculatorAttribute> cattrs =
+            List<CalculatorProperty> cattrs =
                     CalculatorHelper.getCalculatorAttributes(entry.getKey(),
                     entry.getValue());
-            for(CalculatorAttribute cattr : cattrs) {
+            for(CalculatorProperty cattr : cattrs) {
                 attrs.add(createCalculatorAttributeInfo(cattr));
             }
         }
     }
 
     protected MBeanAttributeInfo createCalculatorAttributeInfo(
-            CalculatorAttribute cattr) {
+            CalculatorProperty cattr) {
         Descriptor desc = null;
         String units = cattr.getUnits();
         if(units != null) {

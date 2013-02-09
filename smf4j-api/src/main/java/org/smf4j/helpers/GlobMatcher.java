@@ -86,9 +86,9 @@ public final class GlobMatcher {
         exsitingMemberNames.addAll(node.getAccumulators().keySet());
         for(Map.Entry<String, Calculator> entry : node.getCalculators()
                 .entrySet()) {
-            List<CalculatorAttribute> calcAttrs = CalculatorHelper
+            List<CalculatorProperty> calcAttrs = CalculatorHelper
                     .getCalculatorAttributes(entry.getKey(), entry.getValue());
-            for(CalculatorAttribute calcAttr : calcAttrs) {
+            for(CalculatorProperty calcAttr : calcAttrs) {
                 exsitingMemberNames.add(calcAttr.getName());
             }
         }

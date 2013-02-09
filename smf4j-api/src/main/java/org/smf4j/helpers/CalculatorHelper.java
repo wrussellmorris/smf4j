@@ -58,9 +58,9 @@ public final class CalculatorHelper {
         leafTypes.add(String.class);
     }
 
-    private static final Comparator<CalculatorAttribute> SORTER =
-            new Comparator<CalculatorAttribute>() {
-        public int compare(CalculatorAttribute o1, CalculatorAttribute o2) {
+    private static final Comparator<CalculatorProperty> SORTER =
+            new Comparator<CalculatorProperty>() {
+        public int compare(CalculatorProperty o1, CalculatorProperty o2) {
             if(o1 != null  && o2 != null) {
                 return o1.getName().compareTo(o2.getName());
             }
@@ -68,9 +68,9 @@ public final class CalculatorHelper {
         }
     };
 
-    public static List<CalculatorAttribute> getCalculatorAttributes(
+    public static List<CalculatorProperty> getCalculatorAttributes(
             String rootName, Calculator calculator) {
-        List<CalculatorAttribute> attrs = new ArrayList<CalculatorAttribute>();
+        List<CalculatorProperty> attrs = new ArrayList<CalculatorProperty>();
         Class<?> calculatorClass = calculator.getClass();
 
         // Get the return type of the calculate() method
@@ -88,7 +88,7 @@ public final class CalculatorHelper {
         Class<?> calculationClass = m.getReturnType();
         if(leafTypes.contains(calculationClass)) {
             // It's a leaf type.
-            attrs.add(new CalculatorAttribute(rootName,
+            attrs.add(new CalculatorProperty(rootName,
                     getUnitsString(calculatorClass), calculationClass));
         } else {
             collectLeafProperties(rootName, calculationClass, attrs);
@@ -183,7 +183,7 @@ public final class CalculatorHelper {
     }
 
     private static void collectLeafProperties(String rootName, Class<?>
-            calcResultClass, List<CalculatorAttribute> attrs) {
+            calcResultClass, List<CalculatorProperty> attrs) {
         try {
             BeanInfo bi = Introspector.getBeanInfo(calcResultClass);
             for(PropertyDescriptor pd : bi.getPropertyDescriptors()) {
@@ -194,7 +194,7 @@ public final class CalculatorHelper {
 
                 // Check to see if they've attached a Units hint...
                 Class<?> propertyType = pd.getPropertyType();
-                attrs.add(new CalculatorAttribute(rootName + "." + pd.getName(),
+                attrs.add(new CalculatorProperty(rootName + "." + pd.getName(),
                         getUnitsString(propertyType), propertyType));
             }
         } catch(IntrospectionException e) {

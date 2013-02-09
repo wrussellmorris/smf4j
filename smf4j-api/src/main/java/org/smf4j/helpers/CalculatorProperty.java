@@ -19,13 +19,13 @@ package org.smf4j.helpers;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class CalculatorAttribute {
+public final class CalculatorProperty {
 
     private final String units;
     private final String name;
     private final Class<?> type;
 
-    CalculatorAttribute(String name, String units, Class<?> type) {
+    CalculatorProperty(String name, String units, Class<?> type) {
         this.name = name;
         this.units = units;
         this.type = type;

@@ -224,6 +224,9 @@ public class CsvFile implements Closeable {
             prependDelimeter = true;
         }
 
+        // Call prepare() to force the layout to re-investigate the set
+        // of nodes available in the registrar.
+        layout.prepare();
         for(CsvDataColumn col : layout.getColumns()) {
             if(prependDelimeter) {
                 sb.append(delimeter);

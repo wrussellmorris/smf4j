@@ -29,7 +29,7 @@ import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.helpers.CalculatorHelper;
 import org.smf4j.RegistryNode;
-import org.smf4j.helpers.CalculatorAttribute;
+import org.smf4j.helpers.CalculatorProperty;
 
 /**
  *
@@ -76,11 +76,11 @@ public class CsvFileLayout {
 
             Map<String, Calculator> calcs = node.getCalculators();
             for(Map.Entry<String, Calculator> entry : calcs.entrySet()) {
-                List<CalculatorAttribute> attrs =
+                List<CalculatorProperty> attrs =
                         CalculatorHelper.getCalculatorAttributes(entry.getKey(),
                         entry.getValue());
 
-                for(CalculatorAttribute attr : attrs) {
+                for(CalculatorProperty attr : attrs) {
                     String calcName = attr.getName();
                     // Create column
                     CsvCalculatorColumn col =
