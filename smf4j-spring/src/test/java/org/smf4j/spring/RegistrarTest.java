@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.smf4j.Accumulator;
-import org.smf4j.Calculator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactoryForUnitTests;
 import org.smf4j.RegistryNode;

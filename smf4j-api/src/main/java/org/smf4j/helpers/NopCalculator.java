@@ -27,6 +27,9 @@ public class NopCalculator implements Calculator {
 
     public static final NopCalculator INSTANCE = new NopCalculator();
 
+    private NopCalculator() {
+    }
+
     public Object calculate(Map<String, Long> values,
             Map<String, Accumulator> accumulators) {
         return null;

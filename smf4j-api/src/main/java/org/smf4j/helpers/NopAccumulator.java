@@ -26,6 +26,9 @@ public class NopAccumulator implements Accumulator, Mutator {
 
     public static final Accumulator INSTANCE = new NopAccumulator();
 
+    private NopAccumulator() {
+    }
+
     public Mutator getMutator() {
         return this;
     }

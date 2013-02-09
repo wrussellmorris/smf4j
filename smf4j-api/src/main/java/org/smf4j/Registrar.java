@@ -15,6 +15,8 @@
  */
 package org.smf4j;
 
+import org.smf4j.helpers.GlobMatch;
+
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
@@ -25,7 +27,7 @@ public interface Registrar {
 
     RegistryNode getRootNode();
 
-    Iterable<RegistryNode> match(String globPattern);
+    Iterable<GlobMatch> match(String globPattern);
 
     void setOn(String fullNodeName, boolean on);
 

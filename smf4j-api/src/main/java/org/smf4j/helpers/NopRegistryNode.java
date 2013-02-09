@@ -37,6 +37,9 @@ public class NopRegistryNode implements RegistryNode {
     private static final Map<String, RegistryNode> emptyNodesMap =
             Collections.emptyMap();
 
+    private NopRegistryNode() {
+    }
+
     public String getName() {
         return "nop";
     }

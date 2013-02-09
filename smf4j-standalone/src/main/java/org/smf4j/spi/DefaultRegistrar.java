@@ -24,7 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.smf4j.helpers.NopRegistryNode;
 import org.smf4j.RegistryNode;
 import org.smf4j.Registrar;
-import org.smf4j.helpers.NodeGlobMatcher;
+import org.smf4j.helpers.GlobMatch;
+import org.smf4j.helpers.GlobMatcher;
 
 /**
  *
@@ -133,9 +134,10 @@ class DefaultRegistrar implements Registrar {
         }
     }
 
-    public Iterable<RegistryNode> match(String globPattern) {
-        final ArrayList<RegistryNode> list = new ArrayList<RegistryNode>();
-        final NodeGlobMatcher matcher = new NodeGlobMatcher(globPattern);
+    @Override
+    public Iterable<GlobMatch> match(String globPattern) {
+        final ArrayList<GlobMatch> list = new ArrayList<GlobMatch>();
+        final GlobMatcher matcher = new GlobMatcher(globPattern);
         dfs(getRootNode(), new MatcherCall(list, matcher));
         return list;
     }
@@ -145,17 +147,18 @@ class DefaultRegistrar implements Registrar {
     }
 
     static class MatcherCall implements RegistryNodeCall {
-        private final List<RegistryNode> list;
-        private final NodeGlobMatcher matcher;
+        private final List<GlobMatch> list;
+        private final GlobMatcher matcher;
 
-        public MatcherCall(List<RegistryNode> list, NodeGlobMatcher matcher) {
+        public MatcherCall(List<GlobMatch> list, GlobMatcher matcher) {
             this.list = list;
             this.matcher = matcher;
         }
 
         public void call(RegistryNode node) {
-            if(matcher.match(node)) {
-                list.add(node);
+            GlobMatch match = matcher.match(node);
+            if(match.isNodeMatched()) {
+                list.add(match);
             }
         }
     }

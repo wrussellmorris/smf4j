@@ -27,26 +27,32 @@ import org.smf4j.RegistryNode;
 public class NopRegistrar implements Registrar {
 
     public static final Registrar INSTANCE = new NopRegistrar();
-    public static final List<RegistryNode> empty = Collections.emptyList();
+    public static final List<GlobMatch> empty = Collections.emptyList();
 
+    private NopRegistrar() {
+    }
+
+    @Override
     public RegistryNode getNode(String fullNodeName) {
         return NopRegistryNode.INSTANCE;
     }
 
+    @Override
     public RegistryNode getRootNode() {
         return NopRegistryNode.INSTANCE;
     }
 
-    public void clear() {
-    }
 
-    public Iterable<RegistryNode> match(String globPattern) {
+    @Override
+    public Iterable<GlobMatch> match(String globPattern) {
         return empty;
     }
 
+    @Override
     public void setOn(String fullNodeName, boolean on) {
     }
 
+    @Override
     public void clearOn(String fullNodeName) {
     }
 

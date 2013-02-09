@@ -25,6 +25,9 @@ public class NopMutator implements Mutator {
 
     public static final Mutator INSTANCE = new NopMutator();
 
+    private NopMutator() {
+    }
+
     public void put(long delta) {
     }
 
