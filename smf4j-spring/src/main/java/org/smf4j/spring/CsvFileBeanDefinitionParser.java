@@ -91,7 +91,7 @@ public class CsvFileBeanDefinitionParser extends
         }
         tmp = element.getAttribute(LINE_ENDING_ATTR);
         if(StringUtils.hasLength(tmp)) {
-            String lineEnding = System.lineSeparator();
+            String lineEnding = System.getProperty("line.separator");
             if(CR.equals(tmp)) {
                 lineEnding = "\r";
             } else if(LF.equals(tmp)) {
