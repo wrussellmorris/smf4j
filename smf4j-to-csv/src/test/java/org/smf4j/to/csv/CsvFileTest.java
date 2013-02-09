@@ -261,7 +261,7 @@ public class CsvFileTest {
         CsvFileLayout layout = new CsvFileLayout();
         List<String> filters = new ArrayList<String>();
         filters.add("**");
-        layout.setNodeFilters(filters);
+        layout.setFilters(filters);
         return layout;
     }
 }

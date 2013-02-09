@@ -50,6 +50,8 @@ limitations under the License.
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="csv-export" type="csv-file-type" />
+
     <xsd:attributeGroup name="acc-or-calc-attributes">
         <xsd:attribute name="name" use="required">
             <xsd:simpleType>
@@ -193,5 +195,56 @@ limitations under the License.
             <xsd:enumeration value="weeks" />
         </xsd:restriction>
     </xsd:simpleType>
+
+    <xsd:complexType name="csv-file-type">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="filter">
+                    <xsd:complexType>
+                        <xsd:attribute name="value" type="xsd:string" use="required" />
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:choice>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:ID" use="required" />
+        <xsd:attribute name="path" type="xsd:string" use="required" />
+        <xsd:attribute name="timestampColumn" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="timestampColumnHeader" type="xsd:string" use="optional" />
+        <xsd:attribute name="rolloverTimestampPattern" type="xsd:string" use="optional" />
+        <xsd:attribute name="columnTimestampPattern" type="xsd:string" use="optional" />
+        <xsd:attribute name="lineEnding" use="optional" >
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="system" />
+                    <xsd:enumeration value="cr" />
+                    <xsd:enumeration value="lf" />
+                    <xsd:enumeration value="crlf" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="append" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="delimeter" use="optional">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:minLength value="1" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="quote" use="optional" >
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:minLength value="1" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="charset" type="xsd:string" use="optional" />
+        <xsd:attribute name="maxSize" use="optional">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:integer">
+                    <xsd:minInclusive value="0" />
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
 
 </xsd:schema>

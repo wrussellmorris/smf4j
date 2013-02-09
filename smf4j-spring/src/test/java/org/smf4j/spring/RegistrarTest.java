@@ -16,6 +16,8 @@
 package org.smf4j.spring;
 
 import static org.junit.Assert.*;
+import static org.smf4j.spring.TestUtils.*;
+
 import org.junit.Before;
 
 import org.junit.Test;
@@ -39,6 +41,8 @@ import org.smf4j.core.calculator.Ratio;
  */
 public class RegistrarTest {
 
+    private Class<RegistrarTest> c = RegistrarTest.class;
+
     @Before
     public void before()
     throws Exception {
@@ -48,7 +52,7 @@ public class RegistrarTest {
     @Test
     public void autoregistration()
     throws Exception {
-        ApplicationContext context = loadContext("registration-context.xml");
+        ApplicationContext context = loadContext("registrar-context.xml", c);
         assertNotNull(context);
 
         Registrar r1 = context.getBean("registrar-1", Registrar.class);
@@ -114,7 +118,7 @@ public class RegistrarTest {
     @Test
     public void nodeTemplates()
     throws Exception {
-        ApplicationContext context = loadContext("registration-template.xml");
+        ApplicationContext context = loadContext("registrar-template.xml", c);
         assertNotNull(context);
 
         Registrar r = context.getBean("registrar", Registrar.class);
@@ -211,7 +215,7 @@ public class RegistrarTest {
     @Test
     public void counter()
     throws Exception {
-        ApplicationContext context = loadContext("registrar-counter.xml");
+        ApplicationContext context = loadContext("registrar-counter.xml", c);
         assertNotNull(context);
 
         Registrar r1 = context.getBean("registrar-1", Registrar.class);
@@ -252,7 +256,7 @@ public class RegistrarTest {
     @Test
     public void maxcounter()
     throws Exception {
-        ApplicationContext context = loadContext("registrar-maxcounter.xml");
+        ApplicationContext context = loadContext("registrar-maxcounter.xml", c);
         assertNotNull(context);
 
         Registrar r1 = context.getBean("registrar-1", Registrar.class);
@@ -293,7 +297,7 @@ public class RegistrarTest {
     @Test
     public void mincounter()
     throws Exception {
-        ApplicationContext context = loadContext("registrar-mincounter.xml");
+        ApplicationContext context = loadContext("registrar-mincounter.xml", c);
         assertNotNull(context);
 
         Registrar r1 = context.getBean("registrar-1", Registrar.class);
@@ -334,7 +338,7 @@ public class RegistrarTest {
     @Test
     public void custom()
     throws Exception {
-        ApplicationContext context = loadContext("registrar-bean.xml");
+        ApplicationContext context = loadContext("registrar-bean.xml", c);
         assertNotNull(context);
 
         Registrar r1 = context.getBean("registrar-1", Registrar.class);
@@ -370,7 +374,7 @@ public class RegistrarTest {
     @Test
     public void calculators()
     throws Exception {
-        ApplicationContext context = loadContext("registrar-calculators.xml");
+        ApplicationContext context = loadContext("registrar-calculators.xml",c);
         assertNotNull(context);
 
         Registrar r = context.getBean("registrar-1", Registrar.class);
@@ -402,10 +406,6 @@ public class RegistrarTest {
         assertTrue(rg.isNormalize());
         assertEquals(Frequency.MILLIS, rg.getFrequency());
         assertEquals("%.3f%s", rg.getFormatString());
-    }
-
-    private ApplicationContext loadContext(String path) {
-        return new ClassPathXmlApplicationContext(path, getClass());
     }
 
     private void assertCounterMakeup(Accumulator accumulator,

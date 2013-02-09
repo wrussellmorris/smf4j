@@ -54,10 +54,10 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
     private final AtomicBoolean apiClosed = new AtomicBoolean(false);
 
     private String path;
+    private boolean timestampColumn = true;
     private String timestampColumnHeader = DEFAULT_TIMESTAMP_COLUMN_HEADER;
     private String lineEnding = sysLineEnding;
     private boolean append = true;
-    private boolean timestampColumn = true;
     private String delimeter = COMMA;
     private String quote = DEFAULT_QUOTE_CHARACTER;
     private String doubleQuote = quote + quote;
@@ -314,9 +314,17 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
         this.file = new File(path);
     }
 
+    public String getRolloverTimestampPattern() {
+        return rolloverTimestampPattern.toPattern();
+    }
+
     public void setRolloverTimestampPattern(String rolloverTimestampPattern) {
         this.rolloverTimestampPattern = new SimpleDateFormat(
                 rolloverTimestampPattern);
+    }
+
+    public String getColumnTimestampPattern() {
+        return columnTimestampPattern.toPattern();
     }
 
     public void setColumnTimestampPattern(String columnTimestampPattern) {
@@ -404,6 +412,14 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
             timestampColumnHeader = DEFAULT_TIMESTAMP_COLUMN_HEADER;
         }
         this.timestampColumnHeader = timestampColumnHeader;
+    }
+
+    public String getLineEnding() {
+        return lineEnding;
+    }
+
+    public void setLineEnding(String lineEnding) {
+        this.lineEnding = lineEnding;
     }
 
     @Override

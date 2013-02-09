@@ -36,7 +36,7 @@ import org.smf4j.helpers.CalculatorProperty;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class CsvFileLayout {
-    private List<String> nodeFilters = new ArrayList<String>();
+    private List<String> filters = new ArrayList<String>();
     private List<CsvDataColumn> columns;
 
     public void prepare() {
@@ -114,7 +114,7 @@ public class CsvFileLayout {
         Set<RegistryNode> all = new HashSet<RegistryNode>();
 
         Registrar r = RegistrarFactory.getRegistrar();
-        for(String nodeFilter : nodeFilters) {
+        for(String nodeFilter : filters) {
             for(RegistryNode node : r.match(nodeFilter)) {
                 all.add(node);
             }
@@ -133,14 +133,14 @@ public class CsvFileLayout {
         return list;
     }
 
-    public List<String> getNodeFilters() {
-        return nodeFilters;
+    public List<String> getFilters() {
+        return filters;
     }
 
-    public void setNodeFilters(List<String> nodeFilters) {
-        if(nodeFilters == null) {
-            nodeFilters = new ArrayList<String>();
+    public void setFilters(List<String> filters) {
+        if(filters == null) {
+            filters = new ArrayList<String>();
         }
-        this.nodeFilters = nodeFilters;
+        this.filters = filters;
     }
 }

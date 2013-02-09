@@ -29,10 +29,37 @@
             <artifactId>smf4j-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--
+          smf4j dependencies are all <optional> so that usage of smf4j-spring
+          doesn't require import and distribution of all possible smf4j-*
+          libraries.  This means that when you depend on smf4j-spring, you will
+          need to also directly depend on the specific smf4j-* libraries
+          required by the parts of smf4j-spring that you're using.
+          -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>smf4j-core</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>smf4j-to-csv</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>smf4j-to-jmx</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>smf4j-to-slf4j</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

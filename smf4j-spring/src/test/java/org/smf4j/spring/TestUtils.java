@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Russell Morris (wrussellmorris@gmail.com).
+ * Copyright 2013 Russell Morris (wrussellmorris@gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,16 @@
  */
 package org.smf4j.spring;
 
-import static org.junit.Assert.*;
-import static org.smf4j.spring.TestUtils.*;
-
-import org.junit.Before;
-
-import org.junit.Test;
-import org.smf4j.RegistrarFactoryForUnitTests;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class LookupTest {
+public class TestUtils {
 
-    @Before
-    public void before()
-    throws Exception {
-        RegistrarFactoryForUnitTests.reset(true);
-    }
-
-    @Test
-    public void simple()
-    throws Exception {
-        ApplicationContext context = loadContext("lookup.xml",LookupTest.class);
-        MockBean bean = context.getBean("mockBean", MockBean.class);
-        assertNotNull(bean);
-        assertNotNull(bean.getAccumulator());
+    static ApplicationContext loadContext(String path, Class<?> clazz) {
+        return new ClassPathXmlApplicationContext(path, clazz);
     }
 }

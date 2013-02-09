@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:smf4j="http://www.smf4j.org/schema/spring/smf4j"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.smf4j.org/schema/spring/smf4j http://www.smf4j.org/schema/spring/smf4j-spring-1.0.xsd
+">
+
+    <smf4j:csv-export id="defaults" path="foo" />
+
+    <smf4j:csv-export
+        id="all"
+        path="foo"
+        timestampColumn="true"
+        timestampColumnHeader="timestampColumnHeader"
+        rolloverTimestampPattern="HH-mm-ss"
+        columnTimestampPattern="HH:mm:ss"
+        lineEnding="lf"
+        append="false"
+        delimeter="&#009;"
+        quote="'"
+        charset="UTF-8"
+        maxSize="123456">
+        <smf4j:filter value="one" />
+        <smf4j:filter value="two" />
+    </smf4j:csv-export>
+</beans>

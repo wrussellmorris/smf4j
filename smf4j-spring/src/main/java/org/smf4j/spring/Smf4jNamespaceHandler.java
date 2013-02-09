@@ -34,5 +34,8 @@ public class Smf4jNamespaceHandler extends NamespaceHandlerSupport {
         this.registerBeanDefinitionParser(
                 "node-template",
                 new RegistryNodeTemplateDefinitionParser());
+        this.registerBeanDefinitionParser(
+                "csv-export",
+                new CsvFileBeanDefinitionParser());
     }
 }
