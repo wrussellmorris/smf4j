@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.spi;
+package org.smf4j.core.util;
 
 import org.smf4j.Registrar;
 import java.io.FileInputStream;
@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smf4j.RegistrarFactory;
 
 /**
  *
@@ -34,23 +35,23 @@ public class PropertiesFileRegistrarEnabler {
     private static final String OFF = "off";
     private static final String FALSE = "false";
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(
+            PropertiesFileRegistrarEnabler.class);
 
     public static final String DEFAULT_CONFIG_FILE =
-            CLASSPATH_TYPE + "/monitoring.properties";
+            CLASSPATH_TYPE + "/smf4j.properties";
 
-    public void doEnablement(Registrar registrar) {
-        doEnablement(registrar, DEFAULT_CONFIG_FILE);
+    public void doEnablement() {
+        doEnablement(DEFAULT_CONFIG_FILE);
     }
 
-    public void doEnablement(Registrar registrar,
-            List<String> propertyFilePaths) {
+    public void doEnablement(List<String> propertyFilePaths) {
         for(String propertyFilePath : propertyFilePaths) {
-            doEnablement(registrar, propertyFilePath);
+            doEnablement(propertyFilePath);
         }
     }
 
-    public void doEnablement(Registrar registrar, String propertyFilePath) {
+    public void doEnablement(String propertyFilePath) {
         Properties p;
 
         if(propertyFilePath.startsWith(CLASSPATH_TYPE)) {
@@ -62,7 +63,7 @@ public class PropertiesFileRegistrarEnabler {
             p = loadPropertiesFromFile(propertyFilePath);
         }
 
-        loadProperties(registrar, p);
+        loadProperties(p);
     }
 
     protected Properties loadPropertiesFromClasspath(String path) {
@@ -107,16 +108,17 @@ public class PropertiesFileRegistrarEnabler {
         return p;
     }
 
-    protected void loadProperties(Registrar registrar, Properties p) {
+    protected void loadProperties(Properties p) {
+        Registrar r = RegistrarFactory.getRegistrar();
         for(Map.Entry<Object, Object> entry : p.entrySet()) {
             String node = entry.getKey().toString();
             String enablement = entry.getValue().toString();
             Boolean onOrOff = onOrOff(enablement);
             if(onOrOff != null) {
-                registrar.setOn(node, onOrOff.booleanValue());
+                r.setOn(node, onOrOff);
             } else {
                 log.warn("Unknown enablement setting '{}' for node '{}'.  "
-                        + "Valid values are one of 'true', 'false', 'osn', "
+                        + "Valid values are one of 'true', 'false', 'on', "
                         + "or 'off'.",
                         enablement,
                         node);

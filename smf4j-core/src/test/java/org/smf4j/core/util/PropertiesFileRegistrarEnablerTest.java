@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.spi;
+package org.smf4j.core.util;
 
-import org.smf4j.spi.PropertiesFileRegistrarEnabler;
 import org.smf4j.Registrar;
 import static org.junit.Assert.*;
-import static org.easymock.EasyMock.*;
 
 import java.io.File;
 import java.security.CodeSource;
@@ -26,9 +24,11 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.junit.Ignore;
+import org.junit.Before;
 
 import org.junit.Test;
+import org.smf4j.RegistrarFactory;
+import org.smf4j.RegistrarFactoryForUnitTests;
 
 /**
  *
@@ -42,6 +42,11 @@ public class PropertiesFileRegistrarEnablerTest {
             "org/smf4j/standalone/props1.properties";
     private final String PROPS2_CP =
             "org/smf4j/standalone/props2.properties";
+
+    @Before
+    public void before() {
+        RegistrarFactoryForUnitTests.reset(false);
+    }
 
     @Test
     public void loadPropertiesFromClasspathTest()
@@ -57,7 +62,6 @@ public class PropertiesFileRegistrarEnablerTest {
     }
 
     @Test
-    @Ignore
     public void loadPropertiesFromFileTest()
     throws Exception {
         PropertiesFileRegistrarEnabler pfre =
@@ -92,32 +96,24 @@ public class PropertiesFileRegistrarEnablerTest {
     @Test
     public void loadProps()
     throws Exception {
-        Registrar registrar = createMock(Registrar.class);
-        registrar.setOn(FOO_BAR, true);
-        expectLastCall();
-        registrar.setOn(FOO_BAZ, true);
-        expectLastCall();
-        registrar.setOn(FOO_BAZ, false);
-        expectLastCall();
-
-        replay(registrar);
-
         PropertiesFileRegistrarEnabler pfre =
                 new PropertiesFileRegistrarEnabler();
 
+        Registrar r = RegistrarFactory.getRegistrar();
         List<String> paths = new ArrayList<String>();
         paths.add("classpath:" + PROPS1_CP);
         paths.add("classpath:" + PROPS2_CP);
-        pfre.doEnablement(registrar, paths);
+        pfre.doEnablement(paths);
 
-        verify(registrar);
-    }
+        assertTrue(r.getNode(FOO_BAR).isOn());
+        assertFalse(r.getNode(FOO_BAZ).isOn());
+   }
 
     private File getFilePath(Class<?> clazz) {
         ProtectionDomain pd = clazz.getProtectionDomain();
         CodeSource cs = pd.getCodeSource();
         String extForm = cs.getLocation().toExternalForm();
-        File file = new File(extForm.replace("file:/", ""));
+        File file = new File(extForm.replace("file:", ""));
         return file;
     }
 }
