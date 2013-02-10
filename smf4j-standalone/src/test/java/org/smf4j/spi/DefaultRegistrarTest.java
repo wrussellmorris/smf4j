@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.smf4j.Mutator;
+import org.smf4j.helpers.NopAccumulator;
 
 /**
  *
@@ -102,7 +103,8 @@ public class DefaultRegistrarTest {
         assertEquals("Not 2 accumulators", 2, root.getAccumulators().size());
         assertEquals("one not present", one, root.getAccumulator("one"));
         assertEquals("two not present", two, root.getAccumulator("two"));
-        assertNull("three is present", root.getAccumulator("three"));
+        assertSame("three is present", NopAccumulator.INSTANCE,
+                root.getAccumulator("three"));
     }
 
     @Test
@@ -143,14 +145,16 @@ public class DefaultRegistrarTest {
                 a_first.getAccumulators().size());
         assertEquals("one not present", one, a_first.getAccumulator("one"));
         assertEquals("two not present", two, a_first.getAccumulator("two"));
-        assertNull("ten is present", a_first.getAccumulator("ten"));
+        assertSame("ten is present", NopAccumulator.INSTANCE,
+                a_first.getAccumulator("ten"));
 
         assertEquals("Not 2 accumulators in b.second", 2,
                 b_second.getAccumulators().size());
         assertEquals("three not present", three,
                 b_second.getAccumulator("three"));
         assertEquals("four not present", four, b_second.getAccumulator("four"));
-        assertNull("ten is present", b_second.getAccumulator("ten"));
+        assertSame("ten is present", NopAccumulator.INSTANCE,
+                b_second.getAccumulator("ten"));
     }
 
     private Accumulator createAcc() {
@@ -224,7 +228,8 @@ public class DefaultRegistrarTest {
         assertEquals("Not 2 accumulators", 2, root.getAccumulators().size());
         assertEquals("one not present", one, root.getAccumulator("one"));
         assertEquals("two not present", two, root.getAccumulator("two"));
-        assertNull("three is present", root.getAccumulator("three"));
+        assertSame("three is present", NopAccumulator.INSTANCE,
+                root.getAccumulator("three"));
 
         assertTrue("Couldn't unregister one", root.unregister("one", one));
         assertTrue("Couldn't unregister two", root.unregister("two", two));

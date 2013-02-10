@@ -58,6 +58,7 @@ public class RegistrarBeanDefinitionParser extends
                 parseChildren(parserContext, element);
 
         builder.addPropertyValue(NODES_ATTR, nodes);
+        builder.setLazyInit(false);
     }
 
     protected ManagedList<RuntimeBeanReference> parseChildren(

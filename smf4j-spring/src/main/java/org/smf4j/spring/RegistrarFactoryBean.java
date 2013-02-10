@@ -24,6 +24,7 @@ import org.smf4j.Registrar;
 import org.smf4j.RegistryNode;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
@@ -33,7 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class RegistrarFactoryBean implements FactoryBean<Registrar>,
-        ApplicationContextAware{
+        ApplicationContextAware, InitializingBean {
 
     private ApplicationContext applicationContext;
     private boolean initialized;
@@ -47,9 +48,7 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
 
     @Override
     public Registrar getObject() throws Exception {
-        if(!initialized) {
-            initialize();
-        }
+        initialize();
         return getRegistrar();
     }
 
@@ -74,9 +73,12 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
     }
 
     protected void initialize() {
+        if(initialized) {
+            return;
+        }
+
         initialized = true;
         Registrar r = RegistrarFactory.getRegistrar();
-
         for(RegistryNodeProxy nodeProxy : nodeProxies) {
             registerProxy(r, nodeProxy, "");
         }
@@ -120,5 +122,9 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        initialize();
     }
 }

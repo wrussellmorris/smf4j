@@ -114,15 +114,14 @@ class DefaultRegistrar implements Registrar {
 
         DefaultRegistryNode cur = (DefaultRegistryNode)getRootNode();
         for(String part : parts) {
-            DefaultRegistryNode node = (DefaultRegistryNode)
-                    cur.getChildNode(part);
-            if(node == null) {
+            RegistryNode node = cur.getChildNode(part);
+            if(node == NopRegistryNode.INSTANCE) {
                 // No node yet - we need to create it
                 node = cur.add(part, new DefaultRegistryNode(this, cur, part));
             }
 
             // Next!
-            cur = node;
+            cur = (DefaultRegistryNode)node;
         }
         return cur;
     }

@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
+import org.smf4j.helpers.NopAccumulator;
+import org.smf4j.helpers.NopCalculator;
+import org.smf4j.helpers.NopRegistryNode;
 
 /**
  *
@@ -205,7 +208,11 @@ class DefaultRegistryNode implements RegistryNode {
 
     @Override
     public Accumulator getAccumulator(String name) {
-        return accumulators.get(name);
+        Accumulator result = accumulators.get(name);
+        if(result == null) {
+            result = NopAccumulator.INSTANCE;
+        }
+        return result;
     }
 
     @Override
@@ -215,7 +222,11 @@ class DefaultRegistryNode implements RegistryNode {
 
     @Override
     public Calculator getCalculator(String name) {
-        return calcuations.get(name);
+        Calculator result = calcuations.get(name);
+        if(result == null) {
+            result = NopCalculator.INSTANCE;
+        }
+        return result;
     }
 
     @Override
@@ -225,7 +236,11 @@ class DefaultRegistryNode implements RegistryNode {
 
     @Override
     public RegistryNode getChildNode(String name) {
-        return childNodes.get(name);
+        RegistryNode result = childNodes.get(name);
+        if(result == null) {
+            result = NopRegistryNode.INSTANCE;
+        }
+        return result;
     }
 
     @Override
