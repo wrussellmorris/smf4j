@@ -23,25 +23,22 @@ limitations under the License.
 
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
 
-    <xsd:element name="registrar">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:choice minOccurs="0" maxOccurs="unbounded">
-                    <xsd:element name="node" type="node-type" minOccurs="0" maxOccurs="unbounded" />
-                    <xsd:element name="node-template" type="node-template-ref-type" minOccurs="0" maxOccurs="unbounded" />
-                </xsd:choice>
-            </xsd:sequence>
-            <xsd:attribute name="id" type="xsd:ID" use="optional" />
-        </xsd:complexType>
-    </xsd:element>
-
+    <xsd:element name="registrar" type="registrar-type" />
     <xsd:element name="node-template" type="node-template-type" />
-
     <xsd:element name="resolve" type="resolve-type" />
-
     <xsd:element name="csv-export" type="csv-export-type" />
-
     <xsd:element name="file-enabler" type="file-enabler-type" />
+    <xsd:element name="jmx-export" type="jmx-export-type" />
+
+    <xsd:complexType name="registrar-type">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="node" type="node-type" minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element name="node-template" type="node-template-ref-type" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:choice>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:ID" use="optional" />
+    </xsd:complexType>
 
     <xsd:attributeGroup name="acc-or-calc-attributes">
         <xsd:attribute name="name" use="required">
@@ -236,6 +233,7 @@ limitations under the License.
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
+        <xsd:attribute name="registrar" type="xsd:string" use="optional" />
     </xsd:complexType>
 
     <xsd:complexType name="resolve-type">
@@ -267,4 +265,10 @@ limitations under the License.
             <xsd:minLength value="1" />
         </xsd:restriction>
     </xsd:simpleType>
+
+    <xsd:complexType name="jmx-export-type">
+        <xsd:attribute name="id" type="xsd:ID" use="optional" />
+        <xsd:attribute name="autopublish" type="xsd:boolean" use="optional" default="true" />
+        <xsd:attribute name="registrar" type="xsd:string" use="optional" />
+    </xsd:complexType>
 </xsd:schema>

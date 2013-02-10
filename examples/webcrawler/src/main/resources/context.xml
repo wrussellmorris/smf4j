@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:task="http://www.springframework.org/schema/task"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:smf4j="http://www.smf4j.org/schema/spring/smf4j"
        xsi:schemaLocation="
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
             http://www.smf4j.org/schema/spring/smf4j http://www.smf4j.org/schema/spring/smf4j-spring-1.0.xsd
+            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
 ">
 
-    <smf4j:registrar id="r" >
+    <task:scheduler id="scheduler" pool-size="1" />
+    <task:scheduled-tasks scheduler="scheduler">
+        <task:scheduled ref="csv-export" method="run" fixed-delay="5000" />
+    </task:scheduled-tasks>
+
+    <smf4j:registrar>
         <smf4j:node name="crawler">
             <smf4j:counter name="download" contention="high" duration="windowed" intervals-type="nanos-powers-of-2" time-window="32" intervals="5" />
             <smf4j:counter name="processedPages" contention="high" duration="windowed" intervals-type="nanos-powers-of-2" time-window="32" intervals="5" />
@@ -16,4 +23,9 @@
         </smf4j:node>
     </smf4j:registrar>
 
+    <smf4j:csv-export id="csv-export" path="target/crawlstats.csv">
+        <smf4j:filter value="**" />
+    </smf4j:csv-export>
+    <smf4j:file-enabler />
+    <smf4j:jmx-export />
 </beans>

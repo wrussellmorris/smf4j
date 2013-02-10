@@ -15,7 +15,6 @@
  */
 package org.smf4j.spring;
 
-import org.smf4j.core.util.PropertiesFileRegistrarEnabler;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -41,5 +40,8 @@ public class Smf4jNamespaceHandler extends NamespaceHandlerSupport {
         this.registerBeanDefinitionParser(
                 "file-enabler",
                 new FileEnablerBeanDefinitionParser());
+        this.registerBeanDefinitionParser(
+                "jmx-export",
+                new JmxExporterBeanDefinitionParser());
     }
 }

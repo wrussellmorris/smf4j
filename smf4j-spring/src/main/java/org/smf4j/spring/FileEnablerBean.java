@@ -32,7 +32,11 @@ public class FileEnablerBean implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         PropertiesFileRegistrarEnabler pfre =
                 new PropertiesFileRegistrarEnabler();
-        pfre.doEnablement(getPaths());
+        if(paths == null || paths.isEmpty()) {
+            pfre.doEnablement();
+        } else {
+            pfre.doEnablement(getPaths());
+        }
     }
 
     public List<String> getPaths() {
