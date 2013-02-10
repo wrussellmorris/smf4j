@@ -39,7 +39,7 @@ public class PropertiesFileRegistrarEnabler {
             PropertiesFileRegistrarEnabler.class);
 
     public static final String DEFAULT_CONFIG_FILE =
-            CLASSPATH_TYPE + "/smf4j.properties";
+            CLASSPATH_TYPE + "smf4j.properties";
 
     public void doEnablement() {
         doEnablement(DEFAULT_CONFIG_FILE);

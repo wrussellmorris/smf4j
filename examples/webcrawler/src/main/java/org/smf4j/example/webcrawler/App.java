@@ -8,7 +8,6 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import java.io.File;
 import org.smf4j.Accumulator;
 import org.smf4j.RegistrarFactory;
-import org.smf4j.to.jmx.JmxRegistrarPublisher;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class App {
@@ -17,13 +16,10 @@ public class App {
         ClassPathXmlApplicationContext context =
                 new ClassPathXmlApplicationContext("context.xml");
         context.start();
-        RegistrarFactory.getRegistrar().getRootNode().setOn(true);
-        JmxRegistrarPublisher p = new JmxRegistrarPublisher();
-        p.publish();
         try {
             String rootFolder = getDataFolder();
             int numberOfCrawlers = 8;
-            Accumulator downloaded = RegistrarFactory.getRegistrar().getNode("crawler").getAccumulator("download");
+            Accumulator downloaded = RegistrarFactory.getAccumulator("crawler:download");
 
             CrawlConfig config = new CrawlConfig();
             config.setCrawlStorageFolder(rootFolder);
@@ -35,13 +31,12 @@ public class App {
             RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
             CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
-            controller.addSeed("http://www.ics.uci.edu/");
+            controller.addSeed("http://static.springsource.org/spring/docs/3.0.0.M3/reference/html/");
             controller.start(Smf4jDataCollectorCrawler.class, numberOfCrawlers);
         } finally {
             if(context != null) {
                 context.close();
             }
-            p.unpublish();
         }
     }
 

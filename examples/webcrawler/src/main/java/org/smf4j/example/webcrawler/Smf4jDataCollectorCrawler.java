@@ -33,7 +33,6 @@ import org.smf4j.RegistryNode;
 public class Smf4jDataCollectorCrawler extends WebCrawler {
 
     private final RegistryNode crawlerNode = RegistrarFactory.getRegistrar().getNode("crawler");
-    private final Accumulator download = crawlerNode.getAccumulator("download");
     private final Accumulator processedPages = crawlerNode.getAccumulator("processedPages");
     private final Accumulator linksFound = crawlerNode.getAccumulator("linksFound");
     private final Accumulator textSize = crawlerNode.getAccumulator("textSize");
@@ -47,7 +46,8 @@ public class Smf4jDataCollectorCrawler extends WebCrawler {
     @Override
     public boolean shouldVisit(WebURL url) {
         String href = url.getURL().toLowerCase();
-        return !filters.matcher(href).matches() && href.startsWith("http://www.ics.uci.edu/");
+        return true;
+        //return !filters.matcher(href).matches() && href.startsWith("http://regularguys.com/");
     }
 
     @Override

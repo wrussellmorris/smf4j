@@ -56,6 +56,7 @@ public class CsvFileBeanDefinitionParser extends
     private static final String VALUE_ATTR = "value";
     private static final String FILTERS_ATTR = "filters";
     private static final String LAYOUT_ATTR = "layout";
+    private static final String REGISTRAR_ATTR = "registrar";
 
     private static final String CR = "cr";
     private static final String LF = "lf";
@@ -72,6 +73,7 @@ public class CsvFileBeanDefinitionParser extends
         parseTopLevelProperties(element, context, builder);
         String layoutId = createLayout(element, context, builder);
         builder.addPropertyReference(LAYOUT_ATTR, layoutId);
+        builder.setDestroyMethodName("close");
     }
 
     private void parseTopLevelProperties(Element element, ParserContext context,
@@ -148,6 +150,17 @@ public class CsvFileBeanDefinitionParser extends
         if(StringUtils.hasLength(tmp)) {
             builder.addPropertyValue(MAXSIZE_ATTR, tmp);
         }
+
+        tmp = element.getAttribute(REGISTRAR_ATTR);
+        if(StringUtils.hasLength(tmp)) {
+            for(String id : StringUtils.commaDelimitedListToSet(tmp)) {
+                builder.addDependsOn(id);
+            }
+        } else {
+            builder.addDependsOn(
+                    RegistrarBeanDefinitionParser.MASTER_REGISTRAR_ID);
+        }
+        builder.setLazyInit(false);
     }
 
     private String createLayout(Element element, ParserContext context,

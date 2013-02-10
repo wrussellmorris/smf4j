@@ -81,6 +81,7 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
                 DEFAULT_FILE_TIMESTAMP_PATTERN);
         columnTimestampPattern = new SimpleDateFormat(
                 DEFAULT_DATA_TIMESTAMP_PATTERN);
+        numberFormat.setGroupingUsed(false);
     }
 
     public void write() {
@@ -261,6 +262,7 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
 
         sb.append(lineEnding);
         w.write(sb.toString());
+        w.flush();
     }
 
     protected void writeColumn(CsvDataColumn col, StringBuilder sb) {
