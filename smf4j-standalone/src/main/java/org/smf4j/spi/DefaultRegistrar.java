@@ -21,11 +21,15 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smf4j.Accumulator;
+import org.smf4j.Calculator;
 import org.smf4j.helpers.NopRegistryNode;
 import org.smf4j.RegistryNode;
 import org.smf4j.Registrar;
 import org.smf4j.helpers.GlobMatch;
 import org.smf4j.helpers.GlobMatcher;
+import org.smf4j.helpers.NopAccumulator;
+import org.smf4j.helpers.NopCalculator;
 
 /**
  *
@@ -45,13 +49,31 @@ class DefaultRegistrar implements Registrar {
     }
 
     @Override
+    public RegistryNode getRootNode() {
+        return root;
+    }
+
+    @Override
     public RegistryNode getNode(String fullNodeName) {
         return findNode(fullNodeName);
     }
 
     @Override
-    public RegistryNode getRootNode() {
-        return root;
+    public Accumulator getAccumulator(String memberPath) {
+        String[] split = splitMemberPath(memberPath);
+        if(split == null) {
+            return NopAccumulator.INSTANCE;
+        }
+        return findNode(split[0]).getAccumulator(split[1]);
+    }
+
+    @Override
+    public Calculator getCalculator(String memberPath) {
+        String[] split = splitMemberPath(memberPath);
+        if(split == null) {
+            return NopCalculator.INSTANCE;
+        }
+        return findNode(split[0]).getCalculator(split[1]);
     }
 
     @Override
@@ -139,6 +161,19 @@ class DefaultRegistrar implements Registrar {
         final GlobMatcher matcher = new GlobMatcher(globPattern);
         dfs(getRootNode(), new MatcherCall(list, matcher));
         return list;
+    }
+
+    private String[] splitMemberPath(String memberPath) {
+        if(memberPath == null) {
+            return null;
+        }
+
+        String[] results = memberPath.split(":");
+        if(results.length != 2) {
+            return null;
+        }
+
+        return results;
     }
 
     interface RegistryNodeCall {

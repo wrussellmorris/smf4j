@@ -28,7 +28,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class LookupTest {
+public class ResolveTest {
 
     @Before
     public void before()
@@ -39,7 +39,8 @@ public class LookupTest {
     @Test
     public void simple()
     throws Exception {
-        ApplicationContext context = loadContext("lookup.xml",LookupTest.class);
+        ApplicationContext context = loadContext("resolve.xml",
+                ResolveTest.class);
         MockBean bean = context.getBean("mockBean", MockBean.class);
         assertNotNull(bean);
         assertNotNull(bean.getAccumulator());

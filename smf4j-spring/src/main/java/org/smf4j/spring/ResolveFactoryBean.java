@@ -13,27 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j;
+package org.smf4j.spring;
 
-import org.smf4j.helpers.GlobMatch;
+import org.springframework.beans.factory.FactoryBean;
+import org.smf4j.Accumulator;
+import org.smf4j.RegistrarFactory;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public interface Registrar {
+public class ResolveFactoryBean implements FactoryBean<Accumulator> {
 
-    RegistryNode getRootNode();
+    private String path;
 
-    RegistryNode getNode(String fullNodeName);
+    @Override
+    public Class<?> getObjectType() {
+        return Accumulator.class;
+    }
 
-    Accumulator getAccumulator(String path);
+    @Override
+    public Accumulator getObject() throws Exception {
+        return RegistrarFactory.getAccumulator(path);
+    }
 
-    Calculator getCalculator(String path);
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
 
-    Iterable<GlobMatch> match(String globPattern);
+    public String getPath() {
+        return path;
+    }
 
-    void setOn(String fullNodeName, boolean on);
-
-    void clearOn(String fullNodeName);
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

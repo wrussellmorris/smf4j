@@ -37,12 +37,12 @@ limitations under the License.
 
     <xsd:element name="node-template" type="node-template-type" />
 
-    <xsd:element name="lookup">
+    <xsd:element name="resolve">
         <xsd:complexType>
             <xsd:attribute name="path" use="required">
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:string">
-                        <xsd:pattern value="[a-zA-Z0-9\-_\.]+" />
+                        <xsd:pattern value="[a-zA-Z0-9\-_\.]+:[a-zA-Z0-9\-_]+" />
                     </xsd:restriction>
                 </xsd:simpleType>
             </xsd:attribute>

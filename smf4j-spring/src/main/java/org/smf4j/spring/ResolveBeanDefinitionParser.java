@@ -15,8 +15,6 @@
  */
 package org.smf4j.spring;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -27,17 +25,15 @@ import org.w3c.dom.Element;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class LookupBeanDefinitionParser extends
+public class ResolveBeanDefinitionParser extends
         AbstractSingleBeanDefinitionParser {
 
     private static final String REGISTRAR_ATTR = "registrar";
     private static final String PATH_ATTR = "path";
-    private static final String NODE_ATTR = "node";
-    private static final String ACCUMULATOR_ATTR = "accumulator";
 
     @Override
     protected String getBeanClassName(Element element) {
-        return LookupFactoryBean.class.getCanonicalName();
+        return ResolveFactoryBean.class.getCanonicalName();
     }
 
     @Override
@@ -49,12 +45,12 @@ public class LookupBeanDefinitionParser extends
         String path = element.getAttribute(PATH_ATTR);
         if(!StringUtils.hasLength(path)) {
             context.getReaderContext().error(
-                    "'lookup' elements must have a 'path' attribute.",
+                    "'resolve' elements must have a 'path' attribute.",
                     element);
         }
 
-        // Parse the path and set it
-        parseAndSetPath(path, element, context, builder);
+        // Set the path
+        builder.addPropertyValue(PATH_ATTR, path);
 
         // Make sure that spring knows we depend on a <registrar>
         // bean definition.
@@ -67,31 +63,5 @@ public class LookupBeanDefinitionParser extends
             builder.addDependsOn(
                     RegistrarBeanDefinitionParser.MASTER_REGISTRAR_ID);
         }
-    }
-
-    protected void parseAndSetPath(String path, Element element,
-            ParserContext context, BeanDefinitionBuilder builder) {
-        String[] parts = path.split("\\.");
-        if(parts.length == 0) {
-            context.getReaderContext().error(
-                    "'lookup' elements must have a 'path' attribute.",
-                    element);
-        }
-
-        List<String> nodeParts = new ArrayList<String>();
-        for(String part : parts) {
-            if(part.length() == 0) {
-                context.getReaderContext().error(
-                        "'lookup' element 'path' cannot have empty path parts.",
-                        element);
-            }
-            nodeParts.add(part);
-        }
-
-        String accumulator = nodeParts.remove(nodeParts.size()-1);
-        String node = StringUtils.collectionToDelimitedString(nodeParts, ".");
-
-        builder.addPropertyValue(NODE_ATTR, node);
-        builder.addPropertyValue(ACCUMULATOR_ATTR, accumulator);
     }
 }

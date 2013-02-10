@@ -65,7 +65,7 @@ class CounterConfig {
         this.counterType = counterType;
     }
 
-    ContentionType getConcurrencyType() {
+    ContentionType getContentionType() {
         return contentionType;
     }
 

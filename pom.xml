@@ -33,6 +33,7 @@
         <module>smf4j-to-jmx</module>
         <module>smf4j-test</module>
 
+        <module>testharness</module>
         <module>examples/webcrawler</module>
     </modules>
 

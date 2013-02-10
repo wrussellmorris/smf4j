@@ -29,8 +29,8 @@ public class Smf4jNamespaceHandler extends NamespaceHandlerSupport {
                 "registrar",
                 new RegistrarBeanDefinitionParser());
         this.registerBeanDefinitionParser(
-                "lookup",
-                new LookupBeanDefinitionParser());
+                "resolve",
+                new ResolveBeanDefinitionParser());
         this.registerBeanDefinitionParser(
                 "node-template",
                 new RegistryNodeTemplateDefinitionParser());

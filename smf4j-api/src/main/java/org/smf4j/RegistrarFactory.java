@@ -69,6 +69,18 @@ public final class RegistrarFactory {
         }
     }
 
+    public static RegistryNode getNode(String fullNodeName) {
+        return getRegistrar().getNode(fullNodeName);
+    }
+
+    public static Accumulator getAccumulator(String path) {
+        return getRegistrar().getAccumulator(path);
+    }
+
+    public static Calculator getCalculator(String path) {
+        return getRegistrar().getCalculator(path);
+    }
+
     private static void initialize() {
         while(true) {
             int curState = initState.get();

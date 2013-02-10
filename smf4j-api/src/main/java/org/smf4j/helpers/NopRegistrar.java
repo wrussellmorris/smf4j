@@ -17,6 +17,8 @@ package org.smf4j.helpers;
 
 import java.util.Collections;
 import java.util.List;
+import org.smf4j.Accumulator;
+import org.smf4j.Calculator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistryNode;
 
@@ -54,6 +56,14 @@ public class NopRegistrar implements Registrar {
 
     @Override
     public void clearOn(String fullNodeName) {
+    }
+
+    public Accumulator getAccumulator(String path) {
+        return NopAccumulator.INSTANCE;
+    }
+
+    public Calculator getCalculator(String path) {
+        return NopCalculator.INSTANCE;
     }
 
 }
