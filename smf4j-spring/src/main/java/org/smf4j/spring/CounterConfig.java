@@ -27,7 +27,7 @@ class CounterConfig {
     public static final String INTERVALS_ATTR = "intervals";
 
     private CounterType counterType = CounterType.NA;
-    private ConcurrencyType concurrencyType = ConcurrencyType.NA;
+    private ContentionType contentionType = ContentionType.NA;
     private DurationType durationType = DurationType.NA;
     private IntervalsType intervalsType = IntervalsType.NA;
     private Integer timeWindow = null;
@@ -35,7 +35,7 @@ class CounterConfig {
 
     CounterConfig(CounterType counterType, Element element) {
         this.counterType = counterType;
-        this.concurrencyType = ConcurrencyType.from(element);
+        this.contentionType = ContentionType.from(element);
         this.durationType = DurationType.from(element);
         this.intervalsType = IntervalsType.from(element);
 
@@ -65,12 +65,12 @@ class CounterConfig {
         this.counterType = counterType;
     }
 
-    ConcurrencyType getConcurrencyType() {
-        return concurrencyType;
+    ContentionType getConcurrencyType() {
+        return contentionType;
     }
 
-    void setConcurrencyType(ConcurrencyType concurrencyType) {
-        this.concurrencyType = concurrencyType;
+    void setConcurrencyType(ContentionType concurrencyType) {
+        this.contentionType = concurrencyType;
     }
 
     DurationType getDurationType() {
@@ -105,21 +105,21 @@ class CounterConfig {
         this.numIntervals = numIntervals;
     }
 
-    enum ConcurrencyType {
+    enum ContentionType {
         NA      (null),
         UNKNOWN (null),
         HIGH    ("high"),
         LOW     ("low");
 
-        public static final String ATTR_NAME = "concurrency";
+        public static final String ATTR_NAME = "contention";
         private final String str;
-        private ConcurrencyType(String str) {
+        private ContentionType(String str) {
             this.str = str;
         }
-        public static ConcurrencyType from(Element element) {
+        public static ContentionType from(Element element) {
             String attr = element.getAttribute(ATTR_NAME);
             if(StringUtils.hasLength(attr)) {
-                for(ConcurrencyType tmp : ConcurrencyType.values()) {
+                for(ContentionType tmp : ContentionType.values()) {
                     if(tmp.str != null && tmp.str.equals(attr) ) {
                         return tmp;
                     }

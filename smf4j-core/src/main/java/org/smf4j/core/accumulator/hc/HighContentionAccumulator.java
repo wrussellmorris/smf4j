@@ -24,13 +24,13 @@ import org.smf4j.helpers.NopMutator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class HighConcurrencyAccumulator extends AbstractAccumulator {
+public final class HighContentionAccumulator extends AbstractAccumulator {
 
     private final MutatorRegistry mutatorRegistry;
     private final long timeWindow;
     private final int intervals;
 
-    public HighConcurrencyAccumulator(MutatorFactory mutatorFactory) {
+    public HighContentionAccumulator(MutatorFactory mutatorFactory) {
         this.mutatorRegistry = new MutatorRegistry(mutatorFactory);
         this.timeWindow = mutatorFactory.getTimeWindow();
         this.intervals = mutatorFactory.getIntervals();

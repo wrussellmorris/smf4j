@@ -11,14 +11,14 @@
         <smf4j:node name="counters">
             <!-- [h|l]_[u|[w_[s|2]]]_ -->
             <smf4j:max name="m_" />
-            <smf4j:max name="m_l" concurrency="low" />
-            <smf4j:max name="m_h" concurrency="high" />
-            <smf4j:max name="m_l_u" concurrency="low" duration="unbounded" />
-            <smf4j:max name="m_l_w_s" concurrency="low" duration="windowed" intervals-type="seconds" time-window="1" intervals="10" />
-            <smf4j:max name="m_l_w_2" concurrency="low" duration="windowed" intervals-type="nanos-powers-of-2" time-window="28" intervals="5" />
-            <smf4j:max name="m_h_u" concurrency="high" duration="unbounded" />
-            <smf4j:max name="m_h_w_s" concurrency="high" duration="windowed" intervals-type="seconds" time-window="1" intervals="10" />
-            <smf4j:max name="m_h_w_2" concurrency="high" duration="windowed" intervals-type="nanos-powers-of-2" time-window="28" intervals="5" />
+            <smf4j:max name="m_l" contention="low" />
+            <smf4j:max name="m_h" contention="high" />
+            <smf4j:max name="m_l_u" contention="low" duration="unbounded" />
+            <smf4j:max name="m_l_w_s" contention="low" duration="windowed" intervals-type="seconds" time-window="1" intervals="10" />
+            <smf4j:max name="m_l_w_2" contention="low" duration="windowed" intervals-type="nanos-powers-of-2" time-window="28" intervals="5" />
+            <smf4j:max name="m_h_u" contention="high" duration="unbounded" />
+            <smf4j:max name="m_h_w_s" contention="high" duration="windowed" intervals-type="seconds" time-window="1" intervals="10" />
+            <smf4j:max name="m_h_w_2" contention="high" duration="windowed" intervals-type="nanos-powers-of-2" time-window="28" intervals="5" />
         </smf4j:node>
     </smf4j:registrar>
 </beans>

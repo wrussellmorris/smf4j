@@ -23,12 +23,12 @@ import org.smf4j.core.accumulator.MutatorFactory;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class LowConcurrencyAccumulator extends AbstractAccumulator {
+public final class LowContentionAccumulator extends AbstractAccumulator {
 
     private final MutatorFactory mutatorFactory;
     private final Mutator mutator;
 
-    public LowConcurrencyAccumulator(MutatorFactory mutatorFactory) {
+    public LowContentionAccumulator(MutatorFactory mutatorFactory) {
         this.mutatorFactory = mutatorFactory;
         this.mutator = mutatorFactory.createMutator();
     }

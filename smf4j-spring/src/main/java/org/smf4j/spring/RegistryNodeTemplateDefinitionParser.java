@@ -18,14 +18,14 @@ package org.smf4j.spring;
 import java.util.List;
 import org.smf4j.core.accumulator.PowersOfTwoIntervalStrategy;
 import org.smf4j.core.accumulator.SecondsIntervalStrategy;
-import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
+import org.smf4j.core.accumulator.hc.HighContentionAccumulator;
 import org.smf4j.core.accumulator.hc.UnboundedAddMutator;
 import org.smf4j.core.accumulator.hc.UnboundedMaxMutator;
 import org.smf4j.core.accumulator.hc.UnboundedMinMutator;
 import org.smf4j.core.accumulator.hc.WindowedAddMutator;
 import org.smf4j.core.accumulator.hc.WindowedMaxMutator;
 import org.smf4j.core.accumulator.hc.WindowedMinMutator;
-import org.smf4j.core.accumulator.lc.LowConcurrencyAccumulator;
+import org.smf4j.core.accumulator.lc.LowContentionAccumulator;
 import org.smf4j.core.calculator.Frequency;
 import org.smf4j.core.calculator.Normalizer;
 import org.smf4j.core.calculator.RangeGroupCalculator;
@@ -192,7 +192,7 @@ public class RegistryNodeTemplateDefinitionParser extends
             CounterConfig config) {
         String name = getName(context, element);
 
-        if(config.getConcurrencyType() == CounterConfig.ConcurrencyType.UNKNOWN) {
+        if(config.getConcurrencyType() == CounterConfig.ContentionType.UNKNOWN) {
             context.getReaderContext().error("Unknown concurrency type.",
                     context.extractSource(element));
             return null;
@@ -236,10 +236,10 @@ public class RegistryNodeTemplateDefinitionParser extends
         switch(config.getConcurrencyType()) {
             case HIGH:
             case NA:
-                accumulatorClass = HighConcurrencyAccumulator.class;
+                accumulatorClass = HighContentionAccumulator.class;
                 break;
             case LOW:
-                accumulatorClass = LowConcurrencyAccumulator.class;
+                accumulatorClass = LowContentionAccumulator.class;
                 break;
             default:
                 context.getReaderContext().error("Unexpected concurrency type.",
@@ -267,21 +267,21 @@ public class RegistryNodeTemplateDefinitionParser extends
         switch(config.getCounterType()) {
             case ADD:
                 mutatorFactoryClass =
-                        (config.getConcurrencyType() == CounterConfig.ConcurrencyType.HIGH) ?
+                        (config.getConcurrencyType() == CounterConfig.ContentionType.HIGH) ?
                         UnboundedAddMutator.Factory.class :
                         org.smf4j.core.accumulator.lc.UnboundedAddMutator
                         .Factory.class;
                 break;
             case MIN:
                 mutatorFactoryClass =
-                        (config.getConcurrencyType() == CounterConfig.ConcurrencyType.HIGH) ?
+                        (config.getConcurrencyType() == CounterConfig.ContentionType.HIGH) ?
                         UnboundedMinMutator.Factory.class :
                         org.smf4j.core.accumulator.lc.UnboundedMinMutator
                         .Factory.class;
                 break;
             case MAX:
                 mutatorFactoryClass =
-                        (config.getConcurrencyType() == CounterConfig.ConcurrencyType.HIGH) ?
+                        (config.getConcurrencyType() == CounterConfig.ContentionType.HIGH) ?
                         UnboundedMaxMutator.Factory.class :
                         org.smf4j.core.accumulator.lc.UnboundedMaxMutator
                         .Factory.class;
@@ -305,21 +305,21 @@ public class RegistryNodeTemplateDefinitionParser extends
         switch(config.getCounterType()) {
             case ADD:
                 mutatorFactoryClass =
-                        (config.getConcurrencyType() == CounterConfig.ConcurrencyType.HIGH) ?
+                        (config.getConcurrencyType() == CounterConfig.ContentionType.HIGH) ?
                         WindowedAddMutator.Factory.class :
                         org.smf4j.core.accumulator.lc.WindowedAddMutator
                         .Factory.class;
                 break;
             case MIN:
                 mutatorFactoryClass =
-                        (config.getConcurrencyType() == CounterConfig.ConcurrencyType.HIGH) ?
+                        (config.getConcurrencyType() == CounterConfig.ContentionType.HIGH) ?
                         WindowedMinMutator.Factory.class :
                         org.smf4j.core.accumulator.lc.WindowedMinMutator
                         .Factory.class;
                 break;
             case MAX:
                 mutatorFactoryClass =
-                        (config.getConcurrencyType() == CounterConfig.ConcurrencyType.HIGH) ?
+                        (config.getConcurrencyType() == CounterConfig.ContentionType.HIGH) ?
                         WindowedMaxMutator.Factory.class :
                         org.smf4j.core.accumulator.lc.WindowedMaxMutator
                         .Factory.class;

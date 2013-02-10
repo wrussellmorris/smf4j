@@ -112,7 +112,7 @@ limitations under the License.
 
     <xsd:complexType name="core-accumulator-type" >
         <xsd:attributeGroup ref="acc-or-calc-attributes" />
-        <xsd:attribute name="concurrency" use="optional" default="high">
+        <xsd:attribute name="contention" use="optional" default="high">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="high" />

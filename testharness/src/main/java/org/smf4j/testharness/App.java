@@ -11,9 +11,9 @@ import java.util.concurrent.Executors;
 import org.smf4j.Accumulator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
-import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
+import org.smf4j.core.accumulator.hc.HighContentionAccumulator;
 import org.smf4j.core.accumulator.IntervalStrategy;
-import org.smf4j.core.accumulator.lc.LowConcurrencyAccumulator;
+import org.smf4j.core.accumulator.lc.LowContentionAccumulator;
 import org.smf4j.core.accumulator.PowersOfTwoIntervalStrategy;
 import org.smf4j.core.accumulator.SecondsIntervalStrategy;
 import org.smf4j.core.accumulator.hc.UnboundedAddMutator;
@@ -159,25 +159,25 @@ public class App
 
     Accumulator createUnboundedCounter(boolean highConcurrency) {
         if(highConcurrency) {
-            return new HighConcurrencyAccumulator(UnboundedAddMutator.MUTATOR_FACTORY);
+            return new HighContentionAccumulator(UnboundedAddMutator.MUTATOR_FACTORY);
         } else {
-            return new LowConcurrencyAccumulator(org.smf4j.core.accumulator.lc.UnboundedAddMutator.MUTATOR_FACTORY);
+            return new LowContentionAccumulator(org.smf4j.core.accumulator.lc.UnboundedAddMutator.MUTATOR_FACTORY);
         }
     }
 
     Accumulator createUnboundedMin(boolean highConcurrency) {
         if(highConcurrency) {
-            return new HighConcurrencyAccumulator(UnboundedMinMutator.MUTATOR_FACTORY);
+            return new HighContentionAccumulator(UnboundedMinMutator.MUTATOR_FACTORY);
         } else {
-            return new LowConcurrencyAccumulator(org.smf4j.core.accumulator.lc.UnboundedMinMutator.MUTATOR_FACTORY);
+            return new LowContentionAccumulator(org.smf4j.core.accumulator.lc.UnboundedMinMutator.MUTATOR_FACTORY);
         }
     }
 
     Accumulator createUnboundedMax(boolean highConcurrency) {
         if(highConcurrency) {
-            return new HighConcurrencyAccumulator(UnboundedMaxMutator.MUTATOR_FACTORY);
+            return new HighContentionAccumulator(UnboundedMaxMutator.MUTATOR_FACTORY);
         } else {
-            return new LowConcurrencyAccumulator(org.smf4j.core.accumulator.lc.UnboundedMaxMutator.MUTATOR_FACTORY);
+            return new LowContentionAccumulator(org.smf4j.core.accumulator.lc.UnboundedMaxMutator.MUTATOR_FACTORY);
         }
     }
 
@@ -190,9 +190,9 @@ public class App
         }
 
         if(highConcurrency) {
-            return new HighConcurrencyAccumulator(new WindowedAddMutator.Factory(strategy));
+            return new HighContentionAccumulator(new WindowedAddMutator.Factory(strategy));
         } else {
-            return new LowConcurrencyAccumulator(new org.smf4j.core.accumulator.lc.WindowedAddMutator.Factory(strategy));
+            return new LowContentionAccumulator(new org.smf4j.core.accumulator.lc.WindowedAddMutator.Factory(strategy));
         }
     }
 
@@ -205,9 +205,9 @@ public class App
         }
 
         if(highConcurrency) {
-            return new HighConcurrencyAccumulator(new WindowedMinMutator.Factory(strategy));
+            return new HighContentionAccumulator(new WindowedMinMutator.Factory(strategy));
         } else {
-            return new LowConcurrencyAccumulator(new org.smf4j.core.accumulator.lc.WindowedMinMutator.Factory(strategy));
+            return new LowContentionAccumulator(new org.smf4j.core.accumulator.lc.WindowedMinMutator.Factory(strategy));
         }
     }
 
@@ -220,9 +220,9 @@ public class App
         }
 
         if(highConcurrency) {
-            return new HighConcurrencyAccumulator(new WindowedMaxMutator.Factory(strategy));
+            return new HighContentionAccumulator(new WindowedMaxMutator.Factory(strategy));
         } else {
-            return new LowConcurrencyAccumulator(new org.smf4j.core.accumulator.lc.WindowedMaxMutator.Factory(strategy));
+            return new LowContentionAccumulator(new org.smf4j.core.accumulator.lc.WindowedMaxMutator.Factory(strategy));
         }
     }
 

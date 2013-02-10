@@ -28,8 +28,8 @@ import org.smf4j.Accumulator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactoryForUnitTests;
 import org.smf4j.RegistryNode;
-import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
-import org.smf4j.core.accumulator.lc.LowConcurrencyAccumulator;
+import org.smf4j.core.accumulator.hc.HighContentionAccumulator;
+import org.smf4j.core.accumulator.lc.LowContentionAccumulator;
 import org.smf4j.core.calculator.Frequency;
 import org.smf4j.core.calculator.Normalizer;
 import org.smf4j.core.calculator.RangeGroupCalculator;
@@ -414,7 +414,7 @@ public class RegistrarTest {
 
         if(highConcurrency) {
             if(windowed) {
-                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator instanceof HighContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.hc.WindowedAddMutator);
                 if(powersOfTwo) {
@@ -425,13 +425,13 @@ public class RegistrarTest {
                     assertEquals(10, accumulator.getIntervals());
                 }
             } else {
-                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator instanceof HighContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.hc.UnboundedAddMutator);
             }
         } else {
             if(windowed) {
-                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator instanceof LowContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.lc.WindowedAddMutator);
                 if(powersOfTwo) {
@@ -442,7 +442,7 @@ public class RegistrarTest {
                     assertEquals(10, accumulator.getIntervals());
                 }
             } else {
-                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator instanceof LowContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.lc.UnboundedAddMutator);
             }
@@ -455,7 +455,7 @@ public class RegistrarTest {
 
         if(highConcurrency) {
             if(windowed) {
-                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator instanceof HighContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.hc.WindowedMaxMutator);
                 if(powersOfTwo) {
@@ -466,13 +466,13 @@ public class RegistrarTest {
                     assertEquals(10, accumulator.getIntervals());
                 }
             } else {
-                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator instanceof HighContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.hc.UnboundedMaxMutator);
             }
         } else {
             if(windowed) {
-                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator instanceof LowContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.lc.WindowedMaxMutator);
                 if(powersOfTwo) {
@@ -483,7 +483,7 @@ public class RegistrarTest {
                     assertEquals(10, accumulator.getIntervals());
                 }
             } else {
-                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator instanceof LowContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.lc.UnboundedMaxMutator);
             }
@@ -496,7 +496,7 @@ public class RegistrarTest {
 
         if(highConcurrency) {
             if(windowed) {
-                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator instanceof HighContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.hc.WindowedMinMutator);
                 if(powersOfTwo) {
@@ -507,13 +507,13 @@ public class RegistrarTest {
                     assertEquals(10, accumulator.getIntervals());
                 }
             } else {
-                assertTrue(accumulator instanceof HighConcurrencyAccumulator);
+                assertTrue(accumulator instanceof HighContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.hc.UnboundedMinMutator);
             }
         } else {
             if(windowed) {
-                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator instanceof LowContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.lc.WindowedMinMutator);
                 if(powersOfTwo) {
@@ -524,7 +524,7 @@ public class RegistrarTest {
                     assertEquals(10, accumulator.getIntervals());
                 }
             } else {
-                assertTrue(accumulator instanceof LowConcurrencyAccumulator);
+                assertTrue(accumulator instanceof LowContentionAccumulator);
                 assertTrue(accumulator.getMutator() instanceof
                         org.smf4j.core.accumulator.lc.UnboundedMinMutator);
             }

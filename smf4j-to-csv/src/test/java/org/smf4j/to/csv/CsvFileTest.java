@@ -33,7 +33,7 @@ import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistrarFactoryForUnitTests;
 import org.smf4j.RegistryNode;
-import org.smf4j.core.accumulator.hc.HighConcurrencyAccumulator;
+import org.smf4j.core.accumulator.hc.HighContentionAccumulator;
 import org.smf4j.core.accumulator.MutatorFactory;
 import org.smf4j.core.accumulator.SecondsIntervalStrategy;
 import org.smf4j.core.accumulator.hc.WindowedAddMutator;
@@ -228,8 +228,8 @@ public class CsvFileTest {
     void createRatesNodeMembers(RegistryNode node) {
         MutatorFactory mf = new WindowedAddMutator.Factory(
                 new SecondsIntervalStrategy(10, 10));
-        node.register("x", new HighConcurrencyAccumulator(mf));
-        node.register("y", new HighConcurrencyAccumulator(mf));
+        node.register("x", new HighContentionAccumulator(mf));
+        node.register("y", new HighContentionAccumulator(mf));
 
         Normalizer x_per_second = new Normalizer();
         x_per_second.setAccumulator("x");
