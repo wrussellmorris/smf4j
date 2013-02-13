@@ -177,6 +177,10 @@ public class GlobMatcherTest {
             Accumulator mock = createMock(Accumulator.class);
             accs.put(accName, mock);
             expect(node.getAccumulator(accName)).andStubReturn(mock);
+            for(String calcName : calcNames) {
+                expect(node.getAccumulator(calcName)).andStubReturn(
+                        NopAccumulator.INSTANCE);
+            }
         }
 
         Map<String, Calculator> calcs =
@@ -185,6 +189,10 @@ public class GlobMatcherTest {
             MockCalculator mock = new MockCalculator();
             calcs.put(calcName, mock);
             expect(node.getCalculator(calcName)).andStubReturn(mock);
+            for(String accName : accNames) {
+                expect(node.getCalculator(accName)).andStubReturn(
+                        NopCalculator.INSTANCE);
+            }
         }
 
         Map<String, RegistryNode> children =

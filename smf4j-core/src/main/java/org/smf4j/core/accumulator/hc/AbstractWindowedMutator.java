@@ -109,16 +109,6 @@ public abstract class AbstractWindowedMutator implements Mutator {
         return ret;
     }
 
-    public final boolean allBucketsStale(long nanos) {
-        long stale = nanos - staleWindowTimestampOffset;
-        for(int i=0; i<timestamps.length(); i++) {
-            if(timestamps.get(i) >= stale) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private int parw(int index) {
         if(index < 0) {
             return buckets+index;

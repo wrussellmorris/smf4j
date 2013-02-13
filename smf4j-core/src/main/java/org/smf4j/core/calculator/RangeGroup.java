@@ -22,7 +22,7 @@ import org.smf4j.Accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RangeGroupCalculator extends AbstractCalculator {
+public class RangeGroup extends AbstractCalculator {
 
     private static final GroupingComparator sorter = new GroupingComparator();
     private static final Frequency DEFAULT_FREQUENCY = Frequency.SECONDS;
@@ -36,7 +36,7 @@ public class RangeGroupCalculator extends AbstractCalculator {
     private Normalizer normalizer = null;
     private Frequency frequency = null;
 
-    public RangeGroupCalculator() {
+    public RangeGroup() {
         this.groupings = new ArrayList<Grouping>();
     }
 
@@ -48,21 +48,21 @@ public class RangeGroupCalculator extends AbstractCalculator {
         if(normalize) {
             Double val = normalizer.calculate(values, accumulators);
             if(val == null) {
-                return "NaN";
+                val = 0.0d;
             }
             start = val;
         } else {
             Long val = values.get(getAccumulator());
             if(val == null) {
-                return "NaN";
+                val = 0L;
             }
             start = val.doubleValue();
         }
 
-        double result = start;
-        String label = "";
+        double sign = Math.signum(start);
+        double result = start = Math.abs(start);
+        String label = getUnits();
         if(groupings.size() > 0) {
-            label = groupings.get(0).getSuffix();
             for(Grouping g : groupings) {
                 double test = start / (double)g.getRange();
                 if(test < threshold) {
@@ -73,7 +73,8 @@ public class RangeGroupCalculator extends AbstractCalculator {
             }
         }
 
-        return String.format(getFormatString(), result, label);
+        return String.format(getFormatString(), result*sign,
+                label == null ? "" : label);
     }
 
     /**
@@ -121,6 +122,7 @@ public class RangeGroupCalculator extends AbstractCalculator {
      */
     public void setAccumulator(String accumulator) {
         this.accumulator = accumulator;
+        initNormalizer();
     }
 
     public boolean isNormalize() {
@@ -165,7 +167,7 @@ public class RangeGroupCalculator extends AbstractCalculator {
 
     public static class Grouping {
         private String suffix;
-        private long range;
+        private double range;
 
         /**
          * @return the suffix
@@ -178,20 +180,26 @@ public class RangeGroupCalculator extends AbstractCalculator {
          * @param suffix the label to set
          */
         public void setSuffix(String suffix) {
+            if(suffix == null) {
+                this.suffix = "";
+            }
             this.suffix = suffix;
         }
 
         /**
          * @return the range
          */
-        public long getRange() {
+        public double getRange() {
             return range;
         }
 
         /**
          * @param range the range to set
          */
-        public void setRange(long range) {
+        public void setRange(double range) {
+            if(range <= 0.0) {
+                throw new IllegalArgumentException("range");
+            }
             this.range = range;
         }
     }
@@ -199,11 +207,11 @@ public class RangeGroupCalculator extends AbstractCalculator {
     static class GroupingComparator implements Comparator<Grouping> {
         @Override
         public int compare(Grouping o1, Grouping o2) {
-            long diff = o1.range - o2.range;
-            if(diff == 0L) {
+            double diff = o1.range - o2.range;
+            if(diff == 0.0d) {
                 return 0;
             }
-            return diff < 0L ? -1 : 1;
+            return diff < 0.0d ? -1 : 1;
         }
     }
 }

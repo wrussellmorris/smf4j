@@ -64,9 +64,9 @@ public class GlobMatch implements RegistryNode {
             for(String member : rootMembers) {
                 Accumulator acc = node.getAccumulator(member);
                 Calculator calc = node.getCalculator(member);
-                if(acc != null) {
+                if(acc != NopAccumulator.INSTANCE) {
                     accs.put(member, acc);
-                } else if(calc != null) {
+                } else if(calc != NopCalculator.INSTANCE) {
                     calcs.put(member, calc);
                 }
             }
@@ -126,14 +126,18 @@ public class GlobMatch implements RegistryNode {
 
     @Override
     public Accumulator getAccumulator(String name) {
-        return node == null || !rootMembers.contains(name)
-                ? NopAccumulator.INSTANCE : node.getAccumulator(name);
+        if(node == null || !rootMembers.contains(name)) {
+            return NopAccumulator.INSTANCE;
+        }
+        return  node.getAccumulator(name);
     }
 
     @Override
     public Calculator getCalculator(String name) {
-        return node == null || !rootMembers.contains(name)
-                ? NopCalculator.INSTANCE : node.getCalculator(name);
+        if(node == null || !rootMembers.contains(name)) {
+            return NopCalculator.INSTANCE;
+        }
+        return node.getCalculator(name);
     }
 
     @Override

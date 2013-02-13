@@ -32,7 +32,7 @@ import org.smf4j.core.accumulator.hc.HighContentionAccumulator;
 import org.smf4j.core.accumulator.lc.LowContentionAccumulator;
 import org.smf4j.core.calculator.Frequency;
 import org.smf4j.core.calculator.Normalizer;
-import org.smf4j.core.calculator.RangeGroupCalculator;
+import org.smf4j.core.calculator.RangeGroup;
 import org.smf4j.core.calculator.Ratio;
 
 /**
@@ -397,7 +397,7 @@ public class RegistrarTest {
         assertEquals("test", ratio.getNumerator());
         assertEquals("test", ratio.getDenominator());
 
-        RangeGroupCalculator rg = (RangeGroupCalculator)
+        RangeGroup rg = (RangeGroup)
                 foobar.getCalculator("rangegroup");
         assertNotNull(rg);
         assertEquals("test", rg.getAccumulator());

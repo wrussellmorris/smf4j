@@ -31,15 +31,16 @@ import org.smf4j.Accumulator;
  */
 public class RangeGroupCalculatorTest {
 
-    private RangeGroupCalculator c;
+    private RangeGroup c;
     private MockAccumulator a;
     private Map<String, Long> vals;
     private Map<String, Accumulator> as;
 
     @Before
     public void before() {
-        c = new RangeGroupCalculator();
+        c = new RangeGroup();
         c.setAccumulator("a");
+        c.setUnits(" B");
         a = new MockAccumulator();
         as = new HashMap<String, Accumulator>();
         as.put("a", a);
@@ -54,15 +55,56 @@ public class RangeGroupCalculatorTest {
     @Test
     public void noGroupings() {
         set(123456L);
-        assertEquals("123456.00", c.calculate(vals, as));
+        assertEquals("123456.00 B", c.calculate(vals, as));
+    }
+
+    @Test
+    public void normalized() {
+        set(20L);
+        a.setTimeWindow(1000000000L);
+        c.setNormalize(true);
+        c.setFrequency(Frequency.SECONDS);
+        assertEquals("20.00 B", c.calculate(vals, as));
+    }
+
+    @Test
+    public void formatString() {
+        set(20L);
+        c.setFormatString("%.3f%s");
+        assertEquals("20.000 B", c.calculate(vals, as));
+    }
+
+    @Test
+    public void nullFormatString() {
+        set(20L);
+
+        c.setFormatString(null);
+        assertEquals("20.00 B", c.calculate(vals, as));
+
+        c.setFormatString("");
+        assertEquals("20.00 B", c.calculate(vals, as));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void zeroGroupRange() {
+        createGroup("", 0);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void negativeGroupRange() {
+        createGroup("", -1);
+    }
+
+    @Test
+    public void nullGroupSuffix() {
+        createGroup(null, 1);
     }
 
     @Test
     public void powerTenByteCount() {
 
-        List<RangeGroupCalculator.Grouping> groups =
-                new ArrayList<RangeGroupCalculator.Grouping>();
-        groups.add(createGroup(" B",1));
+        List<RangeGroup.Grouping> groups =
+                new ArrayList<RangeGroup.Grouping>();
         groups.add(createGroup(" KB",1000));
         groups.add(createGroup(" MB",1000000));
         groups.add(createGroup(" GB",1000000000));
@@ -87,9 +129,8 @@ public class RangeGroupCalculatorTest {
     @Test
     public void powerTwoByteCount() {
 
-        List<RangeGroupCalculator.Grouping> groups =
-                new ArrayList<RangeGroupCalculator.Grouping>();
-        groups.add(createGroup(" B",1));
+        List<RangeGroup.Grouping> groups =
+                new ArrayList<RangeGroup.Grouping>();
         groups.add(createGroup(" KiB",1<<10));
         groups.add(createGroup(" MiB",1<<20));
         groups.add(createGroup(" GiB",1<<30));
@@ -111,8 +152,34 @@ public class RangeGroupCalculatorTest {
         assertEquals("838.19 GiB", c.calculate(vals, as));
     }
 
-    private RangeGroupCalculator.Grouping createGroup(String label, long mult) {
-        RangeGroupCalculator.Grouping g = new RangeGroupCalculator.Grouping();
+    @Test
+    public void negativePowerTenByteCount() {
+
+        List<RangeGroup.Grouping> groups =
+                new ArrayList<RangeGroup.Grouping>();
+        groups.add(createGroup(" KB",1000));
+        groups.add(createGroup(" MB",1000000));
+        groups.add(createGroup(" GB",1000000000));
+        c.setGroupings(groups);
+
+        set(-1);
+        assertEquals("-1.00 B", c.calculate(vals, as));
+
+        set(-750);
+        assertEquals("-750.00 B", c.calculate(vals, as));
+
+        set(-900);
+        assertEquals("-0.90 KB", c.calculate(vals, as));
+
+        set(-900000000);
+        assertEquals("-0.90 GB", c.calculate(vals, as));
+
+        set(-900000000000L);
+        assertEquals("-900.00 GB", c.calculate(vals, as));
+    }
+
+    private RangeGroup.Grouping createGroup(String label, long mult) {
+        RangeGroup.Grouping g = new RangeGroup.Grouping();
         g.setSuffix(label);
         g.setRange(mult);
         return g;

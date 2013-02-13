@@ -61,48 +61,24 @@ class CounterConfig {
         return counterType;
     }
 
-    void setCounterType(CounterType counterType) {
-        this.counterType = counterType;
-    }
-
     ContentionType getContentionType() {
         return contentionType;
-    }
-
-    void setConcurrencyType(ContentionType concurrencyType) {
-        this.contentionType = concurrencyType;
     }
 
     DurationType getDurationType() {
         return durationType;
     }
 
-    void setDurationType(DurationType durationType) {
-        this.durationType = durationType;
-    }
-
     IntervalsType getIntervalsType() {
         return intervalsType;
-    }
-
-    void setIntervalsType(IntervalsType intervalsType) {
-        this.intervalsType = intervalsType;
     }
 
     Integer getTimeWindow() {
         return timeWindow;
     }
 
-    void setTimeWindow(Integer timeWindow) {
-        this.timeWindow = timeWindow;
-    }
-
     Integer getNumIntervals() {
         return numIntervals;
-    }
-
-    void setNumIntervals(Integer numIntervals) {
-        this.numIntervals = numIntervals;
     }
 
     enum ContentionType {

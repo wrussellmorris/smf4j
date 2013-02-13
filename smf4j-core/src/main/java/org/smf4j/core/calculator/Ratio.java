@@ -37,7 +37,7 @@ public class Ratio extends AbstractCalculator {
             return 0.0d;
         }
         if(den == null || den == 0L) {
-            return Double.NaN;
+            return 0.0d;
         }
 
         return (double)num / (double)den;
