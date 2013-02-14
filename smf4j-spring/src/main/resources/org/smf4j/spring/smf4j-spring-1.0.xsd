@@ -23,36 +23,181 @@ limitations under the License.
 
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
 
-    <xsd:element name="registrar" type="registrar-type" />
-    <xsd:element name="node-template" type="node-template-type" />
-    <xsd:element name="resolve" type="resolve-type" />
-    <xsd:element name="csv-export" type="csv-export-type" />
-    <xsd:element name="file-enabler" type="file-enabler-type" />
-    <xsd:element name="jmx-export" type="jmx-export-type" />
+    <xsd:element name="registrar" type="registrar-type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+    Defines a set of nodes and accumulators and/or calculators which exist in
+    the singleton application Registrar.
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="node-template" type="node-template-type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+    Defines a node template that can be used to build other <node-templates> or
+    referenced to create concrete nodes in a <registrar>.
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="resolve" type="resolve-type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+    Resolves an accumulator from the singleton application Registrar.  This tag
+    should be used to inject accumulators into beans.
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="csv-export" type="csv-export-type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+    Defines a bean that will create a CSV file that exports the values of
+    matched accumulators and calculators into a delimited text file.
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="file-enabler" type="file-enabler-type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+    Defines a bean that will automatically enable nodes in the singleton
+    application Registrar based on data in one or more properties files.
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="jmx-export" type="jmx-export-type">
+        <xsd:annotation>
+            <xsd:documentation>
+                <![CDATA[
+    Defines a bean that will automatically export matched nodes from the
+    singleton application Registrar into the default JMX server.
+                ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
     <xsd:complexType name="registrar-type">
         <xsd:sequence>
             <xsd:choice minOccurs="0" maxOccurs="unbounded">
-                <xsd:element name="node" type="node-type" minOccurs="0" maxOccurs="unbounded" />
-                <xsd:element name="node-template" type="node-template-ref-type" minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element name="node" type="node-type" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[
+    Defines a node, as well as its accumulators, calculators, and any child
+    nodes.
+                            ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="node-template" type="node-template-ref-type" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[
+    Defines a node by copying a given <node-template>, and possibly renaming it.
+                            ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
             </xsd:choice>
         </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:ID" use="optional" />
+        <xsd:attribute name="id" type="xsd:ID" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <![CDATA[
+    Names this <registrar> so that other interested nodes can depend on it,
+    thereby ensuring that this <registrar>'s changes have been pushed to the
+    singleton application Registrar before they attempt to use them.
+
+    If there is only one <registrar> in an application's configuration, you can
+    leave this id undefined, and a pre-defined id value will be used
+    automatically.  If there are more than one <registrar> in an
+    application's configuration, each MUST be given unique a unique 'id'.
+
+    This forces certain patterns to be followed in any elements that are built
+    to query or export the contents of the singleton application Registrar.  If
+    there is only 1 <registrar>, and it has no 'id', these elements MUST leave
+    their 'depends-on' attribute empty.  If there are more than 1 <registrar> in
+    the application's context, then these elements MUST use their 'depends-on'
+    attribute to indicate which <registrar> instances produce nodes that they
+    depend on.
+
+    For instance, if there is only 1 <registrar>, and it has no 'id', then the
+    <resolve> element could be written as:
+
+        <resolve path="some.node:an_accumulator" />
+
+    If there are 2 or more <registrar>'s with 'id's 'registrar-1' and
+    'registrar-2', and the <resolve> element was attempting to resolve a node
+    and accumulator defined as part of 'registrar-2', then the <resolve> element
+    would be written as:
+
+        <resolve path="some.node:an_accumulator" depends-on="registrar-2" />
+                    ]]>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
     </xsd:complexType>
 
     <xsd:attributeGroup name="acc-or-calc-attributes">
         <xsd:attribute name="name" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <![CDATA[
+    The name of an accumulator or a calculator in a node.  The name must match
+    the pattern '[a-zA-Z0-9_]+', and MUST uniquely identify this calculator or
+    accumulator among all other calculators or accumulators in its node.
+                    ]]>
+                </xsd:documentation>
+            </xsd:annotation>
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:pattern value="[a-zA-Z0-9_]+" />
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
-        <xsd:attribute name="units" type="xsd:string" use="optional" />
+        <xsd:attribute name="units" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <![CDATA[
+    The units represented by the count of this accumulator or simple
+    calculator.
+
+    This value is ignored for compound calculators whose calculate() methods
+    return user defined types.  Instead, each readable bean property X
+    (discovered by introspection of a method getX() or isX() can be decorated
+    with a org.smf4j.helpers.Units annotation.
+
+    In either case, it is not guaranteed that this units value will be paid
+    attention to by any particular exporter.
+                    ]]>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
     </xsd:attributeGroup>
 
     <xsd:attributeGroup name="node-name-attribute">
         <xsd:attribute name="name" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <![CDATA[
+    The name of a <node> or <node-template>, which must match the pattern
+    [a-zA-Z0-9_\.]+ .
+                    ]]>
+                </xsd:documentation>
+            </xsd:annotation>
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:pattern value="[a-zA-Z0-9_\.]+" />
@@ -65,21 +210,119 @@ limitations under the License.
         <xsd:sequence>
             <xsd:choice minOccurs="0" maxOccurs="unbounded">
                 <!-- Embedded node and node template refs -->
-                <xsd:element name="node" type="node-type" />
-                <xsd:element name="node-template" type="node-template-ref-type" />
+                <xsd:element name="node" type="node-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines a child node.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="node-template" type="node-template-ref-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines a child node by copying an existing <node-template>.  If a
+    'name' attribute is specified, then the copied node will have that name.  If
+    a 'name' attribute is not specified, then the copied node will keep the
+    name it was assigned in its <node-template> definition.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
 
                 <!-- Core Accumulators -->
-                <xsd:element name="counter" type="core-accumulator-type" />
-                <xsd:element name="min" type="core-accumulator-type" />
-                <xsd:element name="max" type="core-accumulator-type" />
+                <xsd:element name="counter" type="core-accumulator-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines an accumulator which reports the sum of the numbers it has
+    been shown.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="min" type="core-accumulator-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines an accumulator which reports the smallest of the numbers it has
+    been shown.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="max" type="core-accumulator-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines an accumulator which reports the largest of the numbers it has
+    been shown.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
 
                 <!-- Core Calculators -->
-                <xsd:element name="normalize" type="core-normalize-type" />
-                <xsd:element name="ratio" type="core-ratio-type" />
-                <xsd:element name="range-group" type="core-range-group-type" />
+                <xsd:element name="normalize" type="core-normalize-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines a simple calculator that normalizes the value of an accumulator
+    to a specified frequency.  This calculator is intended to normalize
+    accumulators whose duration='windowed'.  If the attached accumulator is not
+    duration='windowed', it's value is returned without modification.
+
+    This calculator exists principally to easily massage the value reported by a
+    'counter' accumulator with duration='windowed' and
+    intervals-type='powers-of-two' into a much more easily understandable
+    per-millisecond/per-second/per-minute/etc... value instead of its native
+    per-2^n-nanoseconds value.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="ratio" type="core-ratio-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines a simple calculator that returns the ratio of two accumulators.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+                <xsd:element name="range-group" type="core-range-group-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Defines simple calculator that returns a string representing the
+    value of the given accumulator in units of the 'range' it best fits.
+
+    If units='B', ranges='1000,1000000', groups='KB,MB', and threshold='0.85'
+    then the returned value would be as follows:
+
+        1      -> '1B'
+        500    -> '500B'
+        900    -> '0.90KB'
+        5000   -> '5.00KB'
+        900000 -> '0.90MB'
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
 
                 <!-- Random Beans -->
-                <xsd:element name="custom" type="custom-type" />
+                <xsd:element name="custom" type="custom-type">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                    <![CDATA[
+    Used to pull in a user-defined bean that implements either
+    org.smf4j.Accumulator or org.smf4j.Calculator.
+                    ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
             </xsd:choice>
         </xsd:sequence>
         <xsd:attributeGroup ref="node-name-attribute" />
@@ -233,7 +476,7 @@ limitations under the License.
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
-        <xsd:attribute name="registrar" type="xsd:string" use="optional" />
+        <xsd:attribute name="depends-on" type="xsd:string" use="optional" />
     </xsd:complexType>
 
     <xsd:complexType name="resolve-type">
@@ -244,7 +487,7 @@ limitations under the License.
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
-        <xsd:attribute name="registrar" type="xsd:string" use="optional" />
+        <xsd:attribute name="depends-on" type="xsd:string" use="optional" />
     </xsd:complexType>
 
     <xsd:complexType name="file-enabler-type">
@@ -269,6 +512,6 @@ limitations under the License.
     <xsd:complexType name="jmx-export-type">
         <xsd:attribute name="id" type="xsd:ID" use="optional" />
         <xsd:attribute name="autopublish" type="xsd:boolean" use="optional" default="true" />
-        <xsd:attribute name="registrar" type="xsd:string" use="optional" />
+        <xsd:attribute name="depends-on" type="xsd:string" use="optional" />
     </xsd:complexType>
 </xsd:schema>

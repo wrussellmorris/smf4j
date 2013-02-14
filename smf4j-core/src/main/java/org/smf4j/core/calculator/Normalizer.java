@@ -38,11 +38,10 @@ public class Normalizer extends AbstractCalculator {
         }
 
         double window = a.getTimeWindow();
-        if(window > 0.0d) {
-            return (frequency.getNanos() / window) * val;
+        if(window <= 0.0d) {
+            return val.doubleValue();
         }
-
-        return 0.0d;
+        return (frequency.getNanos() / window) * val;
     }
 
     public String getAccumulator() {
