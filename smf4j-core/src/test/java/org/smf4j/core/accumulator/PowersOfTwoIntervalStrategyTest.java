@@ -22,7 +22,7 @@ import org.junit.Test;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class PowersOfTwoIntervalTest {
+public class PowersOfTwoIntervalStrategyTest {
 
     private IntervalStrategy create(int windowExp, int intervalExp) {
         return new PowersOfTwoIntervalStrategy(windowExp, intervalExp);
@@ -55,6 +55,11 @@ public class PowersOfTwoIntervalTest {
     @Test( expected = IllegalArgumentException.class )
     public void initNegWindowExp() {
         create(-1, 1);
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void initTooSmallIntervalExp() {
+        create(1, 1);
     }
 
     @Test( expected = IllegalArgumentException.class )

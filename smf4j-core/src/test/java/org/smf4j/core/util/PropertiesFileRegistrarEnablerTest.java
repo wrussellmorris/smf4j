@@ -36,6 +36,7 @@ import org.smf4j.RegistrarFactoryForUnitTests;
  */
 public class PropertiesFileRegistrarEnablerTest {
 
+    private final String FOO = "foo";
     private final String FOO_BAR = "foo.bar";
     private final String FOO_BAZ = "foo.baz";
     private final String PROPS1_CP =
@@ -62,21 +63,6 @@ public class PropertiesFileRegistrarEnablerTest {
     }
 
     @Test
-    public void loadPropertiesFromFileTest()
-    throws Exception {
-        PropertiesFileRegistrarEnabler pfre =
-                new PropertiesFileRegistrarEnabler();
-
-        File rootPath = getFilePath(getClass());
-        File propFile = new File(rootPath, PROPS1_CP);
-        Properties p = pfre.loadPropertiesFromFile(propFile.getAbsolutePath());
-
-        assertEquals(2, p.entrySet().size());
-        assertEquals("on", p.getProperty(FOO_BAR));
-        assertEquals("true", p.getProperty(FOO_BAZ));
-    }
-
-    @Test
     public void onOffParseTest() {
         PropertiesFileRegistrarEnabler pfre =
                 new PropertiesFileRegistrarEnabler();
@@ -94,7 +80,35 @@ public class PropertiesFileRegistrarEnablerTest {
     }
 
     @Test
-    public void loadProps()
+    public void doEnablementDefault()
+    throws Exception {
+        PropertiesFileRegistrarEnabler pfre =
+                new PropertiesFileRegistrarEnabler();
+
+        pfre.doEnablement();
+
+        assertFalse(RegistrarFactory.getNode(FOO).isOn());
+        assertTrue(RegistrarFactory.getNode(FOO_BAR).isOn());
+        assertFalse(RegistrarFactory.getNode(FOO_BAZ).isOn());
+    }
+
+    @Test
+    public void doEnablementSinglePath()
+    throws Exception {
+        PropertiesFileRegistrarEnabler pfre =
+                new PropertiesFileRegistrarEnabler();
+
+        File rootPath = getFilePath(getClass());
+        File propFile = new File(rootPath, PROPS1_CP);
+        pfre.doEnablement(propFile.getAbsolutePath());
+
+        assertFalse(RegistrarFactory.getNode(FOO).isOn());
+        assertTrue(RegistrarFactory.getNode(FOO_BAR).isOn());
+        assertTrue(RegistrarFactory.getNode(FOO_BAZ).isOn());
+    }
+
+    @Test
+    public void doEnablementMultiplePaths()
     throws Exception {
         PropertiesFileRegistrarEnabler pfre =
                 new PropertiesFileRegistrarEnabler();
@@ -105,6 +119,7 @@ public class PropertiesFileRegistrarEnablerTest {
         paths.add("classpath:" + PROPS2_CP);
         pfre.doEnablement(paths);
 
+        assertFalse(r.getNode(FOO).isOn());
         assertTrue(r.getNode(FOO_BAR).isOn());
         assertFalse(r.getNode(FOO_BAZ).isOn());
    }
