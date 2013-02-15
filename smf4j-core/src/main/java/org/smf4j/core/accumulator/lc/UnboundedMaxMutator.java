@@ -16,6 +16,7 @@
 package org.smf4j.core.accumulator.lc;
 
 import org.smf4j.Mutator;
+import org.smf4j.core.accumulator.AbstractMutatorFactory;
 import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
@@ -47,20 +48,9 @@ public final class UnboundedMaxMutator extends AbstractUnboundedMutator {
         return val >= other ? val : other;
     }
 
-    public static final class Factory implements MutatorFactory{
-        @Override
+    public static final class Factory extends AbstractMutatorFactory {
         public Mutator createMutator() {
             return new UnboundedMaxMutator();
-        }
-
-        @Override
-        public long getTimeWindow() {
-            return 0L;
-        }
-
-        @Override
-        public int getIntervals() {
-            return 0;
         }
     };
 }

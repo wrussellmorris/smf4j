@@ -15,6 +15,8 @@
  */
 package org.smf4j.spring;
 
+import java.util.Collections;
+import java.util.Map;
 import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
 
@@ -24,46 +26,33 @@ import org.smf4j.Mutator;
  */
 public class MockAccumulator implements Accumulator, Mutator {
 
-    @Override
     public Mutator getMutator() {
         return this;
     }
 
-    @Override
     public long get() {
         return 0L;
     }
 
-    @Override
     public boolean isOn() {
         return false;
     }
 
-    @Override
     public void setOn(boolean on) {
     }
 
-    @Override
     public String getUnits() {
         return null;
     }
 
-    @Override
-    public long getTimeWindow() {
-        return 0L;
-    }
-
-    @Override
-    public int getIntervals() {
-        return 0;
-    }
-
-    @Override
     public void put(long delta) {
     }
 
-    @Override
     public long combine(long other) {
         return 0L;
+    }
+
+    public Map<Object, Object> getMetadata() {
+        return Collections.emptyMap();
     }
 }

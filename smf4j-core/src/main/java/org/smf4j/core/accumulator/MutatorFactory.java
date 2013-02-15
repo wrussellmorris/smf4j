@@ -15,6 +15,7 @@
  */
 package org.smf4j.core.accumulator;
 
+import java.util.Map;
 import org.smf4j.Mutator;
 
 /**
@@ -24,7 +25,5 @@ import org.smf4j.Mutator;
 public interface MutatorFactory {
     Mutator createMutator();
 
-    long getTimeWindow();
-
-    int getIntervals();
+    Map<Object, Object> getMetadata();
 }

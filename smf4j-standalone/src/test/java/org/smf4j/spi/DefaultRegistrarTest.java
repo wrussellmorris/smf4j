@@ -15,6 +15,7 @@
  */
 package org.smf4j.spi;
 
+import java.util.Map;
 import org.smf4j.spi.DefaultRegistrar;
 import org.smf4j.RegistryNode;
 import org.smf4j.Accumulator;
@@ -161,52 +162,47 @@ public class DefaultRegistrarTest {
         return new Accumulator() {
             private boolean on = false;
 
-            @Override
             public long get() {
                 return 0;
             }
 
-            @Override
             public boolean isOn() {
                 return on;
             }
 
-            @Override
             public void setOn(boolean on) {
                 this.on = on;
             }
 
             public Mutator getMutator() {
                 return new Mutator() {
-                    @Override
                     public void put(long delta) {
                     }
 
-                    @Override
                     public long get() {
                         return 0L;
                     }
 
-                    @Override
                     public long combine(long other) {
                         return 0L;
                     }
                 };
             }
 
-            @Override
             public String getUnits() {
                 return null;
             }
 
-            @Override
             public long getTimeWindow() {
                 return 0L;
             }
 
-            @Override
             public int getIntervals() {
                 return 0;
+            }
+
+            public Map<Object, Object> getMetadata() {
+                return null;
             }
         };
     }

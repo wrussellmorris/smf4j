@@ -17,9 +17,9 @@ package org.smf4j.core.accumulator.hc;
 
 import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.IntervalStrategy;
-import org.smf4j.core.accumulator.MutatorFactory;
 import org.smf4j.core.accumulator.SystemNanosTimeReporter;
 import org.smf4j.core.accumulator.TimeReporter;
+import org.smf4j.core.accumulator.WindowedMutatorFactory;
 
 /**
  *
@@ -46,29 +46,18 @@ public final class WindowedMaxMutator extends AbstractWindowedMutator {
         return val >= other ? val : other;
     }
 
-    public static final class Factory implements MutatorFactory {
-        private final IntervalStrategy strategy;
-        private final TimeReporter timeReporter;
+    public static final class Factory extends WindowedMutatorFactory {
 
         public Factory(IntervalStrategy strategy) {
-            this(strategy, SystemNanosTimeReporter.INSTANCE);
+            super(strategy);
         }
 
         public Factory(IntervalStrategy strategy, TimeReporter timeReporter) {
-            this.strategy = strategy;
-            this.timeReporter = timeReporter;
+            super(strategy, timeReporter);
         }
 
         public Mutator createMutator() {
-            return new WindowedMaxMutator(strategy, timeReporter);
-        }
-
-        public long getTimeWindow() {
-            return strategy.timeWindowInNanos();
-        }
-
-        public int getIntervals() {
-            return strategy.intervals();
+            return new WindowedMaxMutator(getStrategy(), getTimeReporter());
         }
     }
 }

@@ -13,52 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.to.csv;
+package org.smf4j.core.accumulator;
 
+import java.util.Collections;
 import java.util.Map;
-import org.smf4j.Accumulator;
-import org.smf4j.Mutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class MockAccumulator implements Accumulator, Mutator {
+public abstract class AbstractMutatorFactory implements MutatorFactory {
 
-    private long val;
-
-    public MockAccumulator(long val) {
-        this.val = val;
-    }
-
-    public boolean isOn() {
-        return false;
-    }
-
-    public void setOn(boolean on) {
-    }
-
-    public void put(long delta) {
-        this.val = delta;
-    }
-
-    public Mutator getMutator() {
-        return this;
-    }
-
-    public long get() {
-        return val;
-    }
-
-    public String getUnits() {
-        return null;
-    }
-
-    public long combine(long other) {
-        return 0L;
-    }
+    private static final Map<Object, Object> empty = Collections.emptyMap();
 
     public Map<Object, Object> getMetadata() {
-        return null;
+        return empty;
     }
 }

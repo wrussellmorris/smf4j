@@ -15,6 +15,7 @@
  */
 package org.smf4j.core.accumulator.lc;
 
+import java.util.Map;
 import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.AbstractAccumulator;
 import org.smf4j.core.accumulator.MutatorFactory;
@@ -41,13 +42,7 @@ public final class LowContentionAccumulator extends AbstractAccumulator {
         return mutator.get();
     }
 
-    @Override
-    public long getTimeWindow() {
-        return mutatorFactory.getTimeWindow();
-    }
-
-    @Override
-    public int getIntervals() {
-        return mutatorFactory.getIntervals();
+    public Map<Object, Object> getMetadata() {
+        return mutatorFactory.getMetadata();
     }
 }

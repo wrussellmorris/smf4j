@@ -21,6 +21,9 @@ package org.smf4j.core.accumulator;
  */
 public interface IntervalStrategy {
 
+    public static final String METADATA_TIME_WINDOW = "timewindow";
+    public static final String METADATA_INTERVALS = "intervals";
+
     int intervals();
 
     int bufferIntervals();

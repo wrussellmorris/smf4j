@@ -15,6 +15,7 @@
  */
 package org.smf4j.core.accumulator.hc;
 
+import java.util.Map;
 import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.AbstractAccumulator;
 import org.smf4j.core.accumulator.MutatorFactory;
@@ -27,15 +28,14 @@ import org.smf4j.helpers.NopMutator;
 public final class HighContentionAccumulator extends AbstractAccumulator {
 
     private final MutatorRegistry mutatorRegistry;
-    private final long timeWindow;
-    private final int intervals;
+    private final Map<Object, Object> metadata;
 
     public HighContentionAccumulator(MutatorFactory mutatorFactory) {
         this.mutatorRegistry = new MutatorRegistry(mutatorFactory);
-        this.timeWindow = mutatorFactory.getTimeWindow();
-        this.intervals = mutatorFactory.getIntervals();
+        this.metadata = mutatorFactory.getMetadata();
     }
 
+    @Override
     public final Mutator getMutator() {
         if(!isOn()) {
             return NopMutator.INSTANCE;
@@ -61,11 +61,8 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
         return value;
     }
 
-    public long getTimeWindow() {
-        return timeWindow;
-    }
-
-    public int getIntervals() {
-        return intervals;
+    @Override
+    public Map<Object, Object> getMetadata() {
+        return metadata;
     }
 }

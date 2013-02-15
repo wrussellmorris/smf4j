@@ -15,11 +15,13 @@
  */
 package org.smf4j.testharness;
 
+import java.util.Map;
 import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
+import org.smf4j.core.accumulator.IntervalStrategy;
 import org.smf4j.core.calculator.Frequency;
 import org.smf4j.core.calculator.Normalizer;
 
@@ -39,11 +41,16 @@ public class AccTestRunner extends TestRunner {
         Registrar r = RegistrarFactory.getRegistrar();
         RegistryNode node = r.getNode(testName);
         node.register("accumulator", accumulator);
-        if(accumulator.getTimeWindow() > 0) {
-            Normalizer wn = new Normalizer();
-            wn.setFrequency(Frequency.SECONDS);
-            wn.setAccumulator("accumulator");
-            node.register("normalized", wn);
+        Map<Object, Object> metadata = accumulator.getMetadata();
+        if(metadata.containsKey(IntervalStrategy.METADATA_TIME_WINDOW)) {
+            Long timeWindow = (Long)metadata.get(
+                    IntervalStrategy.METADATA_TIME_WINDOW);
+            if(timeWindow > 0) {
+                Normalizer wn = new Normalizer();
+                wn.setFrequency(Frequency.SECONDS);
+                wn.setAccumulator("accumulator");
+                node.register("normalized", wn);
+            }
         }
     }
 

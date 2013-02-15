@@ -15,8 +15,12 @@
  */
 package org.smf4j.core.calculator;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
+import org.smf4j.core.accumulator.IntervalStrategy;
 
 /**
  *
@@ -26,10 +30,8 @@ public class MockAccumulator implements Accumulator, Mutator {
 
     long value;
     boolean on;
-    long timeWindow = 0L;
-    int intervals = 0;
+    Map<Object, Object> metadata = new HashMap<Object, Object>();
 
-    @Override
     public long get() {
         return value;
     }
@@ -38,52 +40,39 @@ public class MockAccumulator implements Accumulator, Mutator {
         this.value = value;
     }
 
-    @Override
     public boolean isOn() {
         return on;
     }
 
-    @Override
     public void setOn(boolean on) {
         this.on = on;
     }
 
-    @Override
     public void put(long delta) {
         this.value = delta;
     }
 
-    @Override
     public Mutator getMutator() {
         return this;
     }
 
-    @Override
     public String getUnits() {
         return null;
     }
 
-    @Override
     public long combine(long other) {
         return other;
     }
 
-    @Override
-    public long getTimeWindow() {
-        return timeWindow;
-    }
-
     public void setTimeWindow(long timeWindow) {
-        this.timeWindow = timeWindow;
-    }
-
-    @Override
-    public int getIntervals() {
-        return intervals;
+        metadata.put(IntervalStrategy.METADATA_TIME_WINDOW, timeWindow);
     }
 
     public void setIntervals(int intervals) {
-        this.intervals = intervals;
+        metadata.put(IntervalStrategy.METADATA_INTERVALS, intervals);
     }
 
+    public Map<Object, Object> getMetadata() {
+        return metadata;
+    }
 }

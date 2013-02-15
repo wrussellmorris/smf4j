@@ -17,6 +17,7 @@ package org.smf4j.core.calculator;
 
 import java.util.Map;
 import org.smf4j.Accumulator;
+import org.smf4j.core.accumulator.IntervalStrategy;
 
 /**
  *
@@ -37,7 +38,18 @@ public class Normalizer extends AbstractCalculator {
             return 0.0d;
         }
 
-        double window = a.getTimeWindow();
+        // Grab time window
+        Map<Object, Object> metadata = a.getMetadata();
+        if(metadata == null
+            || !metadata.containsKey(IntervalStrategy.METADATA_TIME_WINDOW)) {
+            return val.doubleValue();
+        }
+        Object o = metadata.get(IntervalStrategy.METADATA_TIME_WINDOW);
+        if(o == null || !(o instanceof Long)) {
+            return val.doubleValue();
+        }
+
+        double window = (Long)o;
         if(window <= 0.0d) {
             return val.doubleValue();
         }

@@ -15,6 +15,8 @@
  */
 package org.smf4j.helpers;
 
+import java.util.Collections;
+import java.util.Map;
 import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
 
@@ -61,5 +63,9 @@ public class NopAccumulator implements Accumulator, Mutator {
 
     public long combine(long other) {
         return 0L;
+    }
+
+    public Map<Object, Object> getMetadata() {
+        return Collections.emptyMap();
     }
 }
