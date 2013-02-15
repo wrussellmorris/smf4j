@@ -114,9 +114,9 @@ public class RegistryNodeTemplateDefinitionParser extends
     public static final String RATIO_CLASS =
             "org.smf4j.core.calculator.Ratio";
     public static final String RANGEGROUP_CLASS =
-            "org.smf4j.core.calculator.RangeGroupCalculator";
+            "org.smf4j.core.calculator.RangeGroup";
     public static final String RANGEGROUP_GROUPING_CLASS =
-            "org.smf4j.core.calculator.RangeGroupCalculator.Grouping";
+            RANGEGROUP_CLASS + ".Grouping";
 
     private final boolean createPrototype;
 

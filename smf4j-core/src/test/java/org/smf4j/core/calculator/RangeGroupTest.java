@@ -29,7 +29,7 @@ import org.smf4j.Accumulator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class RangeGroupCalculatorTest {
+public class RangeGroupTest {
 
     private RangeGroup c;
     private MockAccumulator a;

@@ -41,7 +41,6 @@ public class RegistrarBeanDefinitionParser extends
 
     public static final String NAME_ATTR = "name";
     public static final String NODES_ATTR = "nodeProxies";
-    public static final String REF_ATTR = "ref";
 
     @Override
     protected String getBeanClassName(Element element) {

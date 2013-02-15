@@ -28,7 +28,7 @@ import org.w3c.dom.Element;
 public class ResolveBeanDefinitionParser extends
         AbstractSingleBeanDefinitionParser {
 
-    private static final String REGISTRAR_ATTR = "registrar";
+    private static final String DEPENDSON_ATTR = "depends-on";
     private static final String PATH_ATTR = "path";
 
     @Override
@@ -52,12 +52,14 @@ public class ResolveBeanDefinitionParser extends
         // Set the path
         builder.addPropertyValue(PATH_ATTR, path);
 
-        // Make sure that spring knows we depend on a <registrar>
-        // bean definition.
-        String registrarId = element.getAttribute(REGISTRAR_ATTR);
-        if(StringUtils.hasLength(registrarId)) {
-            // Depend on the indicated registrar name
-            builder.addDependsOn(registrarId);
+        // Make sure that spring knows we depend on the given beans, which are
+        // probably <registrar> nodes.
+        String dependsOn = element.getAttribute(DEPENDSON_ATTR);
+        if(StringUtils.hasLength(dependsOn)) {
+            for(String id : StringUtils.commaDelimitedListToSet(dependsOn)) {
+                // Depend on the indicated registrar name
+                builder.addDependsOn(id);
+            }
         } else {
             // Depend on the default registrar name
             builder.addDependsOn(

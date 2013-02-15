@@ -15,7 +15,7 @@
 
     <bean id="mockBean" class="org.smf4j.spring.MockBean">
         <property name="accumulator">
-            <smf4j:resolve path="foo.bar:counter" registrar="foo" />
+            <smf4j:resolve path="foo.bar:counter" depends-on="foo" />
         </property>
     </bean>
 </beans>

@@ -28,9 +28,9 @@ import org.w3c.dom.Element;
 public class JmxExporterBeanDefinitionParser extends
         AbstractSingleBeanDefinitionParser {
 
-    private static final String AUTOPUBLISH_ATTR = "autopublish";
+    private static final String AUTOPUBLISH_ATTR = "auto-publish";
     private static final String AUTOPUBLISH_PROP = "autoPublish";
-    private static final String REGISTRAR_ATTR = "registrar";
+    private static final String DEPENDSON_ATTR = "depends-on";
 
     @Override
     protected String getBeanClassName(Element element) {
@@ -45,7 +45,7 @@ public class JmxExporterBeanDefinitionParser extends
             builder.addPropertyValue(AUTOPUBLISH_PROP, tmp);
         }
 
-        tmp = element.getAttribute(REGISTRAR_ATTR);
+        tmp = element.getAttribute(DEPENDSON_ATTR);
         if(StringUtils.hasLength(tmp)) {
             for(String id : StringUtils.commaDelimitedListToSet(tmp)) {
                 builder.addDependsOn(id);
