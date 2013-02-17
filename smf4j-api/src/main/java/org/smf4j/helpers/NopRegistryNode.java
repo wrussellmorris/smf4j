@@ -44,12 +44,12 @@ public class NopRegistryNode implements RegistryNode {
         return "nop";
     }
 
-    public boolean register(String name, Accumulator accumulator) {
-        return false;
+    public Accumulator register(String name, Accumulator accumulator) {
+        return NopAccumulator.INSTANCE;
     }
 
-    public boolean register(String name, Calculator calculator) {
-        return false;
+    public Calculator register(String name, Calculator calculator) {
+        return NopCalculator.INSTANCE;
     }
 
     public boolean unregister(String name, Accumulator accumulator) {

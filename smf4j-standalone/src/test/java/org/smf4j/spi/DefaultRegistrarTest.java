@@ -16,7 +16,6 @@
 package org.smf4j.spi;
 
 import java.util.Map;
-import org.smf4j.spi.DefaultRegistrar;
 import org.smf4j.RegistryNode;
 import org.smf4j.Accumulator;
 import static org.junit.Assert.*;
@@ -97,9 +96,9 @@ public class DefaultRegistrarTest {
         Accumulator one = createAcc();
         Accumulator two = createAcc();
 
-        assertTrue("Couldn't add one", root.register("one", one));
-        assertFalse("Duplicate add of one", root.register("one", one));
-        assertTrue("Couldn't add two", root.register("two", two));
+        assertEquals("Couldn't add one", one, root.register("one", one));
+        assertEquals("Duplicate add of one", one, root.register("one", one));
+        assertEquals("Couldn't add two", two, root.register("two", two));
 
         assertEquals("Not 2 accumulators", 2, root.getAccumulators().size());
         assertEquals("one not present", one, root.getAccumulator("one"));
@@ -130,14 +129,17 @@ public class DefaultRegistrarTest {
         assertNotNull("Couldn't create b.second", b_second);
 
         // a.first one, two
-        assertTrue("Couldn't add one", a_first.register("one", one));
-        assertFalse("Duplicate add of one", a_first.register("one", one));
-        assertTrue("Couldn't add two", a_first.register("two", two));
+        assertEquals("Couldn't add one", one, a_first.register("one", one));
+        assertEquals("Duplicate add of one", one, a_first.register("one", one));
+        assertEquals("Couldn't add two", two, a_first.register("two", two));
 
         // b.second+three, four
-        assertTrue("Couldn't add three", b_second.register("three", three));
-        assertFalse("Duplicate add of three", b_second.register("three", three));
-        assertTrue("Couldn't add four", b_second.register("four", four));
+        assertEquals("Couldn't add three", three,
+                b_second.register("three", three));
+        assertEquals("Duplicate add of three", three,
+                b_second.register("three", three));
+        assertEquals("Couldn't add four", four,
+                b_second.register("four", four));
 
         assertEquals("Accumulators in a", 0, a.getAccumulators().size());
         assertEquals("Accumulators in b", 0, b.getAccumulators().size());
@@ -217,9 +219,9 @@ public class DefaultRegistrarTest {
 
         assertNotNull("Couldn't register root", root);
 
-        assertTrue("Couldn't add one", root.register("one", one));
-        assertFalse("Duplicate add of one", root.register("one", one));
-        assertTrue("Couldn't add two", root.register("two", two));
+        assertEquals("Couldn't add one", one, root.register("one", one));
+        assertEquals("Duplicate add of one", one, root.register("one", one));
+        assertEquals("Couldn't add two", two, root.register("two", two));
 
         assertEquals("Not 2 accumulators", 2, root.getAccumulators().size());
         assertEquals("one not present", one, root.getAccumulator("one"));
@@ -288,7 +290,7 @@ public class DefaultRegistrarTest {
         assertFalse(root.isOn());
 
         // Accumulator set to node state
-        assertTrue(root.register("one", one));
+        assertEquals(one, root.register("one", one));
         assertFalse(root.getAccumulator("one").isOn());
 
         // Accumulator follows node state

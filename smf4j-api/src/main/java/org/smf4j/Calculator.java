@@ -84,6 +84,9 @@ import org.smf4j.helpers.Units;
  * either case, code that inspects and exports information from {@code smf4j}
  * may or may not pay attention to this information.
  * </p>
+ * <p>
+ * {@code Calculator} implementations <strong>must</strong> be thread-safe.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  * @see Accumulator

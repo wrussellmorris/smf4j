@@ -94,20 +94,22 @@ class DefaultRegistryNode implements RegistryNode {
     }
 
     @Override
-    public boolean register(String name, Accumulator acc) {
-        if(null == accumulators.putIfAbsent(name, acc)) {
+    public Accumulator register(String name, Accumulator acc) {
+        Accumulator registered = accumulators.putIfAbsent(name, acc);
+        if(null == registered) {
             acc.setOn(isOn());
-            return true;
+            registered = acc;
         }
-        return false;
+        return registered;
     }
 
     @Override
-    public boolean register(String name, Calculator calc) {
-        if(null == calcuations.putIfAbsent(name, calc)) {
-            return true;
+    public Calculator register(String name, Calculator calc) {
+        Calculator registered = calcuations.putIfAbsent(name, calc);
+        if(null == registered) {
+            registered = calc;
         }
-        return false;
+        return registered;
     }
 
     @Override

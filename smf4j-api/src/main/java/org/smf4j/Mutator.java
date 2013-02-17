@@ -43,6 +43,11 @@ package org.smf4j;
  * // ...
  * </pre>
  * </p>
+ * <p>
+ * {@code Mutator} implementations <strong>should</strong> be thread-safe if at
+ * all possible.
+ * </p>
+ *
  * @author Russell Morris (wrussellmorris@gmail.com)
  * @see Accumulator
  */

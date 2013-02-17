@@ -39,6 +39,9 @@ import org.smf4j.helpers.NopMutator;
  * value they report via {@link #get()} means, and how the {@link Mutator}s they
  * produce from {@link #getMutator()} modify the returned value.
  * </p>
+ * <p>
+ * {@code Accumulator} implementations <strong>must</strong> be thread-safe.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  * @see Mutator

@@ -42,21 +42,21 @@ public class MockRegistryNode implements RegistryNode {
     }
 
     @Override
-    public boolean register(String name, Accumulator accumulator) {
+    public Accumulator register(String name, Accumulator accumulator) {
         if(!accs.containsKey(name)) {
             accs.put(name, accumulator);
-            return true;
+            return accumulator;
         }
-        return false;
+        return accs.get(name);
     }
 
     @Override
-    public boolean register(String name, Calculator calculator) {
+    public Calculator register(String name, Calculator calculator) {
         if(!calcs.containsKey(name)) {
             calcs.put(name, calculator);
-            return true;
+            return calculator;
         }
-        return false;
+        return calcs.get(name);
     }
 
     @Override

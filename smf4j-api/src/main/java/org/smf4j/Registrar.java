@@ -108,6 +108,9 @@ import org.smf4j.helpers.NopRegistryNode;
  * a hierarchy.</dd>
  * </dl>
  * </p>
+ * <p>
+ * {@code Registrar} implementations <strong>must</strong> be thread-safe.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
