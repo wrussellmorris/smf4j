@@ -89,42 +89,34 @@ public class GlobMatch implements RegistryNode {
         return !members.isEmpty();
     }
 
-    @Override
     public String getName() {
         return node == null ? "" : node.getName();
     }
 
-    @Override
     public Accumulator register(String name, Accumulator accumulator) {
         return NopAccumulator.INSTANCE;
     }
 
-    @Override
     public Calculator register(String name, Calculator calculator) {
         return NopCalculator.INSTANCE;
     }
 
-    @Override
     public boolean unregister(String name, Accumulator accumulator) {
         return false;
     }
 
-    @Override
     public boolean unregister(String name, Calculator calculator) {
         return false;
     }
 
-    @Override
     public Map<String, Accumulator> getAccumulators() {
         return roAccs;
     }
 
-    @Override
     public Map<String, Calculator> getCalculators() {
         return roCalcs;
     }
 
-    @Override
     public Accumulator getAccumulator(String name) {
         if(node == null || !rootMembers.contains(name)) {
             return NopAccumulator.INSTANCE;
@@ -132,7 +124,6 @@ public class GlobMatch implements RegistryNode {
         return  node.getAccumulator(name);
     }
 
-    @Override
     public Calculator getCalculator(String name) {
         if(node == null || !rootMembers.contains(name)) {
             return NopCalculator.INSTANCE;
@@ -140,7 +131,6 @@ public class GlobMatch implements RegistryNode {
         return node.getCalculator(name);
     }
 
-    @Override
     public Map<String, Object> snapshot() {
         Map<String, Object> snapshot = new HashMap<String, Object>();
         if(node == null) {
@@ -158,7 +148,6 @@ public class GlobMatch implements RegistryNode {
         return snapshot;
     }
 
-    @Override
     public Map<String, RegistryNode> getChildNodes() {
         if(node == null) {
             return EMPTY_CHILD_MAP;
@@ -166,25 +155,21 @@ public class GlobMatch implements RegistryNode {
         return node.getChildNodes();
     }
 
-    @Override
     public RegistryNode getChildNode(String name) {
         return node == null || !rootMembers.contains(name)
                 ? NopRegistryNode.INSTANCE : node.getChildNode(name);
     }
 
-    @Override
     public boolean isOn() {
         return node == null ? false : node.isOn();
     }
 
-    @Override
     public void setOn(boolean on) {
         if(node != null) {
             node.setOn(on);
         }
     }
 
-    @Override
     public void clearOn() {
         if(node != null) {
             node.clearOn();

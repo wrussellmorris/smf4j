@@ -53,7 +53,7 @@ import org.smf4j.helpers.NopRegistryNode;
  * {@code Registrar} with them during application initialization, or communicate
  * through documentation the expected layout of them.
  * </p>
- * <a id="NodeNameAndPath" />
+ * <a id="NodeNameAndPath"></a>
  * <h4>Node Names and Paths</h4>
  * A {@code RegistryNode}'s <em>name</em> consists of word characters (as in
  * the regular expression {@code [\w_]+}).  A {@code RegistryNode}'s path is the
@@ -65,7 +65,7 @@ import org.smf4j.helpers.NopRegistryNode;
  * <dt>{@code RegistryNode} path</dt>
  * <dd><strong>must</strong> match the pattern <strong>{@code [\w_]+(\.[\w_]+)*}</strong>.</dd>
  * </dl>
- * <a id="AccumulatorAndCalculatorName" />
+ * <a id="AccumulatorAndCalculatorName"></a>
  * <h4>Member Names</h4>
  * {@code RegistryNode}s can contain named {@code Accumulator}s and
  * {@code Calculator}s.  Their <em>name</em> consists of word characters (as in
@@ -74,7 +74,7 @@ import org.smf4j.helpers.NopRegistryNode;
  * <dt>{@code Accumulator} and {@code Calculator} name</dt>
  * <dd><strong>must</strong> match the pattern <strong>{@code [\w_]+}</strong>.</dd>
  * </dl>
- * <a id="MemberPath" />
+ * <a id="MemberPath"></a>
  * <h4>Member Paths</h4>
  * A <em>Member Path</em> identifies a specific {@code Accumulator} or
  * {@code Calculator} in a specific {@code RegistryNode}, and uses the form
@@ -83,7 +83,7 @@ import org.smf4j.helpers.NopRegistryNode;
  * <dt><strong>Member Path</strong></dt>
  * <dd><strong>must</strong> match the pattern <strong>{@code [\w_]+(\.[\w_]+)*:[\w_]+}</strong>.</dd>
  * </dl>
- * <a id="GlobPattern" />
+ * <a id="GlobPattern"></a>
  * <h4>Glob Pattern</h4>
  * A <em>GlobPattern</em> is used to match a subset of {@code RegistryNode}s and
  * their member {@code Accumulator}s and {@code Calculator}s.  The
@@ -91,7 +91,9 @@ import org.smf4j.helpers.NopRegistryNode;
  * Path</a> format, but it allows glob-style wildcard matching using
  * {@code *}, {@code ?}, and {@code **}, and assumes an omitted
  * <em>node_path</em> or <em>accumulator_or_calculator_name</em> means that
- * all should be matched.
+ * all should be matched.  It also allows multiple <em>node_path</em> and
+ * <em>accumulator_or_calculator_name</em> parts to be combined using
+ * {@code ,} implying logical {@code OR} semantics.
  * <dl>
  * <dt><strong>*</strong></dt>
  * <dd>Matches zero or more characters in a <em>node_name</em> or an
@@ -107,6 +109,14 @@ import org.smf4j.helpers.NopRegistryNode;
  * match <em>.</em>, meaning that it can be used to match nodes inside
  * a hierarchy.</dd>
  * </dl>
+ * </p>
+ * <p>
+ * As an example, <code><em>foo.bar.**,swedish.chef:blah*,bor*</em></code>
+ * would match any {@code Accumulator}s and {@code Calculators} whose names
+ * started with <code><em>blah</em></code> or <code><em>bor</em></code>, and
+ * that were contained by {@code RegistryNode}s whose paths were under
+ * <code><em>foo.bar</em></code>, or equal to
+ * <code><em>swedish.blah</em></code>.
  * </p>
  * <p>
  * {@code Registrar} implementations <strong>must</strong> be thread-safe.

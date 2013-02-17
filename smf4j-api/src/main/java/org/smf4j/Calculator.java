@@ -32,7 +32,7 @@ import org.smf4j.helpers.Units;
  * <p>
  * The value returned by {@link #calculate(java.util.Map, java.util.Map)} can
  * be any type of object, but implementors designing their own
- * {@code Calculator} implementations you should strive to make the returned
+ * {@code Calculator} implementations should strive to make the returned
  * object fully comprehendible by the simple {@link CalculatorHelper} class,
  * which treats the returned class as either an integral type ({@code long},
  * {@code Long}, {@code String}, etc...), or as a bean with standard bean-style
@@ -41,7 +41,7 @@ import org.smf4j.helpers.Units;
  * <p>
  * As an example, an implementation of {@code Calculator} called {@code Ratio}
  * would probably return a {@code Double} from its implementation of
- * {@code cacluate}:
+ * {@code calculate}:
  * <pre>
  * public class Ratio implements Calculator {
  *     // ...
