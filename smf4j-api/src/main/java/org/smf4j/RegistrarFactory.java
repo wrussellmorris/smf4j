@@ -17,10 +17,10 @@ package org.smf4j;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.smf4j.helpers.NopRegistrar;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smf4j.helpers.NopRegistrar;
 import org.smf4j.impl.StaticRegistrarBinder;
 import org.smf4j.impl.StaticRegistrarBinderForUnitTests;
 import org.smf4j.spi.RegistrarProvider;

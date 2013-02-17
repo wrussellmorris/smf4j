@@ -134,14 +134,14 @@ public interface Accumulator {
 
     /**
      * Gets implementation-specific metadata about this {@code Accumulator}
-     * or instance.
+     * implementation and/or instance.
      * <p>
-     * This method can return {@code null} if the implementor has not need
+     * This method can return {@code null} if the implementor has no need
      * for keeping metadata alongside the {@code Accumulator}.
      * </p>
      * @return Returns implementation-specific metadata about this
-     * {@code Accumulator} or instance, or {@code null} if no metadata is
-     * associated with this {@code Accumulator} or instance.
+     * {@code Accumulator} and/or instance, or {@code null} if no metadata is
+     * associated with this {@code Accumulator} and/or instance.
      */
     Map<Object, Object> getMetadata();
 }

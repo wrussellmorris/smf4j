@@ -164,7 +164,7 @@ limitations under the License.
             </xsd:annotation>
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
-                    <xsd:pattern value="[a-zA-Z0-9_]+" />
+                    <xsd:pattern value="[\w_]+" />
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
@@ -200,7 +200,7 @@ limitations under the License.
             </xsd:annotation>
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
-                    <xsd:pattern value="[a-zA-Z0-9_\.]+" />
+                    <xsd:pattern value="[\w_]+(\.[\w_]+)*" />
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>

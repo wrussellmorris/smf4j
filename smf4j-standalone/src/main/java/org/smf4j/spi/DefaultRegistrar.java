@@ -37,7 +37,7 @@ import org.smf4j.helpers.NopCalculator;
  */
 class DefaultRegistrar implements Registrar {
     private static final Pattern validPartChars =
-            Pattern.compile("[a-zA-Z0-9_]+");
+            Pattern.compile("[\\w]+");
     private volatile DefaultRegistryNode root;
 
     private final Logger log = LoggerFactory.getLogger(DefaultRegistrar.class);
