@@ -131,13 +131,20 @@ public final class RegistrarFactory {
                         // Someone else beat us - let's take another pass
                         break;
                     }
+
+                    boolean success = false;
                     if(foundTestBinding.get()) {
-                        initTestBinder();
+                        success |= initTestBinder();
                     }
                     if(foundBinding.get()) {
-                        initBinder();
+                        success |= initBinder();
                     }
-                    initState.set(SUCCESS);
+                    if(!success) {
+                        log.error("Using No-Operation (nop) Registrar since "
+                                + "no binders were successfully registered.  "
+                                + "See prior log entries for details.");
+                    }
+                    initState.set(success ? SUCCESS : NOP);
                     return;
 
                 case INITIALIZING:
@@ -170,13 +177,13 @@ public final class RegistrarFactory {
         }
     }
 
-    private static void initTestBinder() {
+    private static boolean initTestBinder() {
         StaticRegistrarBinderForUnitTests binding =
                 StaticRegistrarBinderForUnitTests.getSingleton();
         if(binding == null) {
             log.error("StaticRegistrarBinderForUnitTests.getSingleton() "
                     + "returned null.");
-            return;
+            return false;
         }
 
         Object obj = binding.getRegistrarProvider();
@@ -184,7 +191,7 @@ public final class RegistrarFactory {
             log.error(
                     "StaticRegistrarBinderForUnitTests.getRegistrarProvider() "
                     + "returned null.");
-            return;
+            return false;
         }
         if(!(obj instanceof RegistrarProvider)) {
             log.error(
@@ -193,10 +200,11 @@ public final class RegistrarFactory {
                     + "org.smf4j.spi.RegistrarProvider.  The returned value "
                     + "was an instance of '"
                     + obj.getClass().getCanonicalName() + "'");
-            return;
+            return false;
         }
 
         testProvider.set((RegistrarProvider)obj);
+        return true;
     }
 
     private static void attemptBinder() {
@@ -214,11 +222,11 @@ public final class RegistrarFactory {
         }
     }
 
-    private static void initBinder() {
+    private static boolean initBinder() {
         StaticRegistrarBinder binding = StaticRegistrarBinder.getSingleton();
         if(binding == null) {
             log.error("StaticRegistrarBinder.getSingleton() returned null.");
-            return;
+            return false;
         }
 
         Object obj = binding.getRegistrarProvider();
@@ -226,7 +234,7 @@ public final class RegistrarFactory {
             log.error(
                     "StaticRegistrarBinder.getRegistrarProvider() "
                     + "returned null.");
-            return;
+            return false;
         }
         if(!(obj instanceof RegistrarProvider)) {
             log.error(
@@ -235,10 +243,11 @@ public final class RegistrarFactory {
                     + "org.smf4j.spi.RegistrarProvider.  The returned value "
                     + "was an instance of '"
                     + obj.getClass().getCanonicalName() + "'");
-            return;
+            return false;
         }
 
         provider.set((RegistrarProvider)obj);
+        return true;
     }
 
     private static boolean detectDuplicateBinders(String fqcn) {
