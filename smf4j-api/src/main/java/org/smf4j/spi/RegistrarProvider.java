@@ -16,11 +16,32 @@
 package org.smf4j.spi;
 
 import org.smf4j.Registrar;
+import org.smf4j.RegistrarFactory;
 
 /**
+ * {@code RegistrarProvider} is the interface implemented by providers
+ * of {@link Registrar}s.
+ *
+ * <p>
+ * These providers must fully implement thread-safe
+ * versions of {@link Registrar} and {@link RegistryNode} and provide them to
+ * clients via this interface.  What constitutes a 'client' is up to the
+ * implementation of {@code RegistrarProvider} - for example, a specific
+ * contained J2EE app, a root-level Spring context, a JVM instance, etc...
+ * </p>
+ * <p>
+ * These providers are found and bound at runtime by {@link RegistrarFactory}.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public interface RegistrarProvider {
+
+    /**
+     * Gets the {@link Registrar} instance for the client, as determined by
+     * the implementation.
+     * @return The {@link Registrar} instance for the client, as determined by
+     *         the implementation.
+     */
     Registrar getRegistrar();
 }

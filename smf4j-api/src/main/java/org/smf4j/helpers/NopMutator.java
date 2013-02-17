@@ -18,23 +18,45 @@ package org.smf4j.helpers;
 import org.smf4j.Mutator;
 
 /**
+ * {@code NopMutator} is a no-operation (nop) implementation of
+ * {@link Mutator} that can be returned in instances where an actual
+ * {@link Mutator} instance cannot be found, or is otherwise inappropriate.
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class NopMutator implements Mutator {
 
+    /**
+     * The static singleton {@code NopMutator}.
+     */
     public static final Mutator INSTANCE = new NopMutator();
 
+    /**
+     * {@code NopMutator} is a static singleton.
+     */
     private NopMutator() {
     }
 
+    /**
+     * Takes no action.
+     * @param delta Ignored.
+     */
     public void put(long delta) {
     }
 
+    /**
+     * Always returns {@code 0}.
+     * @param other Ignored.
+     * @return {@code 0}.
+     */
     public long combine(long other) {
         return 0L;
     }
 
+    /**
+     * Always returns {@code 0}.
+     * @return {@code 0}.
+     */
     public long get() {
         return 0L;
     }

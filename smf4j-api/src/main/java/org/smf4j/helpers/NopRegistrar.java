@@ -20,48 +20,92 @@ import java.util.List;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
 import org.smf4j.Registrar;
+import org.smf4j.RegistrarFactory;
 import org.smf4j.RegistryNode;
 
 /**
+ * {@code NopRegistrar} is a no-operation (nop) implementation of
+ * {@link Registrar} that can be returned in instances where an actual
+ * {@link Registrar} instance cannot be found, or is otherwise inappropriate.
+ * <p>
+ * This is returned by {@link RegistrarFactory} when a binding failure occurs.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class NopRegistrar implements Registrar {
 
+    /**
+     * The static singleton instance of {@code NopRegistrar}.
+     */
     public static final Registrar INSTANCE = new NopRegistrar();
-    public static final List<GlobMatch> empty = Collections.emptyList();
 
+    /**
+     * The empty list returned when {@code match} is called.
+     */
+    private static final List<GlobMatch> empty = Collections.emptyList();
+
+    /**
+     * {@code NopRegistrar} is a static singleton.
+     */
     private NopRegistrar() {
     }
 
-    @Override
+    /**
+     * Always returns {@link NopRegistryNode#INSTANCE}.
+     * @param fullNodeName Ignored.
+     * @return {@link NopRegistryNode#INSTANCE}.
+     */
     public RegistryNode getNode(String fullNodeName) {
         return NopRegistryNode.INSTANCE;
     }
 
-    @Override
+    /**
+     * Always returns {@link NopRegistryNode#INSTANCE}.
+     * @return {@link NopRegistryNode#INSTANCE}.
+     */
     public RegistryNode getRootNode() {
         return NopRegistryNode.INSTANCE;
     }
 
-
-    @Override
+    /**
+     * Always returns {@link Collections#emptyList()}.
+     * @param globPattern Ignored.
+     * @return {@link Collections#emptyList()}.
+     */
     public Iterable<GlobMatch> match(String globPattern) {
         return empty;
     }
 
-    @Override
+    /**
+     * Takes to action.
+     * @param fullNodeName Ignored.
+     * @param on Ignored.
+     */
     public void setOn(String fullNodeName, boolean on) {
     }
 
-    @Override
+    /**
+     * Takes no action.
+     * @param fullNodeName Ignored.
+     */
     public void clearOn(String fullNodeName) {
     }
 
+    /**
+     * Always returns {@link NopAccumulator#INSTANCE}.
+     * @param path Ignored.
+     * @return {@link NopAccumulator#INSTANCE}.
+     */
     public Accumulator getAccumulator(String path) {
         return NopAccumulator.INSTANCE;
     }
 
+    /**
+     * Always returns {@link NopCalculator#INSTANCE}.
+     * @param path Ignored.
+     * @return {@link NopCalculator#INSTANCE}.
+     */
     public Calculator getCalculator(String path) {
         return NopCalculator.INSTANCE;
     }

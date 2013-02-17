@@ -20,8 +20,13 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.smf4j.Calculator;
 
 /**
+ * {@code Units} is a method annotation that allows {@link Calculator}
+ * implementations to decorate the getters of the return type of their
+ * {@link Calculator#calculate(java.util.Map, java.util.Map) calculate} method
+ * with units information.
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
@@ -29,5 +34,9 @@ import java.lang.annotation.Target;
 @Retention(value=RetentionPolicy.RUNTIME)
 @Target(value=ElementType.METHOD)
 public @interface Units {
+    /**
+     * The units string to associate with this method.
+     * @return The units string associated with this method.
+     */
     String value();
 }

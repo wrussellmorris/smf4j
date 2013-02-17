@@ -20,21 +20,40 @@ import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
 
 /**
+ * {@code NopCalculator} is a no-operation (nop) implementation of
+ * {@link Calculator} that can be returned in instances where an actual
+ * {@link Calculator} instance cannot be found, or is otherwise inappropriate.
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public class NopCalculator implements Calculator {
 
+    /**
+     * The static singleton {@code NopCalculator}.
+     */
     public static final NopCalculator INSTANCE = new NopCalculator();
 
+    /**
+     * {@code NopCalculator} is a static singleton.
+     */
     private NopCalculator() {
     }
 
+    /**
+     * Always returns {@code null}.
+     * @param values Ignored.
+     * @param accumulators Ignored.
+     * @return {@code null}.
+     */
     public Object calculate(Map<String, Long> values,
             Map<String, Accumulator> accumulators) {
         return null;
     }
 
+    /**
+     * Always returns {@code null}.
+     * @return {@code null}.
+     */
     public String getUnits() {
         return null;
     }

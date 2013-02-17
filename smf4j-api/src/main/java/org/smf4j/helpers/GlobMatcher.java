@@ -24,26 +24,53 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Calculator;
+import org.smf4j.Registrar;
 import org.smf4j.RegistryNode;
 
 /**
+ * {@code GlobMatcher} parses and prepares a
+ * <a href="{@docRoot}/org/smf4j/Registrar.html#GlobPattern">glob pattern</a>
+ * and manages produces {@link GlobMatch} instances representing
+ * {@link RegistryNode}s matched against this glob pattern.
+ * <p>
+ * {@link Registrar} implementations should use this class to implement their
+ * {@link Registrar#match(java.lang.String) match} method.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class GlobMatcher {
 
+    /**
+     * The logger used by this class
+     */
     private static final Logger log =
             LoggerFactory.getLogger(GlobMatcher.class);
-    static final String ALL_GLOB = "**";
-    static final String SINGLE_NAME_CHAR = "[a-zA-Z0-9_]";
-    static final String ANY_NAME_CHARS_PATTERN =
+
+    // Glob patterns and their regex equivalents
+    private static final String ALL_GLOB = "**";
+    private static final String SINGLE_NAME_CHAR = "[a-zA-Z0-9_]";
+    private static final String ANY_NAME_CHARS_PATTERN =
             "(" + SINGLE_NAME_CHAR + ")*";
-    static final String ARBITRARY_DEPTH_PATTERN =
+    private static final String ARBITRARY_DEPTH_PATTERN =
             "((" + SINGLE_NAME_CHAR + ")*(\\.(" + SINGLE_NAME_CHAR + ")*)*)";
 
+    /**
+     * The list of all node patterns in the glob pattern.
+     */
     private final List<Pattern> nodePatterns;
+
+    /**
+     * The list of all of the member patterns in the glob pattern.
+     */
     private final List<Pattern> memberPatterns;
 
+    /**
+     * Creates a new instance of {@code GlobMatcher} that matches
+     * {@link RegistryNode}s against the given {@code globPattern}.
+     * @param globPattern The <a href="{@docRoot}/org/smf4j/Registrar.html#GlobPattern">
+     *                    glob pattern</a> to match against.
+     */
     public GlobMatcher(String globPattern) {
         if(globPattern == null) {
             throw new NullPointerException();
@@ -61,6 +88,13 @@ public final class GlobMatcher {
         }
     }
 
+    /**
+     * Creates a {@link GlobMatch} representing the matching of
+     * {@code node} against this {@code GlobMatcher}'s glob pattern.
+     * @param node The {@link RegistryNode} to match.
+     * @return A {@link GlobMatch} representing the matching of
+     *         {@code node} against this {@code GlobMatcher}'s glob pattern.
+     */
     public GlobMatch match(RegistryNode node) {
         if(node == null) {
             throw new NullPointerException();
@@ -108,6 +142,15 @@ public final class GlobMatcher {
         return new GlobMatch(node, matchedMemberNames);
     }
 
+    /**
+     * Splits the given {@code globPattern} and returns a two-element
+     * {@code List} of {@code List<String>}, where the first list is the
+     * list of node patterns, and the second list is a list of member patterns.
+     * @param globPattern The glob pattern to be split.
+     * @return A two-element {@code List} of {@code List<String>}, where the
+     *         first list is the list of node patterns, and the second list is
+     *         a list of member patterns.
+     */
     static List<List<String>> splitPatterns(String globPattern) {
         List<List<String>> result = new ArrayList<List<String>>();
         List<String> nodePatterns = new ArrayList<String>();
@@ -174,6 +217,11 @@ public final class GlobMatcher {
         return result;
     }
 
+    /**
+     * Creates a {@link Pattern} that will match against {@code filterPattern}.
+     * @param filterPattern The filter pattern.
+     * @return A {@link Pattern} that will match against {@code filterPattern}.
+     */
     static Pattern createPattern(String filterPattern) {
         String[] parts = filterPattern.split("\\.");
         StringBuilder regexString = new StringBuilder();

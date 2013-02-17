@@ -15,16 +15,44 @@
  */
 package org.smf4j.helpers;
 
+import org.smf4j.Calculator;
+
 /**
+ * {@code CalculatorProperty} represents a property found on the type returned
+ * by an implementation of
+ * {@link Calculator#calculate(java.util.Map, java.util.Map) Calculator.calculate}
+ * .
+ * <p>
+ * Instances of this class are typically created by
+ * {@link CalculatorHelper#getCalculatorAttributes(java.lang.String, org.smf4j.Calculator).
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class CalculatorProperty {
 
-    private final String units;
+    /**
+     * The name of this property.
+     */
     private final String name;
+
+    /**
+     * The units of this property, potentially null.
+     */
+    private final String units;
+
+    /**
+     * The type of this property.
+     */
     private final Class<?> type;
 
+    /**
+     * Creates a new instance of {@code CalculatorProperty}, using the
+     * given {@code name}, {@code units}, and {@code type}.
+     * @param name The name of this property.
+     * @param units The units of this property, possibly {@code null}.
+     * @param type  The type of this property.
+     */
     CalculatorProperty(String name, String units, Class<?> type) {
         this.name = name;
         this.units = units;
@@ -32,21 +60,24 @@ public final class CalculatorProperty {
     }
 
     /**
-     * @return the units
+     * Gets the units of this property, potentially {@code null}.
+     * @return The units of this property, potentially {@code null}.
      */
     public String getUnits() {
         return units;
     }
 
     /**
-     * @return the name
+     * Gets the name of this property.
+     * @return The name of this property.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return the type
+     * Gets the type of this property.
+     * @return The type of this property.
      */
     public Class<?> getType() {
         return type;

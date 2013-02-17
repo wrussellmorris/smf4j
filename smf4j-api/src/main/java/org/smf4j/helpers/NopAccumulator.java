@@ -21,50 +21,68 @@ import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
 
 /**
+ * {@code NopAccumulator} is a no-operation (nop) implementation of
+ * {@link Accumulator} that can be returned in instances where an actual
+ * {@link Accumulator} instance cannot be found, or is otherwise inappropriate.
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class NopAccumulator implements Accumulator, Mutator {
+public class NopAccumulator implements Accumulator {
 
+    /**
+     * The static singleton {@code NopAccumulator}.
+     */
     public static final Accumulator INSTANCE = new NopAccumulator();
 
+    /**
+     * {@code NopAccumulator} is a static singleton.
+     */
     private NopAccumulator() {
     }
 
+    /**
+     * Always returns {@link NopMutator#INSTANCE}.
+     * @return {@link NopMutator#INSTANCE}.
+     */
     public Mutator getMutator() {
-        return this;
+        return NopMutator.INSTANCE;
     }
 
+    /**
+     * Always returns {@code 0}.
+     * @return {@code 0}.
+     */
     public long get() {
         return 0L;
     }
 
+    /**
+     * Always returns {@code false}.
+     * @return {@code false}
+     */
     public boolean isOn() {
         return false;
     }
 
+    /**
+     * Takes no action.
+     * @param on Ignored.
+     */
     public void setOn(boolean on) {
     }
 
+    /**
+     * Always returns {@code null}.
+     * @return {@code null}.
+     */
     public String getUnits() {
         return null;
     }
 
-    public long getTimeWindow() {
-        return 0L;
-    }
-
-    public int getIntervals() {
-        return 0;
-    }
-
-    public void put(long delta) {
-    }
-
-    public long combine(long other) {
-        return 0L;
-    }
-
+    /**
+     * Always returns {@link Collections#emptyMap()}
+     * @return {@link Collections#emptyMap()}
+     */
     public Map<Object, Object> getMetadata() {
         return Collections.emptyMap();
     }

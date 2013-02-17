@@ -16,6 +16,8 @@
 package org.smf4j;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -384,11 +386,11 @@ public final class RegistrarFactory {
      *         were found.
      */
     private static boolean detectAndReportDuplicateBinders(String fqcn) {
-        Set<URL> binders = findMatchingBinders(fqcn);
+        Set<URI> binders = findMatchingBinders(fqcn);
         if(binders.size() > 1) {
             log.error("Found duplicate registrar binders:");
-            for(URL url : binders) {
-                log.error(url.toString());
+            for(URI uri : binders) {
+                log.error(uri.toString());
             }
             return true;
         }
@@ -400,8 +402,8 @@ public final class RegistrarFactory {
      * @param fqcn The name of the class, in resource form, to search for.
      * @return A {@code Set} of all of the classes found matching {@code fqcn}.
      */
-    private static Set<URL> findMatchingBinders(String fqcn) {
-        Set<URL> matchingBinders = new HashSet<URL>();
+    private static Set<URI> findMatchingBinders(String fqcn) {
+        Set<URI> matchingBinders = new HashSet<URI>();
         ClassLoader classLoader = RegistrarFactory.class.getClassLoader();
         Enumeration<URL> matches = null;
         try {
@@ -415,7 +417,11 @@ public final class RegistrarFactory {
         }
 
         while(matches != null && matches.hasMoreElements()) {
-            matchingBinders.add(matches.nextElement());
+            try {
+                matchingBinders.add(matches.nextElement().toURI());
+            } catch(URISyntaxException e) {
+                log.error("Error transforming URL to URI", e);
+            }
         }
 
         return matchingBinders;
