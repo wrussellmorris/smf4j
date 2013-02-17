@@ -42,7 +42,7 @@ public class RegistrarFactoryBean implements FactoryBean<Registrar>,
     private List<RegistryNodeProxy> nodeProxies = Collections.emptyList();
 
     @Override
-    public Class<?> getObjectType() {
+    public Class getObjectType() {
         return Registrar.class;
     }
 

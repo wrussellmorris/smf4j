@@ -170,11 +170,16 @@ public class RegistryNodeTemplateDefinitionParser extends
         }
 
         // Process all child node tags
-        List<Element> children = DomUtils.getChildElements(element);
         ManagedList<RuntimeBeanReference> childProxyIds =
                 new ManagedList<RuntimeBeanReference>();
 
-        for(Element child : children) {
+        NodeList childNodes = element.getChildNodes();
+        for(int i=0; i<childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            if(childNode.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element child = (Element)childNode;
             String childTagName = child.getLocalName();
             String childProxyId = null;
 

@@ -28,7 +28,7 @@ public class ResolveFactoryBean implements FactoryBean<Accumulator> {
     private String path;
 
     @Override
-    public Class<?> getObjectType() {
+    public Class getObjectType() {
         return Accumulator.class;
     }
 

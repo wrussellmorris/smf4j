@@ -15,7 +15,7 @@
         <netbeans.hint.license>apache20</netbeans.hint.license>
         <junit.version>4.10</junit.version>
         <slf4j.version>1.7.2</slf4j.version>
-        <spring.version>3.1.2.RELEASE</spring.version>
+        <spring.version>3.0.0.RELEASE</spring.version>
         <cobertura-maven-plugin.version>2.5.2</cobertura-maven-plugin.version>
         <surefire.forkmode>once</surefire.forkmode>
         <easymock.version>3.1</easymock.version>
@@ -89,10 +89,13 @@
                     <executions>
                         <execution>
                             <id>attach-javadoc</id>
-                            <phase>verify</phase>
+                            <phase>package</phase>
                             <goals>
                                 <goal>jar</goal>
                             </goals>
+                            <configuration>
+                                <quiet>true</quiet>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

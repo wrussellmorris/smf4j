@@ -26,6 +26,8 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -67,8 +69,13 @@ public class RegistrarBeanDefinitionParser extends
         RegistryNodeTemplateDefinitionParser p =
                 new RegistryNodeTemplateDefinitionParser(false);
 
-        List<Element> children = DomUtils.getChildElements(element);
-        for(Element child : children) {
+        NodeList childNodes = element.getChildNodes();
+        for(int i=0; i<childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            if(childNode.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element child = (Element)childNode;
             String childTagName = child.getLocalName();
             String childBeanId = null;
             if(NODE_TAG.equals(childTagName)) {
