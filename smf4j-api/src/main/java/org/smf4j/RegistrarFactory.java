@@ -20,7 +20,6 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
@@ -56,11 +55,9 @@ public final class RegistrarFactory {
     private static final Registrar NOP_REGISTRAR = NopRegistrar.INSTANCE;
     private static final AtomicInteger initState =
             new AtomicInteger(NOT_INITIALIZED);
-    private static final AtomicBoolean foundBinding = new AtomicBoolean(false);
-    private static final AtomicBoolean foundTestBinding =
-            new AtomicBoolean(false);
-    private static final AtomicBoolean foundDuplicates =
-            new AtomicBoolean(false);
+    private static volatile boolean foundBinding = false;
+    private static volatile boolean foundTestBinding = false;
+    private static volatile boolean foundDuplicates = false;
 
     private RegistrarFactory() {
     }
@@ -71,7 +68,7 @@ public final class RegistrarFactory {
             case NOP:
                 return NOP_REGISTRAR;
             case SUCCESS:
-                if(foundTestBinding.get()) {
+                if(foundTestBinding) {
                     return testProvider.get().getRegistrar();
                 } else {
                     return provider.get().getRegistrar();
@@ -106,7 +103,7 @@ public final class RegistrarFactory {
 
                     attemptTestBinder();
                     attemptBinder();
-                    if(!foundBinding.get() && !foundTestBinding.get()) {
+                    if(!foundBinding&& !foundTestBinding) {
                         initState.set(NOP);
                         // Error: We could not find either provider.  We'll
                         // emit a nastygram and fall back to a NOP provider.
@@ -115,7 +112,7 @@ public final class RegistrarFactory {
                                 + "RegistrarProvider could be found.");
                         return;
                     }
-                    if(foundDuplicates.get()) {
+                    if(foundDuplicates) {
                         initState.set(NOP);
                         // Error: We found duplicate providers
                         log.error("Using No-Operation (nop) Registrar since "
@@ -133,10 +130,10 @@ public final class RegistrarFactory {
                     }
 
                     boolean success = false;
-                    if(foundTestBinding.get()) {
+                    if(foundTestBinding) {
                         success |= initTestBinder();
                     }
-                    if(foundBinding.get()) {
+                    if(foundBinding) {
                         success |= initBinder();
                     }
                     if(!success) {
@@ -165,15 +162,15 @@ public final class RegistrarFactory {
         try {
             if(detectDuplicateBinders(BINDER_FOR_UNIT_TESTS)) {
                // There are duplicate test binders
-               foundDuplicates.set(true);
+               foundDuplicates = true;
             }
 
             StaticRegistrarBinderForUnitTests.getSingleton();
-            foundTestBinding.set(true);
+            foundTestBinding = true;
         } catch(NoClassDefFoundError e) {
             // Could not find a testing binding
             log.debug("Did not find a StaticRegistrarBinderForUnitTests.");
-            foundTestBinding.set(false);
+            foundTestBinding = false;
         }
     }
 
@@ -211,14 +208,14 @@ public final class RegistrarFactory {
         try {
             if(detectDuplicateBinders(BINDER)) {
                 // There are duplicate binders
-                foundDuplicates.set(true);
+                foundDuplicates = true;
             }
 
             StaticRegistrarBinder.getSingleton();
-            foundBinding.set(true);
+            foundBinding = true;
         } catch(NoClassDefFoundError e) {
             // Could not find a testing binding
-            foundBinding.set(false);
+            foundBinding = false;
         }
     }
 
