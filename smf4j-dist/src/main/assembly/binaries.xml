@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>binaries</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+        <format>tar.bz2</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useProjectAttachments>false</useProjectAttachments>
+            <includes>
+                <include>org.smf4j:smf4j-api</include>
+                <include>org.smf4j:smf4j-core</include>
+                <include>org.smf4j:smf4j-from-standalone</include>
+                <include>org.smf4j:smf4j-standalone</include>
+                <include>org.smf4j:smf4j-spring</include>
+                <include>org.smf4j:smf4j-test</include>
+                <include>org.smf4j:smf4j-to-csv</include>
+                <include>org.smf4j:smf4j-to-jmx</include>
+            </includes>
+            <excludes>
+                <exclude>*:*:*:sources</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+</assembly>
+

@@ -30,6 +30,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Calculator;
+import org.smf4j.RegistryNode;
 
 /**
  * {@code CalculatorHelper} is a utility class that helps investigating and
@@ -205,7 +206,7 @@ public final class CalculatorHelper {
      * found along the way, this method returns {@code null}.
      * </p>
      * @param calculation The result of calculation.
-     * @param calcAndPropertyName The path of the value to be found.
+     * @param propertyName The path of the value to be found.
      * @return The value {@code propertyName}, resolved against the
      *         calculation result {@code calculation}.
      */

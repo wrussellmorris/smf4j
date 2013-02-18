@@ -17,6 +17,7 @@ package org.smf4j.spi;
 
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
+import org.smf4j.RegistryNode;
 
 /**
  * {@code RegistrarProvider} is the interface implemented by providers

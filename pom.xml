@@ -21,6 +21,21 @@
         <easymock.version>3.1</easymock.version>
     </properties>
 
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:wrussellmorris/smf4j.git</connection>
+        <developerConnection>scm:git:git@github.com:wrussellmorris/smf4j.git</developerConnection>
+        <url>git@github.com:wrussellmorris/smf4j.git</url>
+    </scm>
+
     <modules>
         <module>smf4j-api</module>
         <module>smf4j-api-hack</module>
@@ -32,14 +47,16 @@
         <module>smf4j-to-csv</module>
         <module>smf4j-to-jmx</module>
         <module>smf4j-test</module>
-
-        <module>testharness</module>
-        <module>examples/webcrawler</module>
-    </modules>
+  </modules>
 
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -219,4 +236,13 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>dist</id>
+            <modules>
+                <module>smf4j-dist</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

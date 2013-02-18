@@ -70,7 +70,7 @@ public class NopRegistryNode implements RegistryNode {
     /**
      * Takes no action and returns {@link NopCalculator#INSTANCE}.
      * @param name Ignored.
-     * @param accumulator Ignored.
+     * @param calculator Ignored.
      * @return {@link NopCalculator#INSTANCE}.
      */
     public Calculator register(String name, Calculator calculator) {
@@ -90,7 +90,7 @@ public class NopRegistryNode implements RegistryNode {
     /**
      * Takes no action and returns {@code false}.
      * @param name Ignored.
-     * @param accumulator Ignored.
+     * @param calculator Ignored.
      * @return {@code false}.
      */
     public boolean unregister(String name, Calculator calculator) {

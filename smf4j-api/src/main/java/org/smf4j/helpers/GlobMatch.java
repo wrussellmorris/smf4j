@@ -30,7 +30,7 @@ import org.smf4j.RegistryNode;
  * {@link RegistryNode} against a <a href="{@docRoot}/org/smf4j/Registrar.html#GlobPattern">
  * .
  * <p>
- * {@GlobMatch} implements {@link RegistryNode}, and can thus be used in place
+ * {@code GlobMatch} implements {@link RegistryNode}, and can thus be used in place
  * of one.  Instances are usually acquired by calling
  * {@link Registrar#match(java.lang.String) Registrar.match}.
  * </p>
@@ -185,11 +185,11 @@ public class GlobMatch implements RegistryNode {
     }
 
     /**
-     * Always returns {@code null}, as {@link GlobMatch} does not allow
+     * Always returns {@code null}, as {@code GlobMatch} does not allow
      * registration.
      * @param name na
      * @param accumulator na
-     * @return Always returns {@code null}, as {@link GlobMatch} does not allow
+     * @return Always returns {@code null}, as {@code GlobMatch} does not allow
      *         registration.
      */
     public Accumulator register(String name, Accumulator accumulator) {
@@ -197,11 +197,11 @@ public class GlobMatch implements RegistryNode {
     }
 
     /**
-     * Always returns {@code null}, as {@link GlobMatch} does not allow
+     * Always returns {@code null}, as {@code GlobMatch} does not allow
      * registration.
      * @param name na
      * @param calculator na
-     * @return Always returns {@code null}, as {@link GlobMatch} does not allow
+     * @return Always returns {@code null}, as {@code GlobMatch} does not allow
      *         registration.
      */
     public Calculator register(String name, Calculator calculator) {
@@ -209,11 +209,11 @@ public class GlobMatch implements RegistryNode {
     }
 
     /**
-     * Always returns {@code false}, as {@link GlobMatch} does not allow
+     * Always returns {@code false}, as {@code GlobMatch} does not allow
      * unregistration.
      * @param name na
      * @param accumulator na
-     * @return Always returns {@code false}, as {@link GlobMatch} does not allow
+     * @return Always returns {@code false}, as {@code GlobMatch} does not allow
      *         unregistration.
      */
     public boolean unregister(String name, Accumulator accumulator) {
@@ -221,11 +221,11 @@ public class GlobMatch implements RegistryNode {
     }
 
     /**
-     * Always returns {@code false}, as {@link GlobMatch} does not allow
+     * Always returns {@code false}, as {@code GlobMatch} does not allow
      * unregistration.
      * @param name na
      * @param calculator na
-     * @return Always returns {@code false}, as {@link GlobMatch} does not allow
+     * @return Always returns {@code false}, as {@code GlobMatch} does not allow
      *         unregistration.
      */
     public boolean unregister(String name, Calculator calculator) {

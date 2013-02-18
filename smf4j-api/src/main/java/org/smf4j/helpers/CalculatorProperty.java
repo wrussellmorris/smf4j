@@ -24,7 +24,7 @@ import org.smf4j.Calculator;
  * .
  * <p>
  * Instances of this class are typically created by
- * {@link CalculatorHelper#getCalculatorAttributes(java.lang.String, org.smf4j.Calculator).
+ * {@link CalculatorHelper#getCalculatorAttributes(java.lang.String, org.smf4j.Calculator)}.
  * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
