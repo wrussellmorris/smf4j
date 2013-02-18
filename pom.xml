@@ -5,7 +5,7 @@
 
     <groupId>org.smf4j</groupId>
     <artifactId>smf4j-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.9.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>smf4j</name>
@@ -43,7 +43,6 @@
         <module>smf4j-spring</module>
         <module>smf4j-standalone</module>
         <module>smf4j-from-standalone</module>
-        <module>smf4j-to-slf4j</module>
         <module>smf4j-to-csv</module>
         <module>smf4j-to-jmx</module>
         <module>smf4j-test</module>

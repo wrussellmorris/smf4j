@@ -4,7 +4,7 @@
        xmlns:smf4j="http://www.smf4j.org/schema/spring/smf4j"
        xsi:schemaLocation="
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-            http://www.smf4j.org/schema/spring/smf4j http://www.smf4j.org/schema/spring/smf4j-spring-1.0.xsd
+            http://www.smf4j.org/schema/spring/smf4j http://www.smf4j.org/schema/spring/smf4j-spring-0.9.xsd
 ">
 
     <smf4j:registrar id="registrar-1">
