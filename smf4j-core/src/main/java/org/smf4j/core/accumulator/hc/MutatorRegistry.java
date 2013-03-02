@@ -53,7 +53,7 @@ public final class MutatorRegistry implements Iterable<Mutator>{
         WeakThreadRef existingKey = null;
         for(Map.Entry<WeakThreadRef, Registration> existing :
                 registrations.entrySet()) {
-            if(existing.getValue().acquire()) {
+            if(existing.getValue().acquire(currentThread)) {
                 existingKey = existing.getKey();
                 r = existing.getValue();
                 break;
@@ -129,10 +129,7 @@ public final class MutatorRegistry implements Iterable<Mutator>{
             this.available = new AtomicBoolean(false);
         }
 
-        private boolean acquire() {
-            // The current thread is the one that is attempting to acquire this.
-            Thread thread = Thread.currentThread();
-
+        private boolean acquire(Thread thread) {
             // Check to see which Thread currently owns this.
             Thread cur = threadRef.get();
             if(cur == thread) {
@@ -151,8 +148,8 @@ public final class MutatorRegistry implements Iterable<Mutator>{
             // continue on below to acquire this guy, and then set 'available'
             // back to false.
             if(!available.compareAndSet(false, true)) {
-                // We did not win the race - somebody else beat the curren thread
-                // to acquiring this.
+                // We did not win the race - somebody else beat the current
+                // thread to acquiring this guy.
                 return false;
             }
 
