@@ -16,15 +16,21 @@
 package org.smf4j.core.accumulator;
 
 /**
- * {@code TimeReporter} provides some notion of the 'current time' in nanos.
+ * {@code TimeReporter} provides a notion of the 'current time' in nanoseconds.
+ * <p>
+ * This interface is used by all code interested in the current time so that
+ * they can be unit tested deterministically.
+ * </p>
+ *
+ * @see SystemNanosTimeReporter#INSTANCE
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public interface TimeReporter {
 
     /**
-     * Reports the current time, in nanos
-     * @return The current time, in nanos
+     * Reports the current time, in nanoseconds.
+     * @return The current time, in nanoseconds.
      */
     long nanos();
 }

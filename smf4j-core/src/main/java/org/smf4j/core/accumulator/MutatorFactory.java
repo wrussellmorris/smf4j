@@ -17,13 +17,31 @@ package org.smf4j.core.accumulator;
 
 import java.util.Map;
 import org.smf4j.Mutator;
+import org.smf4j.core.accumulator.hc.HighContentionAccumulator;
+import org.smf4j.core.accumulator.lc.LowContentionAccumulator;
 
 /**
+ * {@code MutatorFactory} implementations create instances of
+ * {@link Mutator}s.
+ *
+ * @see HighContentionAccumulator
+ * @see LowContentionAccumulator
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public interface MutatorFactory {
+
+    /**
+     * Creates a new {@link Mutator} instance.
+     * @return A new {@link Mutator} instance.
+     */
     Mutator createMutator();
 
+    /**
+     * Gets a {@link Map} containing metadata information describing all of the
+     * {@link Mutator}s returned by {@link #createMutator()}.
+     * @return A {@link Map} containing metadata information describing all of
+     *         the {@link Mutator}s returned by {@link #createMutator()}.
+     */
     Map<Object, Object> getMetadata();
 }

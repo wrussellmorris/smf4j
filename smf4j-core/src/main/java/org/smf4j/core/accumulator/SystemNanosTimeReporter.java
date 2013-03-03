@@ -23,11 +23,18 @@ package org.smf4j.core.accumulator;
  */
 public final class SystemNanosTimeReporter implements TimeReporter {
 
+    /**
+     * The static singleton time reporter.
+     */
     public static final TimeReporter INSTANCE = new SystemNanosTimeReporter();
 
-    @Override
+    /**
+     * Gets the current system time, in nanoseconds.
+     * @return The current system time, in nanoseconds.
+     *
+     * @see System#nanoTime()
+     */
     public long nanos() {
         return System.nanoTime();
     }
-
 }

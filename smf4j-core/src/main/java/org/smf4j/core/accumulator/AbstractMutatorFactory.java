@@ -19,14 +19,19 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
+ * {@code AbstractMutatorFactory} serves as a base for {@code smf4j-core}
+ * implementations of {@link MutatorFactory}.
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public abstract class AbstractMutatorFactory implements MutatorFactory {
 
-    private static final Map<Object, Object> empty = Collections.emptyMap();
+    /**
+     * An empty {@link Map} of metadata.
+     */
+    static final Map<Object, Object> EMPTY = Collections.emptyMap();
 
     public Map<Object, Object> getMetadata() {
-        return empty;
+        return EMPTY;
     }
 }

@@ -79,7 +79,7 @@ public class StopwatchTest {
         t.set(200); assertEquals(100L, w.lap());
         t.set(300); assertEquals(100L, w.pause());
         t.set(500); w.resume();
-        t.set(600); assertEquals(100L, w.stop());
+        t.set(600); assertEquals(200L, w.stop());
 
         assertEquals(2L, w.getLaps());
         assertEquals(300L, w.getTotal());

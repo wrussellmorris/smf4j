@@ -18,11 +18,20 @@ package org.smf4j.core.accumulator;
 import org.smf4j.Accumulator;
 
 /**
+ * {@code AbstractAccumulator} serves as a base for the {@link Accumulator}
+ * implementations in {@code smf4j-core}.
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public abstract class AbstractAccumulator implements Accumulator {
+    /**
+     * A {@code boolean} that tracks our on/off state.
+     */
     private volatile boolean on;
+
+    /**
+     * A potentially-{@code null} string describing our units.
+     */
     private String units;
 
     @Override
@@ -40,6 +49,11 @@ public abstract class AbstractAccumulator implements Accumulator {
         return units;
     }
 
+    /**
+     * Sets the {@code units} this {@link Accumulator} implementation reports.
+     * @param units A string describing the units this {@link Accumulator}
+     *              reports.
+     */
     public final void setUnits(String units) {
         this.units = units;
     }

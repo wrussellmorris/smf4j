@@ -15,13 +15,53 @@
  */
 package org.smf4j.core.accumulator;
 
+import org.smf4j.core.calculator.Normalizer;
+import org.smf4j.Accumulator;
+
 /**
+ * {@code PowersOfTwoIntervalStrategy} is an implementation of
+ * {@link IntervalStrategy} that tracks a time window whose nominal time span is
+ * {@code 2^n} nanoseconds split into {@code 2^i} equal intervals, for some
+ * pair {@code n}, {@code i} where {@code n > i}.  While this interval
+ * strategy is certainly a bit stranger and more cumbersome than the
+ * {@link SecondsIntervalStrategy}, it is <strong>much</strong> faster at
+ * calculating the interval index for the current time, as it only needs to
+ * do a <em>mask</em> and <em>right-shift</em>, whereas
+ * {@link SecondsIntervalStrategy} must do an <em>integer division</em> and
+ * <em>modulus</em>.
+ * <p>
+ * The exact width of the reported time window is actually a little smaller than
+ * {@code 2^n} nanoseconds, as 2 intervals are reserved as buffers so that
+ * reads of the intervals never read an interval that could still be written to
+ * in the very near future.
+ * </p>
+ * <p>
+ * An interval's time span in nanoseconds is given by {@code 2^(n-i)}.  Exactly
+ * two intervals are reserved for buffering.  As such, the actual total time
+ * window reported by this interval strategy will be {@code 2^n - 2*2^(n-i)}
+ * nanoseconds.
+ * </p>
+ * <p>
+ * Consider using the {@link Normalizer} calculator to normalize the reported
+ * value of windowed {@link Accumulator}s using
+ * {@code PowersOfTwoIntervalStrategy} to a more easily-comprehendible
+ * frequency.
+ * </p>
+ *
+ * @see SecondsIntervalStrategy
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
 
+    /**
+     * The maximum interval exponent.
+     */
     public static final int MAX_NUM_INTERVALS_EXP = 6;
+
+    /**
+     * The number of buffer intervals.
+     */
     public static final int BUFFER_INTERVALS = 2;
 
     private final long totalWindowInNanos;
@@ -32,6 +72,16 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
     private final long intervalResolutionInNanos;
     private final long indexMask;
 
+    /**
+     * Creates a new instance of {@code PowersOfTwoIntervalStrategy} with the
+     * time window of just under {@code 2^(timeWindowExp)} nanoseconds cut into
+     * {@code 2^(intervalExp)} intervals, each of width
+     * {@code 2^(timeWindowExp-intervalExp)} nanoseconds.
+     * @param timeWindowExp The power of 2 defining the time window, in
+     *                      nanoseconds.
+     * @param intervalExp The power of 2 defining the number of intervals that
+     *                    the time window is split into.
+     */
     public PowersOfTwoIntervalStrategy(int timeWindowExp, int intervalExp) {
 
         if(timeWindowExp < 0) {
@@ -63,13 +113,13 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
         // Total number of intervals is 2^intervalExp nanos
         this.intervals = 1 << intervalExp;
 
-        // reportedIntervals reserves bufferIntervals intervals for buffering
+        // reportedIntervals reserves BUFFER_INTERVALS intervals for buffering
         this.reportedIntervals = intervals - BUFFER_INTERVALS;
 
         // bufferIntervals must be less than intervals
         if(reportedIntervals <= 0) {
             throw new IllegalArgumentException(
-                    "2^(intervalExp)-bufferIntervals must be > 0");
+                    "2^(intervalExp)-BUFFER_INTERVALS must be > 0");
         }
 
         // reportedWindowInNanos takes into account intervals reserved
@@ -78,22 +128,18 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
                 ((long)BUFFER_INTERVALS * intervalResolutionInNanos);
     }
 
-    @Override
     public int intervals() {
         return reportedIntervals;
     }
 
-    @Override
     public long intervalResolutionInNanos() {
         return intervalResolutionInNanos;
     }
 
-    @Override
     public long timeWindowInNanos() {
         return reportedWindowInNanos;
     }
 
-    @Override
     public int intervalIndex(long nanos) {
         return (int)((nanos & indexMask) >> intervalWidthExp);
     }

@@ -15,14 +15,37 @@
  */
 package org.smf4j.core.accumulator;
 
+import org.smf4j.Accumulator;
+
 /**
+ * {@code SecondsIntervalStrategy} is an implementation of
+ * {@link IntervalStrategy} that tracks a time window whose time span is given
+ * in seconds, and is split into equally sized intervals.
+ * <p>
+ * While {@code SecondsIntervalStrategy} feels more natural, its
+ * {@link #intervalIndex(long) intervalIndex} requires an
+ * <em>integer division</em> and <em>modulus</em>, making it much slower than
+ * {@link PowersOfTwoIntervalStrategy#intervalIndex(long) PowersOfTwoIntervalStrategy.intervalIndex}.
+ * Consider using the latter for {@link Accumulator}s that are written very
+ * frequently.
+ * </p>
+ *
+ * @see PowersOfTwoIntervalStrategy
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class SecondsIntervalStrategy implements IntervalStrategy {
 
-    public static final long ONE_BILLION = 1000000000L;
+    private static final long ONE_BILLION = 1000000000L;
+
+    /**
+     * The maximum number of intervals supported.
+     */
     public static final int MAX_INTERVALS = 100;
+
+    /**
+     * The number of buffer intervals used.
+     */
     public static final int BUFFER_INTERVALS = 2;
 
     private final long timeWindowInNanos;
@@ -30,6 +53,13 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
     private final int totalIntervals;
     private final long intervalResolutionInNanos;
 
+    /**
+     * Creates a new {@code SecondsIntervalStrategy} instance tracking a time
+     * window of {@code timeWindowInSeconds} seconds, split into
+     * {@code intervals} equally-sized intervals.
+     * @param timeWindowInSeconds The time window, in seconds.
+     * @param intervals The number of intervals the time window is split into.
+     */
     public SecondsIntervalStrategy(int timeWindowInSeconds, int intervals) {
 
         if(timeWindowInSeconds <= 0) {
@@ -44,36 +74,28 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
 
         this.intervals = intervals;
         this.totalIntervals = intervals + BUFFER_INTERVALS;
-
-        // Extend timeWindowInNanos so that it is evenly
-        // divided by intervals
         this.timeWindowInNanos = ((long)timeWindowInSeconds) * ONE_BILLION;
 
         // Figure out the interval resolution
         this.intervalResolutionInNanos = timeWindowInNanos / intervals;
     }
 
-    @Override
     public int intervals() {
         return intervals;
     }
 
-    @Override
     public int bufferIntervals() {
         return BUFFER_INTERVALS;
     }
 
-    @Override
     public long intervalResolutionInNanos() {
         return intervalResolutionInNanos;
     }
 
-    @Override
     public long timeWindowInNanos() {
         return timeWindowInNanos;
     }
 
-    @Override
     public int intervalIndex(long nanos) {
         int index = (int)((nanos / intervalResolutionInNanos) % totalIntervals);
         return index;

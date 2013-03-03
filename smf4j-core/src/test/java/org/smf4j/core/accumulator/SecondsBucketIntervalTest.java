@@ -34,7 +34,7 @@ public class SecondsBucketIntervalTest {
         int intervals = 5;
         SecondsIntervalStrategy interval = create(window, intervals);
 
-        long windowInNanos = ((long)window) * SecondsIntervalStrategy.ONE_BILLION;
+        long windowInNanos = ((long)window) * 1000000000L;
         assertEquals(windowInNanos, interval.timeWindowInNanos());
         assertEquals(intervals, interval.intervals());
         assertEquals(windowInNanos / ((long)intervals),
@@ -76,6 +76,6 @@ public class SecondsBucketIntervalTest {
     }
 
     private long nanos(int seconds) {
-        return SecondsIntervalStrategy.ONE_BILLION * (long)seconds;
+        return 1000000000L * (long)seconds;
     }
 }
