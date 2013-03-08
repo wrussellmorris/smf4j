@@ -34,17 +34,14 @@ public abstract class AbstractAccumulator implements Accumulator {
      */
     private String units;
 
-    @Override
     public final boolean isOn() {
         return on;
     }
 
-    @Override
     public final void setOn(boolean on) {
         this.on = on;
     }
 
-    @Override
     public final String getUnits() {
         return units;
     }

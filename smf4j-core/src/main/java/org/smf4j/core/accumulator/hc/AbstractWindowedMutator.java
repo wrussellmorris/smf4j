@@ -21,6 +21,36 @@ import org.smf4j.core.accumulator.IntervalStrategy;
 import org.smf4j.core.accumulator.TimeReporter;
 
 /**
+ * {@code AbstractWindowedMutator} serves as a base class for high-contention,
+ * <em>windowed</em> {@link Mutator}s that are designed to be written to by
+ * <strong>exactly</strong> one thread at a time, but safely readable by any
+ * number of threads.
+ * <p>
+ * A <em>windowed</em> {@link Mutator} is a {@code Mutator} that combines and
+ * reports the values it was shown between <em>now</em> and
+ * <em>now</em> - <em>time window</em>.  For example, if the
+ * <em>time window</em> for a {@link WindowedAddMutator} was 10 seconds, its
+ * {@link WindowedAddMutator#get() get()} would return the sum of all of the
+ * values it was show via its {@link WindowedAddMutator#put(long) put} that
+ * occurred within the last 10 seconds.
+ * </p>
+ * <p>
+ * The backing store for the information is two fixed-size circular buffers
+ * recording timestamps and values. An instance of an {@link IntervalStrategy}
+ * is used to determine the size of these buffers, as well as indexing
+ * into them.
+ * </p>
+ * <p>
+ * {@code AbstractWindowedMutator} instances will require storage space
+ * proportional to the number of intervals indicated by the associated
+ * {@link IntervalStrategy}.  All storage is allocated during construction -
+ * once constructed, {@code AbstractWindowedMutator} never allocates any more
+ * storage space as a result of reads or writes.
+ * </p>
+ * <p>
+ * Subclasses are required to implement both {@link #combine(long)} and
+ * {@link #combine(long, long)}.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
@@ -38,6 +68,20 @@ public abstract class AbstractWindowedMutator implements Mutator {
     private final long staleWindowTimestampOffset;
     private final long initialValue;
 
+    /**
+     * Creates a new instance of {@code AbstractWindowedMutator}.
+     * <p>
+     * {@code initialValue} should be chosen so that it acts as an identity
+     * in the {@link #combine(long)} and {@link #combine(long, long)}
+     * operations.
+     * </p>
+     * @param initialValue The initial value reported by this
+     *                     {@code AbstractWindowedMutator}
+     * @param strategy The {@link IntervalStrategy} used to allocated and manage
+     *                 the timestamp and value buffers.
+     * @param timeReporter The {@link TimeReporter} used to determine the
+     *                     current time, in nanoseconds.
+     */
     protected AbstractWindowedMutator(long initialValue,
             IntervalStrategy strategy, TimeReporter timeReporter) {
         this.initialValue = initialValue;
@@ -53,7 +97,6 @@ public abstract class AbstractWindowedMutator implements Mutator {
         this.staleWindowTimestampOffset = intervalResolutionInNanos * buckets;
     }
 
-    @Override
     public final void put(long delta) {
         long nanos = timeReporter.nanos();
         int index = strategy.intervalIndex(nanos);
@@ -69,9 +112,21 @@ public abstract class AbstractWindowedMutator implements Mutator {
         }
     }
 
-    public abstract long combine(long local, long delta);
+    /**
+     * A variant of {@link #combine(long)} that returns the combined value of
+     * {@code local} and {@code delta}.
+     * <p>
+     * This {@code protected} method is used by {@link #put(long) put} to
+     * combine the existing buffer value with the value passed to {@code put}.
+     * </p>
+     * @param local The current local value in the buffer.
+     * @param delta A new value to be combined with {@code local}.
+     * @return The combination of {@code local} and {@code delta}.
+     */
+    protected abstract long combine(long local, long delta);
 
-    @Override
+    public abstract long combine(long other);
+
     public final long get() {
         long nanos = timeReporter.nanos();
         long result = initialValue;
@@ -90,6 +145,17 @@ public abstract class AbstractWindowedMutator implements Mutator {
         return result;
     }
 
+    /**
+     * Returns a copy of the value buffer.
+     * <p>
+     * Any buffer values that are stale will be reported as the
+     * {@code initialValue} passed to the constructor.  The first value in
+     * the returned array will be the value for the most recent interval, and
+     * the last value in the array will be for the oldest recorded interval.
+     * </p>
+     * @param nanos The current time.
+     * @return A copy of the value buffer.
+     */
     public final long[] buckets(long nanos) {
         int index = strategy.intervalIndex(nanos);
         long[] ret = new long[intervals];
@@ -109,6 +175,13 @@ public abstract class AbstractWindowedMutator implements Mutator {
         return ret;
     }
 
+    /**
+     * Decrements {@code index}, wrapping around to the end of the list if
+     * {@code index == 0}.
+     * @param index The index to decrement.
+     * @return {@code index - 1}, or {@code buckets + index} if
+     * {@code index < 0}.
+     */
     private int parw(int index) {
         if(index < 0) {
             return buckets+index;

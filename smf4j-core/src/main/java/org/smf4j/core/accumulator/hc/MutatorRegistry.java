@@ -34,7 +34,7 @@ public final class MutatorRegistry implements Iterable<Mutator>{
     private final ConcurrentMap<WeakThreadRef, Registration> registrations
             = new ConcurrentHashMap<WeakThreadRef, Registration>();
 
-    public MutatorRegistry(final MutatorFactory mutatorFactory) {
+    public MutatorRegistry(MutatorFactory mutatorFactory) {
         this.mutatorFactory = mutatorFactory;
     }
 
@@ -48,32 +48,34 @@ public final class MutatorRegistry implements Iterable<Mutator>{
         if(r != null) {
             return r.mutator;
         }
+
         // We don't have a registration yet - let's scan for an existing one
         // on a dead thread and attempt to acquire it.
-        WeakThreadRef existingKey = null;
+        WeakThreadRef key = null;
         for(Map.Entry<WeakThreadRef, Registration> existing :
                 registrations.entrySet()) {
             if(existing.getValue().acquire(currentThread)) {
-                existingKey = existing.getKey();
+                key = existing.getKey();
                 r = existing.getValue();
                 break;
             }
         }
 
-        if(existingKey != null) {
+        if(key != null) {
             // We acquired a mutator from a dead thread, so we need to
             // re-index it so we can find it again later!
-            registrations.remove(existingKey, r);
-        }
-        if(r == null) {
+            registrations.remove(key, r);
+            key.reset(currentThread);
+        } else {
             // We did not acquire a mutator from a dead thread, so we need
             // to create a new one.
             Mutator mutator = mutatorFactory.createMutator();
             r = new Registration(currentThread, mutator);
+            key = new WeakThreadRef(currentThread);
         }
 
         // Re-register under this new thread.
-        registrations.put(new WeakThreadRef(currentThread), r);
+        registrations.put(key, r);
 
         return r.mutator;
     }
@@ -83,14 +85,17 @@ public final class MutatorRegistry implements Iterable<Mutator>{
     }
 
     private static final class WeakThreadRef {
-        private final WeakReference<Thread> threadRef;
-        private final int hash;
+        private WeakReference<Thread> threadRef;
+        private int hash;
 
         WeakThreadRef(Thread thread) {
+            reset(thread);
+        }
+
+        void reset(Thread thread) {
             if(thread == null) {
                 throw new NullPointerException();
             }
-
             threadRef = new WeakReference<Thread>(thread);
             hash = thread.hashCode();
         }
