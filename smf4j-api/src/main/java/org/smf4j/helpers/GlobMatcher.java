@@ -16,6 +16,7 @@
 package org.smf4j.helpers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ public final class GlobMatcher {
 
         if(!nodeMatch) {
             // The node didn't match
-            return null;
+            return new GlobMatch(false, node, Collections.<String>emptySet());
         }
 
         // Gather all accumulator and calculator attribute names
@@ -139,7 +140,7 @@ public final class GlobMatcher {
         }
 
         // And now we're done...
-        return new GlobMatch(node, matchedMemberNames);
+        return new GlobMatch(true, node, matchedMemberNames);
     }
 
     /**

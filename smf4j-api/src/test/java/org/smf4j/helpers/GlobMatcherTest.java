@@ -122,7 +122,7 @@ public class GlobMatcherTest {
                 "calc2.intProperty", "calc2.stringProperty")
                 .end();
 
-        globMatch(node, "foo:**").n(null).end();
+        globMatch(node, "foo:**").n(node).end();
         globMatch(node, "**:**foobar**").n(node).end();
     }
 
@@ -135,6 +135,8 @@ public class GlobMatcherTest {
 
         // Full match
         GlobMatch match = globMatch(node, "my.name:**");
+        assertTrue(match.isNodeMatched());
+        assertTrue(match.isMembersMatched());
         assertEquals(2, match.getAccumulators().size());
         assertNotNull(match.getAccumulator("acc1"));
         assertNotNull(match.getAccumulator("acc2"));
@@ -146,19 +148,35 @@ public class GlobMatcherTest {
         assertEquals(1, match.getChildNodes().size());
         assertNotNull(match.getChildNode("child"));
 
-        // Partial match
+        // Partial match (node and some members)
         match = globMatch(node, "my.name:*1,*1*.**");
+        assertTrue(match.isNodeMatched());
+        assertTrue(match.isMembersMatched());
         assertEquals(1, match.getAccumulators().size());
         assertNotNull(match.getAccumulator("acc1"));
         assertSame(NopAccumulator.INSTANCE, match.getAccumulator("acc2"));
-
         assertEquals(1, match.getCalculators().size());
         assertNotNull(match.getCalculator("calc1"));
         assertSame(NopCalculator.INSTANCE, match.getCalculator("calc2"));
-
         assertEquals(1, match.getChildNodes().size());
         assertNotNull(match.getChildNode("child"));
 
+        // Partial match (node and no members)
+        match = globMatch(node, "my.name:asdf");
+        assertTrue(match.isNodeMatched());
+        assertFalse(match.isMembersMatched());
+        assertEquals(0, match.getAccumulators().size());
+        assertEquals(0, match.getCalculators().size());
+        assertEquals(1, match.getChildNodes().size());
+        assertNotNull(match.getChildNode("child"));
+
+        // No matches
+        match = globMatch(node, "asdf:asdf");
+        assertFalse(match.isNodeMatched());
+        assertFalse(match.isMembersMatched());
+        assertEquals(0, match.getAccumulators().size());
+        assertEquals(0, match.getCalculators().size());
+        assertEquals(1, match.getChildNodes().size());
     }
 
     private GlobMatchHelper globMatch(RegistryNode node, String pattern) {
@@ -244,8 +262,8 @@ public class GlobMatcherTest {
 
     private static class GlobMatchHelper extends GlobMatch {
         public GlobMatchHelper(GlobMatch globMatch) {
-            super(globMatch != null ? globMatch.getNode() : null,
-                    globMatch != null ? globMatch.getMemberNames() : null);
+            super(globMatch.isNodeMatched(), globMatch.getNode(),
+                    globMatch.getMemberNames());
         }
 
         GlobMatchHelper n(RegistryNode node) {

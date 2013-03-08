@@ -63,6 +63,11 @@ public class GlobMatch implements RegistryNode {
     private final RegistryNode node;
 
     /**
+     * Whether or not the node was actually matched.
+     */
+    private final boolean nodeMatched;
+
+    /**
      * The list of member names that were matched.
      */
     private final Set<String> members;
@@ -96,12 +101,19 @@ public class GlobMatch implements RegistryNode {
     /**
      * Creates a new instance of {@code GlobMatch}, against the given
      * {@code node} and matching the given {@code members}.
+     * @param nodeMatched A boolean indicating whether or not {@code node} was
+     *                    matched.
      * @param node The node against which the matching was made.
      * @param members The set of members matched, including property names on
      *                calculator-returned non-integral types.
      */
-    GlobMatch(RegistryNode node, Set<String> members) {
+    GlobMatch(boolean nodeMatched, RegistryNode node, Set<String> members) {
+        if(node == null) {
+            throw new NullPointerException();
+        }
+
         this.node = node;
+        this.nodeMatched = nodeMatched;
         this.members = members == null ? EMPTY_MEMBERS_SET : members;
         this.accs = new HashMap<String, Accumulator>();
         this.calcs = new HashMap<String, Calculator>();
@@ -120,15 +132,13 @@ public class GlobMatch implements RegistryNode {
             rootMembers.add(member);
         }
 
-        if(node != null) {
-            for(String member : rootMembers) {
-                Accumulator acc = node.getAccumulator(member);
-                Calculator calc = node.getCalculator(member);
-                if(acc != NopAccumulator.INSTANCE) {
-                    accs.put(member, acc);
-                } else if(calc != NopCalculator.INSTANCE) {
-                    calcs.put(member, calc);
-                }
+        for(String member : rootMembers) {
+            Accumulator acc = node.getAccumulator(member);
+            Calculator calc = node.getCalculator(member);
+            if(acc != NopAccumulator.INSTANCE) {
+                accs.put(member, acc);
+            } else if(calc != NopCalculator.INSTANCE) {
+                calcs.put(member, calc);
             }
         }
     }
@@ -159,7 +169,7 @@ public class GlobMatch implements RegistryNode {
      *         the node portion of the glob pattern.
      */
     public boolean isNodeMatched() {
-        return node != null;
+        return nodeMatched;
     }
 
     /**
