@@ -16,7 +16,7 @@
 package org.smf4j;
 
 import java.util.Map;
-import org.smf4j.helpers.NopMutator;
+import org.smf4j.nop.NopMutator;
 
 /**
  * {@code Accumulator} is the core interface of <a href="http://www.smf4j.org">

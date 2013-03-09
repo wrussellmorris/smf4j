@@ -26,9 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
-import org.smf4j.helpers.NopAccumulator;
-import org.smf4j.helpers.NopCalculator;
-import org.smf4j.helpers.NopRegistryNode;
+import org.smf4j.nop.NopAccumulator;
+import org.smf4j.nop.NopCalculator;
+import org.smf4j.nop.NopRegistryNode;
 
 /**
  *

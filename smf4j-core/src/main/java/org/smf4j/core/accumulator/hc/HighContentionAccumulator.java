@@ -20,7 +20,7 @@ import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.AbstractAccumulator;
 import org.smf4j.core.accumulator.MutatorFactory;
-import org.smf4j.helpers.NopMutator;
+import org.smf4j.nop.NopMutator;
 
 /**
  * {@code HighContentionAccumulator} is an {@link Accumulator} implementation

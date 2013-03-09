@@ -15,10 +15,9 @@
  */
 package org.smf4j;
 
-import org.smf4j.helpers.GlobMatch;
-import org.smf4j.helpers.NopAccumulator;
-import org.smf4j.helpers.NopCalculator;
-import org.smf4j.helpers.NopRegistryNode;
+import org.smf4j.nop.NopAccumulator;
+import org.smf4j.nop.NopCalculator;
+import org.smf4j.nop.NopRegistryNode;
 
 /**
  * {@code Registrar} implementations manage a hierarchy of {@link RegistryNode}s
@@ -190,25 +189,14 @@ public interface Registrar {
     /**
      * Matches both {@link RegistryNode}s and their member {@link Accumulator}s
      * and {@link Calculator}s, and returns an {@code Iterable} containing
-     * {@link GlobMatch}s (which descend from {@link RegistryNode}).
-     * <p>
-     * Because {@link GlobMatch} descends from {@link RegistryNode}, this method
-     * can be used to easily iterate over a subset of {@link RegistryNode}s and
-     * their member {@link Accumulator}s and {@link Calculator}s.
-     * <pre>
-     * for(RegistryNode node : registrar.match("com.foo.**:bar*")) {
-     *   // node's path is somewhere under 'com.foo'
-     *   // node's members' names all start with 'bar'
-     * }
-     * </pre>
-     * </p>
+     * {@link RegistryNode}s.
      * @param globPattern The <a href="#GlobPattern">pattern</a> to match.
      * @return Returns a potentially-empty {@code Iterable} of
-     *         {@link GlobMatch}s (which descend from {@link RegistryNode}) that
-     *         identify the matched nodes, and can be used to access the matched
-     *         {@code Calculator}s and {@code Accumulator}s.
+     *         {@link RegistryNode}s that identify the matched nodes, and can
+     *         be used to access the matched {@code Calculator}s and
+     *         {@code Accumulator}s.
      */
-    Iterable<GlobMatch> match(String globPattern);
+    Iterable<? extends RegistryNode> match(String globPattern);
 
     /**
      * Turns on or off the {@link RegistryNode} identified by

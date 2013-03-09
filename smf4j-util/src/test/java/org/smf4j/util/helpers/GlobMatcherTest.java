@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.helpers;
+package org.smf4j.util.helpers;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
 import org.smf4j.RegistryNode;
+import org.smf4j.nop.NopAccumulator;
+import org.smf4j.nop.NopCalculator;
 
 /**
  *

@@ -16,8 +16,6 @@
 package org.smf4j;
 
 import java.util.Map;
-import org.smf4j.helpers.CalculatorHelper;
-import org.smf4j.helpers.Units;
 
 /**
  * {@code Calculator} implementations are responsible for performing some
@@ -33,7 +31,8 @@ import org.smf4j.helpers.Units;
  * The value returned by {@link #calculate(java.util.Map, java.util.Map)} can
  * be any type of object, but implementors designing their own
  * {@code Calculator} implementations should strive to make the returned
- * object fully comprehendible by the simple {@link CalculatorHelper} class,
+ * object fully comprehendible by the simple
+ * {@code org.smf4j.util.helpers.CalculatorHelper} class,
  * which treats the returned class as either an integral type ({@code long},
  * {@code Long}, {@code String}, etc...), or as a bean with standard bean-style
  * property getters <b>for types that are integral types</b>.
@@ -80,9 +79,10 @@ import org.smf4j.helpers.Units;
  * units with their calculation by returning a non-{@code null} string from
  * their {@link #getUnits()} implementation.  {@code Calculator}
  * implementations that return user-defined types (like {@code Stats} above)
- * may associate units with each member via the {@link Units} annotation.  In
- * either case, code that inspects and exports information from {@code smf4j}
- * may or may not pay attention to this information.
+ * may associate units with each member via the
+ * {@code org.smf4j.util.helpers.Units} annotation.  In either case, code that
+ * inspects and exports information from {@code smf4j} may or may not pay
+ * attention to this information.
  * </p>
  * <p>
  * {@code Calculator} implementations <strong>must</strong> be thread-safe.
@@ -91,8 +91,6 @@ import org.smf4j.helpers.Units;
  * @author Russell Morris (wrussellmorris@gmail.com)
  * @see Accumulator
  * @see RegistryNode
- * @see Units
- * @see CalculatorHelper
  */
 public interface Calculator {
 
@@ -109,7 +107,7 @@ public interface Calculator {
      *                     {@code Accumulator} instances.
      * @return Returns an integral type (like {@code long}, {@code Long},
      *         {@code String}, etc...), or an object that can be fully
-     *         comprehended by {@link CalculatorHelper}.
+     *         comprehended by {@code org.smf4j.util.helpers.CalculatorHelper}.
      */
     Object calculate(Map<String, Long> values,
             Map<String, Accumulator> accumulators);

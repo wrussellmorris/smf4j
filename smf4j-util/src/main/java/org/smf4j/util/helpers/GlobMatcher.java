@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.helpers;
+package org.smf4j.util.helpers;
 
 import java.util.ArrayList;
 import java.util.Collections;

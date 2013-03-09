@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.smf4j.Mutator;
-import org.smf4j.helpers.NopAccumulator;
+import org.smf4j.nop.NopAccumulator;
 
 /**
  *

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.helpers;
+package org.smf4j.util.helpers;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +24,9 @@ import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistryNode;
+import org.smf4j.nop.NopAccumulator;
+import org.smf4j.nop.NopCalculator;
+import org.smf4j.nop.NopRegistryNode;
 
 /**
  * {@code GlobMatch} represents the results of matching a single

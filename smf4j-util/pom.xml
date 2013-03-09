@@ -9,25 +9,14 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>smf4j-core</artifactId>
-    <name>smf4j-core</name>
+    <artifactId>smf4j-util</artifactId>
+    <name>smf4j-util</name>
 
     <dependencies>
         <!-- Internal Dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>smf4j-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>smf4j-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>smf4j-util</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -39,7 +28,6 @@
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

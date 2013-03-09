@@ -16,9 +16,9 @@
 package org.smf4j;
 
 import java.util.Map;
-import org.smf4j.helpers.NopAccumulator;
-import org.smf4j.helpers.NopCalculator;
-import org.smf4j.helpers.NopRegistryNode;
+import org.smf4j.nop.NopAccumulator;
+import org.smf4j.nop.NopCalculator;
+import org.smf4j.nop.NopRegistryNode;
 
 /**
  * {@code  RegistryNode}s contain a collection of {@link Accumulator}s and

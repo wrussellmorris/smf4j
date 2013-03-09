@@ -37,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
-import org.smf4j.helpers.CalculatorHelper;
+import org.smf4j.util.helpers.CalculatorHelper;
 import org.smf4j.RegistryNode;
-import org.smf4j.helpers.CalculatorProperty;
+import org.smf4j.util.helpers.CalculatorProperty;
 
 /**
  *

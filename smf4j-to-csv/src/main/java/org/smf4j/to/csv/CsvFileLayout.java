@@ -27,9 +27,9 @@ import org.smf4j.Calculator;
 import org.smf4j.Accumulator;
 import org.smf4j.Registrar;
 import org.smf4j.RegistrarFactory;
-import org.smf4j.helpers.CalculatorHelper;
+import org.smf4j.util.helpers.CalculatorHelper;
 import org.smf4j.RegistryNode;
-import org.smf4j.helpers.CalculatorProperty;
+import org.smf4j.util.helpers.CalculatorProperty;
 
 /**
  *

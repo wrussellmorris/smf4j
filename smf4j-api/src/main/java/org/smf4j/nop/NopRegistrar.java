@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.helpers;
+package org.smf4j.nop;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +43,7 @@ public class NopRegistrar implements Registrar {
     /**
      * The empty list returned when {@code match} is called.
      */
-    private static final List<GlobMatch> empty = Collections.emptyList();
+    private static final List<RegistryNode> empty = Collections.emptyList();
 
     /**
      * {@code NopRegistrar} is a static singleton.
@@ -73,7 +73,7 @@ public class NopRegistrar implements Registrar {
      * @param globPattern Ignored.
      * @return {@link Collections#emptyList()}.
      */
-    public Iterable<GlobMatch> match(String globPattern) {
+    public Iterable<RegistryNode> match(String globPattern) {
         return empty;
     }
 

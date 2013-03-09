@@ -23,13 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smf4j.Accumulator;
 import org.smf4j.Calculator;
-import org.smf4j.helpers.NopRegistryNode;
+import org.smf4j.nop.NopRegistryNode;
 import org.smf4j.RegistryNode;
 import org.smf4j.Registrar;
-import org.smf4j.helpers.GlobMatch;
-import org.smf4j.helpers.GlobMatcher;
-import org.smf4j.helpers.NopAccumulator;
-import org.smf4j.helpers.NopCalculator;
+import org.smf4j.util.helpers.GlobMatch;
+import org.smf4j.util.helpers.GlobMatcher;
+import org.smf4j.nop.NopAccumulator;
+import org.smf4j.nop.NopCalculator;
 
 /**
  *
@@ -156,7 +156,7 @@ class DefaultRegistrar implements Registrar {
     }
 
     @Override
-    public Iterable<GlobMatch> match(String globPattern) {
+    public Iterable<? extends RegistryNode> match(String globPattern) {
         final ArrayList<GlobMatch> list = new ArrayList<GlobMatch>();
         final GlobMatcher matcher = new GlobMatcher(globPattern);
         dfs(getRootNode(), new MatcherCall(list, matcher));
