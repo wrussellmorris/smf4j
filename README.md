@@ -1,4 +1,4 @@
 smf4j
 =====
 
-Simple Monitoring Framework
+Simple Monitoring Facade for Java
