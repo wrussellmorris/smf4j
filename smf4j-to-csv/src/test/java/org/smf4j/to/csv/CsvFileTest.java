@@ -78,7 +78,6 @@ public class CsvFileTest {
     public void rollover()
     throws Exception {
         File tempFile = createTempFile();
-        tempFile.deleteOnExit();
         csvFile = createCsvFile(tempFile, true);
         csvFile.setRolloverTimestampPattern("'ROLLOVER'");
         File rolloverFile = csvFile.timestampPath(tempFile);
@@ -99,7 +98,6 @@ public class CsvFileTest {
     public void append()
     throws Exception {
         File tempFile = createTempFile();
-        tempFile.deleteOnExit();
         csvFile = createCsvFile(tempFile, false);
         csvFile.setAppend(true);
         File rolloverFile = csvFile.timestampPath(tempFile);
@@ -135,6 +133,25 @@ public class CsvFileTest {
 
         assertTrue(tempFile.isFile());
         assertTrue(rolloverFile.isFile());
+    }
+
+    @Test
+    public void cantAppend()
+    throws Exception {
+        File tempFile = createTempFile();
+        csvFile = createCsvFile(tempFile, false);
+        csvFile.setAppend(true);
+        File rolloverFile = csvFile.timestampPath(tempFile);
+        rolloverFile.deleteOnExit();
+
+        assertFalse(tempFile.isFile());
+        assertFalse(rolloverFile.isFile());
+
+        csvFile.write();
+        csvFile.write();
+
+        assertTrue(tempFile.isFile());
+        assertFalse(rolloverFile.isFile());
     }
 
     @Test
