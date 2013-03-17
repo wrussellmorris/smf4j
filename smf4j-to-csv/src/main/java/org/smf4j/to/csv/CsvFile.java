@@ -137,8 +137,12 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
         }
 
         long startCount = 0L;
-        if(file.exists() && append) {
-            startCount = file.length();
+        if(file.exists()) {
+            if(append) {
+                startCount = file.length();
+            } else {
+                renameFileToRollover();
+            }
         }
 
         FileOutputStream fos = null;
@@ -165,9 +169,12 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
     }
 
     protected void rollover() {
-        // Close the original file
         closeFile();
+        renameFileToRollover();
+        openFile();
+    }
 
+    protected void renameFileToRollover() {
         // Determine the rollover file name
         File renamed = timestampPath(file);
         if(!file.renameTo(renamed)) {
@@ -175,8 +182,6 @@ public class CsvFile implements Closeable, Runnable, Callable<Boolean> {
                     renamed.getAbsolutePath());
             setupFailed();
         }
-
-        openFile();
     }
 
     protected void closeFile() {
