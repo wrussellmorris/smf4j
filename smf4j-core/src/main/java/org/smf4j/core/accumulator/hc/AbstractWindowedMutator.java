@@ -52,6 +52,8 @@ import org.smf4j.core.accumulator.TimeReporter;
  * {@link #combine(long, long)}.
  * </p>
  *
+ * @see HighContentionAccumulator
+ *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public abstract class AbstractWindowedMutator implements Mutator {
@@ -124,8 +126,6 @@ public abstract class AbstractWindowedMutator implements Mutator {
      * @return The combination of {@code local} and {@code delta}.
      */
     protected abstract long combine(long local, long delta);
-
-    public abstract long combine(long other);
 
     public final long get() {
         long nanos = timeReporter.nanos();

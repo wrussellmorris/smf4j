@@ -16,8 +16,6 @@
 package org.smf4j.core.accumulator.hc;
 
 import java.lang.ref.WeakReference;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -26,18 +24,49 @@ import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
+ * {@code MutatorRegistry} creates and manages a growable set of {@link Mutator}
+ * instances and guarantees thread affinity for instances of {@link Mutator}
+ * returned by {@link #get()}.
+ * <p>
+ * At any given point in time, each {@code Mutator} instance is associated with
+ * exactly 0 or 1 live threads ({@link Thread#isAlive()}).  By convention,
+ * {@link Mutator#put(long) Mutator.put} should only be called on instances
+ * of {@code Mutator} that are returned to the caller via {@link #get()}.
+ * Calling {@code Mutator.put} on a {@code Mutator} instance that was not
+ * returned by {@code get} risks data loss.
+ * </p>
+ * <p>
+ * {@code Mutator} instances will be re-used when the {@code Thread} they were
+ * associated with dies. This means that the total number of {@code Mutator}
+ * instances managed by a {@code MutatorRegistry} instance will never exceed
+ * the maximum number of live {@code Thread}s that have called {@code get}.
+ * </p>
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class MutatorRegistry implements Iterable<Mutator>{
+public final class MutatorRegistry {
     private final MutatorFactory mutatorFactory;
     private final ConcurrentMap<WeakThreadRef, Registration> registrations
             = new ConcurrentHashMap<WeakThreadRef, Registration>();
 
+    /**
+     * Creates a new {@code MutatorRegistry}.
+     * @param mutatorFactory  The {@code MutatorFactory} that creates new
+     *                        instances of {@link Mutator} when necessary.
+     */
     public MutatorRegistry(MutatorFactory mutatorFactory) {
         this.mutatorFactory = mutatorFactory;
     }
 
+    /**
+     * Gets a {@code Mutator} instance that is bound to the calling
+     * {@code Thread} for the lifetime of that {@code Thread}.  The
+     * calling {@code Thread} can safely call {@code put} on the returned
+     * {@code Mutator} instance without incurring a read-modify-write penalty
+     * for concurrent access to the {@code Mutator}s internal data.
+     * @return An instance of {@code Mutator} that is bound to the calling
+     *         {@code Thread} for that {@code Thread}'s lifetime.
+     */
     public Mutator get() {
         Thread currentThread = Thread.currentThread();
 
@@ -80,18 +109,68 @@ public final class MutatorRegistry implements Iterable<Mutator>{
         return r.mutator;
     }
 
-    public Iterator<Mutator> iterator() {
-        return new Iter(registrations.values());
+    /**
+     * Gets the combined value of all {@code Mutator} instances registered
+     * internally, regardless of whether or not the {@code Thread}s they were
+     * associated with are still alive.
+     * @return The combined value of all {@code Mutator} instances registered
+     *         in this {@code MutatorRegistry}.
+     */
+    public long getCombinedValue() {
+        long value = mutatorFactory.getInitialValue();
+        for (Registration registration : registrations.values()) {
+            value = mutatorFactory.combine(value, registration.mutator);
+        }
+
+        return value;
     }
 
+    /**
+     * {@code WeakThreadRef} is a helper class used as a key in the
+     * {@code MutatorRegistry}'s internal map of
+     * {@code WeakThreadRef}->{@code Mutator}.
+     * <p>
+     * {@code WeakThreadRef}s mimic their associated {@code Thread} in a such
+     * a way as to ensure that a value stored in a {@code Map} with a
+     * {@code WeakThreadRef} key can be found by searching with the
+     * {@code Thread} instance associated with the original
+     * {@code WeakThreadRef}.
+     * </p>
+     * <pre>
+     * Thread t = Thread.currentThread();
+     * WeakThreadRef w = new WeakThreadRef(t);
+     * map.put(w, "hello");
+     * map.get(t); // Returns "hello"
+     * </pre>
+     * <p>
+     * Using {@code WeakThreadRef} allows us to keep a weak reference to the
+     * {@code Thread} that holds a specific {@code Mutator}, and further allows
+     * us to find that {@code Mutator} instance in our map by using the value
+     * of {@code Thread.currentThread()} as a key.
+     * </p>
+     */
     private static final class WeakThreadRef {
         private WeakReference<Thread> threadRef;
         private int hash;
 
+        /**
+         * Creates a new {@code WeakThreadRef}, referring to {@code thread}.
+         * @param thread The {@code Thread} this {@code WeakThreadRef} mimics.
+         */
         WeakThreadRef(Thread thread) {
             reset(thread);
         }
 
+        /**
+         * Resets the {@code WeakThreadRef} to mimic a different thread
+         * {@code thread}.
+         * <p>
+         * This will alter the return values of {@code hashCode()} and
+         * {@code equals}, and as such requires re-indexing any values
+         * previously using this {@code WeakThreadRef} as a key.
+         * </p>
+         * @param thread The {@code Thread} to mimic.
+         */
         void reset(Thread thread) {
             if(thread == null) {
                 throw new NullPointerException();
@@ -123,17 +202,42 @@ public final class MutatorRegistry implements Iterable<Mutator>{
         }
     }
 
+    /**
+     * A {@code Registration} represents the pairing of a {@code Thread}
+     * instance with a {@code Mutator} instance.
+     */
     private static final class Registration {
         private volatile WeakReference<Thread> threadRef;
         private final Mutator mutator;
         private final AtomicBoolean available;
 
+        /**
+         * Creates a new {@code Registration}, pairing {@code thread} with
+         * {@code mutator}.
+         * @param thread The {@code Thread} that initally owns the
+         *               {@code mutator}.
+         * @param mutator The {@code Mutator} owned by {@code thread}.
+         */
         private Registration(Thread thread, Mutator mutator) {
             this.threadRef = new WeakReference<Thread>(thread);
             this.mutator = mutator;
             this.available = new AtomicBoolean(false);
         }
 
+        /**
+         * Attempts to have {@code thread} acquire the {@code Mutator} instance
+         * of this {@code Registration}.
+         * <p>
+         * Acquisition will succeed only if the {@code Thread} already
+         * associated with this {@code Registration} is dead
+         * ({@code !Thread.isAlive()}).
+         * </p>
+         * @param thread The new {@code Thread} that's trying to acquire this
+         *               {@code Registration}.
+         * @return Returns a boolean value indicating whether or not
+         *         {@code thread} successfully acquired this
+         *         {@code Registration}.
+         */
         private boolean acquire(Thread thread) {
             // Check to see which Thread currently owns this.
             Thread cur = threadRef.get();
@@ -163,26 +267,6 @@ public final class MutatorRegistry implements Iterable<Mutator>{
             this.threadRef = new WeakReference<Thread>(thread);
             this.available.set(false);
             return true;
-        }
-    }
-
-    private static final class Iter implements Iterator<Mutator> {
-        private final Iterator<Registration> inner;
-
-        Iter(Collection<Registration> inner) {
-            this.inner = inner.iterator();
-        }
-
-        public boolean hasNext() {
-            return inner.hasNext();
-        }
-
-        public Mutator next() {
-            return inner.next().mutator;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
         }
     }
 }

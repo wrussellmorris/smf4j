@@ -31,8 +31,8 @@ import org.smf4j.nop.NopMutator;
  * to schedule individual {@link Mutator} instances in such a way as to
  * guarantee that every {@link Mutator} returned by {@link #getMutator()} is
  * bound to the calling thread ({@code Thread.currentThread()} until
- * such time as {@code Thread.currentThrad().isAlive()} return {@code false}. In
- * combination with the high-contention {@link AbstractUnboundedMutator} or
+ * such time as {@code Thread.currentThrad().isAlive()} returns {@code false}.
+ * In combination with the high-contention {@link AbstractUnboundedMutator} or
  * {@link AbstractWindowedMutator}, this guarantees that calls to
  * {@link Mutator#put(long)} will not require any read-modify-write
  * synchronization semantics in order to accurately update the internal state
@@ -54,6 +54,7 @@ import org.smf4j.nop.NopMutator;
  * @see UnboundedMaxMutator.Factory
  * @see WindowedAddMutator
  * @see WindowedAddMutator.Factory
+ * @see MutatorRegistry
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
@@ -136,20 +137,7 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
      *         {@code Mutator}s.
      */
     public final long get() {
-        long value = 0L;
-
-        // Sum up all of the active mutators
-        boolean seenOneMutator = false;
-        for (Mutator mutator : mutatorRegistry) {
-            if(seenOneMutator) {
-                value = mutator.combine(value);
-            } else {
-                value = mutator.get();
-                seenOneMutator = true;
-            }
-        }
-
-        return value;
+        return mutatorRegistry.getCombinedValue();
     }
 
     public Map<Object, Object> getMetadata() {

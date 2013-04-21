@@ -67,26 +67,6 @@ public interface Mutator {
     void put(long delta);
 
     /**
-     * Returns the internal value of this {@code Mutator} combined with
-     * {@code other}, but <b>does not</b> modify the internal state of this
-     * {@code Mutator}.
-     * <p>
-     * This method exists principally to allow {@code Accumulator}s to easily
-     * combine the values of their {@code Mutator}s in order to report the
-     * {@code Accumulator}s own value.
-     * </p>
-     * <p>
-     * The actual semantics of the combination are up to the specifics of
-     * the implementation of {@code Mutator}.
-     * </p>
-     * @param other The other value that is to be combined with this
-     *              {@code Mutator}'s internal value.
-     * @return Returns the internal value of this {@code Mutator} combined with
-     *         {@code other}.
-     */
-    long combine(long other);
-
-    /**
      * Gets the internal value of this {@code Mutator}.
      * <p>
      * The returned value does not necessarily equal the return value of

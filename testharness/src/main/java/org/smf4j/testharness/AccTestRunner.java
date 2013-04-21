@@ -66,4 +66,8 @@ public class AccTestRunner extends TestRunner {
         }
         durations.offer(System.currentTimeMillis() - start);
     }
+
+    public final Accumulator getAccumulator() {
+        return accumulator;
+    }
 }

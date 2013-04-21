@@ -20,15 +20,35 @@ import org.smf4j.core.accumulator.AbstractMutatorFactory;
 import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
+ * {@code UnboundedMinMutator} is an unbounded {@code Mutator} that reports
+ * the smallest value it has been given.
+ * <p>
+ * This version does not implement any read-modify-write semantics to its
+ * internal value, and as such should only be used in concert with
+ * {@link MutatorRegistry}.
+ * </p>
  *
- * @author rmorris
+ * @see MutatorRegistry
+ *
+ * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class UnboundedMinMutator extends AbstractUnboundedMutator {
+    /**
+     * The initial value of an {@code UnboundedMaxMutator} -
+     * {@code Long.MAX_VALUE}.
+     */
+    public static final long INITIAL_VALUE = Long.MAX_VALUE;
 
+    /**
+     * A {@link MutatorFactory} that can create instances of this mutator.
+     */
     public static final MutatorFactory MUTATOR_FACTORY = new Factory();
 
+    /**
+     * Creates an instance of {@code UnboundedMinMutator}.
+     */
     public UnboundedMinMutator() {
-        super(Long.MAX_VALUE);
+        super(INITIAL_VALUE);
     }
 
     @Override
@@ -39,15 +59,23 @@ public final class UnboundedMinMutator extends AbstractUnboundedMutator {
         }
     }
 
-    @Override
-    public long combine(long other) {
-        long val = value.get();
-        return val <= other ? val : other;
-    }
-
+    /**
+     * {@code UnboundedMinMutator.Factory} is an instance of
+     * {@code MutatorFactory} that can create instances of
+     * {@code UnboundedMinMutator}.
+     */
     public static final class Factory extends AbstractMutatorFactory {
         public Mutator createMutator() {
             return new UnboundedMinMutator();
+        }
+
+        public long getInitialValue() {
+            return INITIAL_VALUE;
+        }
+
+        public long combine(long value, Mutator mutator) {
+            long other = mutator.get();
+            return value <= other ? value : other;
         }
     };
 }

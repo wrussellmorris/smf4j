@@ -44,4 +44,26 @@ public interface MutatorFactory {
      *         the {@link Mutator}s returned by {@link #createMutator()}.
      */
     Map<Object, Object> getMetadata();
+
+    /**
+     * Gets the initial value reported by {@code Mutator} instances created by
+     * this factory.
+     * @return The initial value reported by {@code Mutator} instances created
+     *         by this factory.
+     */
+    long getInitialValue();
+
+    /**
+     * Combines the value reported by {@code mutator.get()} with an existing
+     * value representing the combined values of other {@code Mutator}s
+     * and/or the value of {@link #getInitialValue()}.
+     *
+     * @param value A value representing the initial value or a combination
+     *              of the values reported by other {@code Mutator}s.
+     * @param mutator The {@code Mutator} whose value is to be combined with
+     *                {@code value}.
+     *
+     * @return Returns
+     */
+    long combine(long value, Mutator mutator);
 }

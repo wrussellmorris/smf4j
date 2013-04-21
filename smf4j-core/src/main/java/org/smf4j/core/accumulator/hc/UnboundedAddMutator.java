@@ -20,31 +20,57 @@ import org.smf4j.core.accumulator.AbstractMutatorFactory;
 import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
+ * {@code UnboundedAddMutator} is an unbounded {@code Mutator} that reports the
+ * sum of all values provided to it.
+ * <p>
+ * This version does not implement any read-modify-write semantics to its
+ * internal value, and as such should only be used in concert with
+ * {@link MutatorRegistry}.
+ * </p>
  *
- * @author rmorris
+ * @see MutatorRegistry
+ *
+ * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class UnboundedAddMutator extends AbstractUnboundedMutator {
+    /**
+     * The initial value of an {@code UnboundedAddMutator} - {@code 0}.
+     */
+    public static final long INITIAL_VALUE = 0L;
 
+    /**
+     * A {@link MutatorFactory} that can create instances of this mutator.
+     */
     public static final MutatorFactory MUTATOR_FACTORY = new Factory();
 
+    /**
+     * Creates an instance of {@code UnboundedAddMutator}.
+     */
     public UnboundedAddMutator() {
-        super(0L);
+        super(INITIAL_VALUE);
     }
 
-    @Override
     public void put(long delta) {
         localValue += delta;
         value.lazySet(localValue);
     }
 
-    @Override
-    public long combine(long other) {
-        return value.get() + other;
-    }
-
+    /**
+     * {@code UnboundedAddMutator.Factory} is an instance of
+     * {@code MutatorFactory} that can create instances of
+     * {@code UnboundedAddMutator}.
+     */
     public static final class Factory extends AbstractMutatorFactory {
         public Mutator createMutator() {
             return new UnboundedAddMutator();
+        }
+
+        public long combine(long value, Mutator mutator) {
+            return value + mutator.get();
+        }
+
+        public long getInitialValue() {
+            return INITIAL_VALUE;
         }
     }
 }

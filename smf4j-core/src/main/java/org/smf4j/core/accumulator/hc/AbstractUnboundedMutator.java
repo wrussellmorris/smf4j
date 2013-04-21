@@ -24,6 +24,8 @@ import org.smf4j.Mutator;
  * <strong>exactly</strong> one thread at a time, but safely readable by any
  * number of threads.
  *
+ * @see HighContentionAccumulator
+ *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public abstract class AbstractUnboundedMutator implements Mutator {
@@ -56,7 +58,6 @@ public abstract class AbstractUnboundedMutator implements Mutator {
         value = new AtomicLong(initialValue);
     }
 
-    @Override
     public final long get() {
         return value.get();
     }

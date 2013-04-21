@@ -20,15 +20,35 @@ import org.smf4j.core.accumulator.AbstractMutatorFactory;
 import org.smf4j.core.accumulator.MutatorFactory;
 
 /**
+ * {@code UnboundedMaxMutator} is an unbounded {@code Mutator} that reports
+ * the largest value it has been given.
+ * <p>
+ * This version does not implement any read-modify-write semantics to its
+ * internal value, and as such should only be used in concert with
+ * {@link MutatorRegistry}.
+ * </p>
  *
- * @author rmorris
+ * @see MutatorRegistry
+ *
+ * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class UnboundedMaxMutator extends AbstractUnboundedMutator {
-
+    /**
+     * The initial value of an {@code UnboundedMaxMutator} -
+     * {@code Long.MIN_VALUE}.
+     */
     public static final MutatorFactory MUTATOR_FACTORY = new Factory();
 
+    /**
+     * A {@link MutatorFactory} that can create instances of this mutator.
+     */
+    public static final long INITIAL_VALUE = Long.MIN_VALUE;
+
+    /**
+     * Creates an instance of {@code UnboundedMaxMutator}.
+     */
     public UnboundedMaxMutator() {
-        super(Long.MIN_VALUE);
+        super(INITIAL_VALUE);
     }
 
     public void put(long delta) {
@@ -38,14 +58,23 @@ public final class UnboundedMaxMutator extends AbstractUnboundedMutator {
         }
     }
 
-    public long combine(long other) {
-        long val = value.get();
-        return val >= other ? val : other;
-    }
-
+    /**
+     * {@code UnboundedMaxMutator.Factory} is an instance of
+     * {@code MutatorFactory} that can create instances of
+     * {@code UnboundedMaxMutator}.
+     */
     public static final class Factory extends AbstractMutatorFactory {
         public Mutator createMutator() {
             return new UnboundedMaxMutator();
+        }
+
+        public long getInitialValue() {
+            return INITIAL_VALUE;
+        }
+
+        public long combine(long value, Mutator mutator) {
+            long other = mutator.get();
+            return value >= other ? value : other;
         }
     };
 }

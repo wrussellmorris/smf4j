@@ -24,11 +24,11 @@ import org.smf4j.core.accumulator.MutatorFactory;
  * @author rmorris
  */
 public final class UnboundedMinMutator extends AbstractUnboundedMutator {
-
+    public static final long INITIAL_VALUE = Long.MAX_VALUE;
     public static final MutatorFactory MUTATOR_FACTORY = new Factory();
 
     public UnboundedMinMutator() {
-        super(Long.MAX_VALUE);
+        super(INITIAL_VALUE);
     }
 
     @Override
@@ -45,15 +45,18 @@ public final class UnboundedMinMutator extends AbstractUnboundedMutator {
         }
     }
 
-    @Override
-    public long combine(long other) {
-        long val = value.get();
-        return val <= other ? val : other;
-    }
-
     public static final class Factory extends AbstractMutatorFactory {
         public Mutator createMutator() {
             return new UnboundedMinMutator();
+        }
+
+        public long getInitialValue() {
+            return INITIAL_VALUE;
+        }
+
+        public long combine(long value, Mutator mutator) {
+            long other = mutator.get();
+            return value <= other ? value : other;
         }
     };
 }

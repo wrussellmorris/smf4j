@@ -26,6 +26,7 @@ import org.smf4j.core.accumulator.WindowedMutatorFactory;
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
 public final class WindowedMinMutator extends AbstractWindowedMutator {
+    public static final long INITIAL_VALUE = Long.MAX_VALUE;
 
     public WindowedMinMutator(IntervalStrategy strategy) {
         this(strategy, SystemNanosTimeReporter.INSTANCE);
@@ -33,18 +34,12 @@ public final class WindowedMinMutator extends AbstractWindowedMutator {
 
     public WindowedMinMutator(IntervalStrategy strategy,
             TimeReporter timeReporter) {
-        super(Long.MAX_VALUE, strategy, timeReporter);
+        super(INITIAL_VALUE, strategy, timeReporter);
     }
 
     @Override
     public long combine(long local, long delta) {
         return local <= delta ? local : delta;
-    }
-
-    @Override
-    public long combine(long other) {
-        long val = get();
-        return val <= other ? val : other;
     }
 
     public static final class Factory extends WindowedMutatorFactory {
@@ -59,6 +54,15 @@ public final class WindowedMinMutator extends AbstractWindowedMutator {
 
         public Mutator createMutator() {
             return new WindowedMinMutator(getStrategy(), getTimeReporter());
+        }
+
+        public long getInitialValue() {
+            return INITIAL_VALUE;
+        }
+
+        public long combine(long value, Mutator mutator) {
+            long other = mutator.get();
+            return value <= other ? value : other;
         }
     }
 }
