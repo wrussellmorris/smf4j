@@ -4,7 +4,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,7 +37,7 @@ public class App
     BufferedWriter bw;
     ExecutorService tpe;
 
-    public void go(long testIterations, int numThreads) throws IOException, InterruptedException {
+    public void go(long testIterations, Integer[] numThreads) throws IOException, InterruptedException {
         List<TestRunner> runners = getTestRunners(testIterations);
         Registrar r = RegistrarFactory.getRegistrar();
         r.getRootNode().setOn(true);
@@ -43,7 +46,7 @@ public class App
 
         // Run one pass of lower-concurrency tests to prime the app
         System.out.println("Priming...");
-        runHighConcurrencyTests(runners, 1);
+        runHighConcurrencyTests(runners, new Integer[] {1});
 
         // Now for the real tests
         System.out.println("Starting...");
@@ -52,7 +55,7 @@ public class App
         System.out.println("Done");
     }
 
-    public void runHighConcurrencyTests(List<TestRunner> runners, int numThreads)
+    public void runHighConcurrencyTests(List<TestRunner> runners, Integer[] numThreads)
     throws IOException, InterruptedException {
         openFile("hc");
 
@@ -61,7 +64,7 @@ public class App
         }
         newLine();
 
-        for(int t=1; t<=numThreads; t++) {
+        for(int t : numThreads) {
             System.out.print(t + " threads");
             for(TestRunner runner : runners) {
                 System.out.print(".");
@@ -236,8 +239,18 @@ public class App
     public static void main( String[] args ) throws IOException, InterruptedException
     {
         final long iterations = 10000000L;
-        final int threads = Runtime.getRuntime().availableProcessors();
+        final int cores = Runtime.getRuntime().availableProcessors();
         App app = new App();
-        app.go(iterations, threads);
+
+        Set<Integer> threadCounts = new HashSet<Integer>();
+        threadCounts.add(1);
+        threadCounts.add(cores/4);
+        threadCounts.add(cores/2);
+        threadCounts.add(cores/2 + cores/4);
+        threadCounts.add(cores);
+
+        Integer[] counts = threadCounts.toArray(new Integer[0]);
+        Arrays.sort(counts);
+        app.go(iterations, counts);
     }
 }
