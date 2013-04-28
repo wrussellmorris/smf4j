@@ -104,33 +104,37 @@ public class App
         //runners.add(new AtomicLongTestRunner(testIterations));
 
         // Cliff Click's HPL Counter
-        runners.add(new AccTestRunner(testIterations, "hpl_counter", new HPLAccumulator()));
-        runners.add(new AccTestRunner(testIterations, "hc_ub_counter", new HighContentionAccumulator(UnboundedAddMutator.MUTATOR_FACTORY)));
+        runners.add(new AccTestRunner(testIterations, "hpl_counter", new HPLAccumulator(), false));
 
         // Our smf4j-core counter implementations
-        //createTestRunnerSet(runners, testIterations, false, false);
-        //createTestRunnerSet(runners, testIterations, false, true);
-        //createTestRunnerSet(runners, testIterations, true, false);
-        //createTestRunnerSet(runners, testIterations, true, true);
+        createTestRunnerSet(runners, testIterations, false, false, true);
+        createTestRunnerSet(runners, testIterations, false, true, true);
+        createTestRunnerSet(runners, testIterations, true, false, true);
+        createTestRunnerSet(runners, testIterations, true, true, true);
+        createTestRunnerSet(runners, testIterations, false, false, false);
+        createTestRunnerSet(runners, testIterations, false, true, false);
+        createTestRunnerSet(runners, testIterations, true, false, false);
+        createTestRunnerSet(runners, testIterations, true, true, false);
         return runners;
     }
 
     public void createTestRunnerSet(List<TestRunner> runners, long testIterations,
-            boolean highConcurrency, boolean windowed) {
+            boolean highConcurrency, boolean windowed, boolean privateMutator) {
         String prefix = highConcurrency ? "hc_" : "lc_";
         prefix += windowed ? "w_" : "ub_";
+        prefix += privateMutator ? "p_" : "g_";
 
         if(!windowed) {
-            runners.add(new AccTestRunner(testIterations, prefix + "counter", createUnboundedCounter(highConcurrency)));
-            runners.add(new AccTestRunner(testIterations, prefix + "min", createUnboundedMin(highConcurrency)));
-            runners.add(new AccTestRunner(testIterations, prefix + "max", createUnboundedMax(highConcurrency)));
+            runners.add(new AccTestRunner(testIterations, prefix + "counter", createUnboundedCounter(highConcurrency), privateMutator));
+            runners.add(new AccTestRunner(testIterations, prefix + "min", createUnboundedMin(highConcurrency), privateMutator));
+            runners.add(new AccTestRunner(testIterations, prefix + "max", createUnboundedMax(highConcurrency), privateMutator));
         } else {
-            runners.add(new AccTestRunner(testIterations, prefix + "10s_counter", createWindowedCounter(highConcurrency, false, 1, 10)));
-            runners.add(new AccTestRunner(testIterations, prefix + "2s_counter", createWindowedCounter(highConcurrency, true, 28, 5)));
-            runners.add(new AccTestRunner(testIterations, prefix + "10s_min", createWindowedMin(highConcurrency, false, 1, 10)));
-            runners.add(new AccTestRunner(testIterations, prefix + "2s_min", createWindowedMin(highConcurrency, true, 28, 5)));
-            runners.add(new AccTestRunner(testIterations, prefix + "10s_max", createWindowedMax(highConcurrency, false, 1, 10)));
-            runners.add(new AccTestRunner(testIterations, prefix + "2s_max", createWindowedMax(highConcurrency, true, 28, 5)));
+            runners.add(new AccTestRunner(testIterations, prefix + "10s_counter", createWindowedCounter(highConcurrency, false, 1, 10), privateMutator));
+            runners.add(new AccTestRunner(testIterations, prefix + "2s_counter", createWindowedCounter(highConcurrency, true, 28, 5), privateMutator));
+            runners.add(new AccTestRunner(testIterations, prefix + "10s_min", createWindowedMin(highConcurrency, false, 1, 10), privateMutator));
+            runners.add(new AccTestRunner(testIterations, prefix + "2s_min", createWindowedMin(highConcurrency, true, 28, 5), privateMutator));
+            runners.add(new AccTestRunner(testIterations, prefix + "10s_max", createWindowedMax(highConcurrency, false, 1, 10), privateMutator));
+            runners.add(new AccTestRunner(testIterations, prefix + "2s_max", createWindowedMax(highConcurrency, true, 28, 5), privateMutator));
         }
     }
 

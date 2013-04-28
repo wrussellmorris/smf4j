@@ -32,11 +32,13 @@ import org.smf4j.core.calculator.Normalizer;
 public class AccTestRunner extends TestRunner {
 
     private final Accumulator accumulator;
+    private final boolean usePrivateMutator;
 
     public AccTestRunner(long testIterations, String testName,
-            Accumulator accumulator) {
+            Accumulator accumulator, boolean usePrivateMutator) {
         super(testIterations, testName);
         this.accumulator = accumulator;
+        this.usePrivateMutator = usePrivateMutator;
 
         Registrar r = RegistrarFactory.getRegistrar();
         RegistryNode node = r.getNode(testName);
@@ -57,11 +59,11 @@ public class AccTestRunner extends TestRunner {
     @Override
     public final void run() {
         long localCount = 0;
-        Mutator mutator = accumulator.getMutator();
+        Mutator mutator = usePrivateMutator
+                ? accumulator.getMutator() : accumulator;
         long start = System.currentTimeMillis();
         while(localCount < testIterations) {
-            //mutator.put(1L);
-            accumulator.getMutator().put(1L);
+            mutator.put(1L);
             localCount++;
         }
         durations.offer(System.currentTimeMillis() - start);
