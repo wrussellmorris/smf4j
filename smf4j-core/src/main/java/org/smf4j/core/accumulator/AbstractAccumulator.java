@@ -27,20 +27,12 @@ public abstract class AbstractAccumulator implements Accumulator {
     /**
      * A {@code boolean} that tracks our on/off state.
      */
-    private volatile boolean on;
+    protected volatile boolean on;
 
     /**
      * A potentially-{@code null} string describing our units.
      */
     private String units;
-
-    public final boolean isOn() {
-        return on;
-    }
-
-    public final void setOn(boolean on) {
-        this.on = on;
-    }
 
     public final String getUnits() {
         return units;

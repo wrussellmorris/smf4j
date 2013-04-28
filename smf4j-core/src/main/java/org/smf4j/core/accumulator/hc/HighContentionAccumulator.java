@@ -118,7 +118,7 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
      *         {@code Thread.currentThread().isAlive() == true}.
      */
     public final Mutator getMutator() {
-        if(!isOn()) {
+        if(!on) {
             return NopMutator.INSTANCE;
         }
         return mutatorRegistry.get();
@@ -140,7 +140,15 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
         return mutatorRegistry.getCombinedValue();
     }
 
-    public Map<Object, Object> getMetadata() {
+    public final Map<Object, Object> getMetadata() {
         return metadata;
+    }
+
+    public final boolean isOn() {
+        return on;
+    }
+
+    public final void setOn(boolean on) {
+        this.on = on;
     }
 }

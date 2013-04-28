@@ -22,6 +22,7 @@ import org.smf4j.core.accumulator.hc.UnboundedMinMutator;
 import org.smf4j.core.accumulator.hc.WindowedAddMutator;
 import org.smf4j.core.accumulator.hc.WindowedMaxMutator;
 import org.smf4j.core.accumulator.hc.WindowedMinMutator;
+import org.smf4j.testharness.temp.HPLAccumulator;
 import org.smf4j.to.jmx.JmxRegistrarPublisher;
 
 /**
@@ -42,63 +43,34 @@ public class App
 
         // Run one pass of lower-concurrency tests to prime the app
         System.out.println("Priming...");
-        runLowConcurrencyTests(runners);
+        runHighConcurrencyTests(runners, 1);
 
         // Now for the real tests
         System.out.println("Starting...");
-        runLowConcurrencyTests(runners);
         runHighConcurrencyTests(runners, numThreads);
 
         System.out.println("Done");
-    }
-
-    public void runLowConcurrencyTests(List<TestRunner> runners)
-    throws IOException, InterruptedException {
-        openFile("lc");
-
-        writeData("Test name");
-        writeData("Duration");
-        newLine();
-
-        for(TestRunner runner : runners) {
-            runLowConcurrencyTest(runner);
-        }
-        closeFile();
-    }
-
-    public void runLowConcurrencyTest(TestRunner runner) throws IOException, InterruptedException {
-        writeData(runner.getName());
-        System.out.print(runner.getName() + ":");
-        runHighConcurrencyTest(runner, 1);
-        System.out.println();
-        newLine();
     }
 
     public void runHighConcurrencyTests(List<TestRunner> runners, int numThreads)
     throws IOException, InterruptedException {
         openFile("hc");
 
-        writeData("Test name");
-        for(int i=1; i<=numThreads; i++) {
-            writeData(i + " Thread(s)");
+        for(TestRunner runner : runners) {
+            writeData(runner.getName());
         }
         newLine();
 
-        for(TestRunner runner : runners) {
-            runHighConcurrencyTests(runner, numThreads);
+        for(int t=1; t<=numThreads; t++) {
+            System.out.print(t + " threads");
+            for(TestRunner runner : runners) {
+                System.out.print(".");
+                runHighConcurrencyTest(runner, t);
+            }
+            System.out.println();
+            newLine();
         }
         closeFile();
-    }
-
-    public void runHighConcurrencyTests(TestRunner runner, int numThreads) throws IOException, InterruptedException {
-        writeData(runner.getName());
-        System.out.print(runner.getName() + ":");
-        for(int i=1; i<=numThreads; i++) {
-            System.out.print(" " + i);
-            runHighConcurrencyTest(runner, i);
-        }
-        System.out.println();
-        newLine();
     }
 
     public void runHighConcurrencyTest(final TestRunner runner, int numThreads) throws InterruptedException, IOException {
@@ -131,10 +103,15 @@ public class App
         // Plain AtomicLong
         //runners.add(new AtomicLongTestRunner(testIterations));
 
-        createTestRunnerSet(runners, testIterations, false, false);
-        createTestRunnerSet(runners, testIterations, false, true);
-        createTestRunnerSet(runners, testIterations, true, false);
-        createTestRunnerSet(runners, testIterations, true, true);
+        // Cliff Click's HPL Counter
+        runners.add(new AccTestRunner(testIterations, "hpl_counter", new HPLAccumulator()));
+        runners.add(new AccTestRunner(testIterations, "hc_ub_counter", new HighContentionAccumulator(UnboundedAddMutator.MUTATOR_FACTORY)));
+
+        // Our smf4j-core counter implementations
+        //createTestRunnerSet(runners, testIterations, false, false);
+        //createTestRunnerSet(runners, testIterations, false, true);
+        //createTestRunnerSet(runners, testIterations, true, false);
+        //createTestRunnerSet(runners, testIterations, true, true);
         return runners;
     }
 

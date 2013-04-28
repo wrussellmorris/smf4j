@@ -70,10 +70,8 @@ public final class MutatorRegistry {
     public Mutator get() {
         Thread currentThread = Thread.currentThread();
 
-        // Our implementation of WeakThreadRef is such that instances of
-        // Thread (or a subclass) can be used to find it in the map.
-        @SuppressWarnings("element-type-mismatch")
-        Registration r = registrations.get(currentThread);
+        // Find our registration
+        Registration r = registrations.get(new WeakThreadRef(currentThread));
         if(r != null) {
             return r.mutator;
         }
@@ -130,26 +128,12 @@ public final class MutatorRegistry {
      * {@code MutatorRegistry}'s internal map of
      * {@code WeakThreadRef}->{@code Mutator}.
      * <p>
-     * {@code WeakThreadRef}s mimic their associated {@code Thread} in a such
-     * a way as to ensure that a value stored in a {@code Map} with a
-     * {@code WeakThreadRef} key can be found by searching with the
-     * {@code Thread} instance associated with the original
-     * {@code WeakThreadRef}.
-     * </p>
-     * <pre>
-     * Thread t = Thread.currentThread();
-     * WeakThreadRef w = new WeakThreadRef(t);
-     * map.put(w, "hello");
-     * map.get(t); // Returns "hello"
-     * </pre>
      * <p>
      * Using {@code WeakThreadRef} allows us to keep a weak reference to the
-     * {@code Thread} that holds a specific {@code Mutator}, and further allows
-     * us to find that {@code Mutator} instance in our map by using the value
-     * of {@code Thread.currentThread()} as a key.
+     * {@code Thread} that holds a specific {@code Mutator}.
      * </p>
      */
-    private static final class WeakThreadRef {
+    static final class WeakThreadRef {
         private WeakReference<Thread> threadRef;
         private int hash;
 
@@ -193,9 +177,10 @@ public final class MutatorRegistry {
                 return true;
             }
 
-            if(obj instanceof Thread) {
-                Thread other = (Thread)obj;
-                return threadRef.get() == other;
+            if(obj instanceof WeakThreadRef) {
+                WeakThreadRef other = (WeakThreadRef)obj;
+                return hash == other.hash &&
+                        threadRef.get() == other.threadRef.get();
             }
 
             return false;
@@ -206,7 +191,7 @@ public final class MutatorRegistry {
      * A {@code Registration} represents the pairing of a {@code Thread}
      * instance with a {@code Mutator} instance.
      */
-    private static final class Registration {
+    static final class Registration {
         private volatile WeakReference<Thread> threadRef;
         private final Mutator mutator;
         private final AtomicBoolean available;
@@ -247,7 +232,7 @@ public final class MutatorRegistry {
             }
 
             // Check on the status of the currently-owning Thread.
-            if(cur != null && cur.isAlive()) {
+            if(cur != null && cur.getState() != Thread.State.TERMINATED) {
                 // It's currently owned by another thread that is still alive.
                 return false;
             }

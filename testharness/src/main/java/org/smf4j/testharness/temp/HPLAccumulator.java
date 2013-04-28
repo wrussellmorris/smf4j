@@ -13,48 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.smf4j.core.accumulator.lc;
+package org.smf4j.testharness.temp;
 
+import java.util.Collections;
 import java.util.Map;
+import org.cliffc.high_scale_lib.Counter;
+import org.smf4j.Accumulator;
 import org.smf4j.Mutator;
-import org.smf4j.core.accumulator.AbstractAccumulator;
-import org.smf4j.core.accumulator.MutatorFactory;
-import org.smf4j.nop.NopMutator;
 
 /**
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public final class LowContentionAccumulator extends AbstractAccumulator {
-
-    private final MutatorFactory mutatorFactory;
-    private final Mutator mutator;
-
-    public LowContentionAccumulator(MutatorFactory mutatorFactory) {
-        this.mutatorFactory = mutatorFactory;
-        this.mutator = mutatorFactory.createMutator();
-    }
-
-    public Mutator getMutator() {
-        if(!isOn()) {
-            return NopMutator.INSTANCE;
-        }
-        return mutator;
-    }
-
-    public long get() {
-        return mutator.get();
-    }
-
-    public Map<Object, Object> getMetadata() {
-        return mutatorFactory.getMetadata();
-    }
+public final class HPLAccumulator implements Accumulator, Mutator {
+    private Counter counter = new Counter();
 
     public boolean isOn() {
-        return on;
+        return true;
     }
 
     public void setOn(boolean on) {
-        this.on = on;
     }
+
+    public Mutator getMutator() {
+        return this;
+    }
+
+    public long get() {
+        return counter.get();
+    }
+
+    public String getUnits() {
+        return null;
+    }
+
+    public Map<Object, Object> getMetadata() {
+        return Collections.emptyMap();
+    }
+
+    public void put(long delta) {
+        counter.add(delta);
+    }
+
 }

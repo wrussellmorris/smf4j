@@ -60,8 +60,8 @@ public class AccTestRunner extends TestRunner {
         Mutator mutator = accumulator.getMutator();
         long start = System.currentTimeMillis();
         while(localCount < testIterations) {
-            mutator.put(1L);
-            //accumulator.getMutator().add(1L);
+            //mutator.put(1L);
+            accumulator.getMutator().put(1L);
             localCount++;
         }
         durations.offer(System.currentTimeMillis() - start);
