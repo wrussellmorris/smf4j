@@ -1,5 +1,6 @@
 set datafile separator ','
 set style data lines
+set xtics 1
 set xlabel "Concurrent Writer Threads (counting to 10,000,000)"
 set ylabel "Time (ms)"
 set terminal png truecolor
