@@ -151,4 +151,10 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
     public final void setOn(boolean on) {
         this.on = on;
     }
+
+    public void put(long delta) {
+        if(on) {
+            getMutator().put(delta);
+        }
+    }
 }

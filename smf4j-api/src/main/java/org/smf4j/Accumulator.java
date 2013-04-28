@@ -25,7 +25,6 @@ import org.smf4j.nop.NopMutator;
  * that value at runtime.  In this regard, {@code Accumulator} is somewhat
  * comparable to logging systems' {@code Logger} interfaces - they define a
  * simple api for simple data acquisition and externalization.
- *
  * <p>
  * {@code Accumulator} instances can be created directly in code that wishes to
  * use them, or can be registered ahead of time in a {@link Registrar}, and
@@ -40,6 +39,14 @@ import org.smf4j.nop.NopMutator;
  * produce from {@link #getMutator()} modify the returned value.
  * </p>
  * <p>
+ * {@code Accumulator} implementations must implement the {@link Mutator}
+ * interface which allows {@code Accumulator}s to be modified.  Additionally,
+ * {@link #getMutator()} allows {@code Accumulator} implementations to provide
+ * high-performance {@code Mutator}s capable of modifying the
+ * {@code Accumulator} while incurring less of a penalty for concurrent
+ * modification.
+ * </p>
+ * <p>
  * {@code Accumulator} implementations <strong>must</strong> be thread-safe.
  * </p>
  *
@@ -47,7 +54,7 @@ import org.smf4j.nop.NopMutator;
  * @see Mutator
  * @see Registrar
  */
-public interface Accumulator {
+public interface Accumulator extends Mutator {
 
     /**
      * Gets a {@code boolean} value that indicates whether or not this

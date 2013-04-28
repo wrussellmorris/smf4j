@@ -27,7 +27,7 @@ import org.smf4j.Mutator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class NopAccumulator implements Accumulator {
+public final class NopAccumulator implements Accumulator {
 
     /**
      * The static singleton {@code NopAccumulator}.
@@ -85,5 +85,12 @@ public class NopAccumulator implements Accumulator {
      */
     public Map<Object, Object> getMetadata() {
         return Collections.emptyMap();
+    }
+
+    /**
+     * Takes no action
+     * @param delta Ignored
+     */
+    public void put(long delta) {
     }
 }

@@ -24,7 +24,7 @@ import org.smf4j.Mutator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class NopMutator implements Mutator {
+public final class NopMutator implements Mutator {
 
     /**
      * The static singleton {@code NopMutator}.

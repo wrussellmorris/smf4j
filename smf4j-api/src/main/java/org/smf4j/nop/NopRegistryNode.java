@@ -28,7 +28,7 @@ import org.smf4j.RegistryNode;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class NopRegistryNode implements RegistryNode {
+public final class NopRegistryNode implements RegistryNode {
     /**
      * The static singleton {@code NopRegistryNode}.
      */

@@ -57,4 +57,10 @@ public final class LowContentionAccumulator extends AbstractAccumulator {
     public void setOn(boolean on) {
         this.on = on;
     }
+
+    public void put(long delta) {
+        if(on) {
+            getMutator().put(delta);
+        }
+    }
 }

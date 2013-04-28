@@ -33,7 +33,7 @@ import org.smf4j.RegistryNode;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class NopRegistrar implements Registrar {
+public final class NopRegistrar implements Registrar {
 
     /**
      * The static singleton instance of {@code NopRegistrar}.

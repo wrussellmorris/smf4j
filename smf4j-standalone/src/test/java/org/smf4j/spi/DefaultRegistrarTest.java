@@ -177,18 +177,7 @@ public class DefaultRegistrarTest {
             }
 
             public Mutator getMutator() {
-                return new Mutator() {
-                    public void put(long delta) {
-                    }
-
-                    public long get() {
-                        return 0L;
-                    }
-
-                    public long combine(long other) {
-                        return 0L;
-                    }
-                };
+                return this;
             }
 
             public String getUnits() {
@@ -205,6 +194,9 @@ public class DefaultRegistrarTest {
 
             public Map<Object, Object> getMetadata() {
                 return null;
+            }
+
+            public void put(long delta) {
             }
         };
     }

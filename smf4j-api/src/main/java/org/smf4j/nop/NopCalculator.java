@@ -26,7 +26,7 @@ import org.smf4j.Calculator;
  *
  * @author Russell Morris (wrussellmorris@gmail.com)
  */
-public class NopCalculator implements Calculator {
+public final class NopCalculator implements Calculator {
 
     /**
      * The static singleton {@code NopCalculator}.
