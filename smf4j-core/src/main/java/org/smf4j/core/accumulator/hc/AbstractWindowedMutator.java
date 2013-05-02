@@ -47,10 +47,6 @@ import org.smf4j.core.accumulator.TimeReporter;
  * once constructed, {@code AbstractWindowedMutator} never allocates any more
  * storage space as a result of reads or writes.
  * </p>
- * <p>
- * Subclasses are required to implement both {@link #combine(long)} and
- * {@link #combine(long, long)}.
- * </p>
  *
  * @see HighContentionAccumulator
  *
@@ -63,7 +59,6 @@ public abstract class AbstractWindowedMutator implements Mutator {
     private final int intervals;
     private final int bufferIntervals;
     private final AtomicLongArray values;
-    private final long[] localTimestamps;
     private final AtomicLongArray timestamps;
     private final long intervalResolutionInNanos;
     private final IntervalStrategy strategy;
@@ -72,11 +67,6 @@ public abstract class AbstractWindowedMutator implements Mutator {
 
     /**
      * Creates a new instance of {@code AbstractWindowedMutator}.
-     * <p>
-     * {@code initialValue} should be chosen so that it acts as an identity
-     * in the {@link #combine(long)} and {@link #combine(long, long)}
-     * operations.
-     * </p>
      * @param initialValue The initial value reported by this
      *                     {@code AbstractWindowedMutator}
      * @param strategy The {@link IntervalStrategy} used to allocated and manage
@@ -95,7 +85,6 @@ public abstract class AbstractWindowedMutator implements Mutator {
         this.buckets = intervals + bufferIntervals;
         this.values = new AtomicLongArray(buckets);
         this.timestamps = new AtomicLongArray(buckets);
-        this.localTimestamps = new long[buckets];
         this.staleWindowTimestampOffset = intervalResolutionInNanos * buckets;
     }
 
@@ -103,10 +92,9 @@ public abstract class AbstractWindowedMutator implements Mutator {
         long nanos = timeReporter.nanos();
         int index = strategy.intervalIndex(nanos);
         long stale = nanos - intervalResolutionInNanos;
-        if(localTimestamps[index] < stale) {
+        if(timestamps.get(index) < stale) {
             // This bucket is stale
             timestamps.lazySet(index, nanos);
-            localTimestamps[index] = nanos;
             values.lazySet(index, delta);
         } else {
             // Bucket's still fresh...
@@ -115,8 +103,8 @@ public abstract class AbstractWindowedMutator implements Mutator {
     }
 
     /**
-     * A variant of {@link #combine(long)} that returns the combined value of
-     * {@code local} and {@code delta}.
+     * Returns a value that is the combined value of {@code local} and
+     * {@code delta}.
      * <p>
      * This {@code protected} method is used by {@link #put(long) put} to
      * combine the existing buffer value with the value passed to {@code put}.

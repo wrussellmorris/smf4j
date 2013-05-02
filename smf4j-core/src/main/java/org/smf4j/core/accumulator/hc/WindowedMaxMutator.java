@@ -17,6 +17,8 @@ package org.smf4j.core.accumulator.hc;
 
 import org.smf4j.Mutator;
 import org.smf4j.core.accumulator.IntervalStrategy;
+import org.smf4j.core.accumulator.PowersOfTwoIntervalStrategy;
+import org.smf4j.core.accumulator.SecondsIntervalStrategy;
 import org.smf4j.core.accumulator.SystemNanosTimeReporter;
 import org.smf4j.core.accumulator.TimeReporter;
 import org.smf4j.core.accumulator.WindowedMutatorFactory;

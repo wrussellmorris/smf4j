@@ -29,7 +29,21 @@ public class SecondsBucketIntervalTest {
     }
 
     @Test
-    public void initSimple() {
+    public void initWithBufferIntervals() {
+        int window = 1;
+        int intervals = 5;
+        SecondsIntervalStrategy interval = create(window, intervals);
+
+        long windowInNanos = ((long)window) * 1000000000L;
+        assertEquals(windowInNanos, interval.timeWindowInNanos());
+        assertEquals(intervals, interval.intervals());
+        assertEquals(2, interval.bufferIntervals());
+        assertEquals(windowInNanos / ((long)intervals),
+                interval.intervalResolutionInNanos());
+    }
+
+    @Test
+    public void initWithoutBufferIntervals() {
         int window = 10;
         int intervals = 5;
         SecondsIntervalStrategy interval = create(window, intervals);
@@ -37,6 +51,7 @@ public class SecondsBucketIntervalTest {
         long windowInNanos = ((long)window) * 1000000000L;
         assertEquals(windowInNanos, interval.timeWindowInNanos());
         assertEquals(intervals, interval.intervals());
+        assertEquals(0, interval.bufferIntervals());
         assertEquals(windowInNanos / ((long)intervals),
                 interval.intervalResolutionInNanos());
     }

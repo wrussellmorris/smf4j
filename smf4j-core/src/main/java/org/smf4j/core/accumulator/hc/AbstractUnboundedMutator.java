@@ -46,12 +46,6 @@ public abstract class AbstractUnboundedMutator implements Mutator {
      * use to set their initial value.
      * @param initialValue The initial value, reported when no writes have been
      *                     made.
-     * <p>
-     * {@code initialValue} should be chosen in such a manner that it serves as
-     * an identity transformation when passed to {@link #combine(long)}.  For
-     * example, {@link UnboundedAddMutator} uses {@code 0}, and
-     * {@link UnboundedMaxMutator} uses {@link Long#MIN_VALUE}.
-     * </p>
      */
     protected AbstractUnboundedMutator(long initialValue) {
         localValue = initialValue;

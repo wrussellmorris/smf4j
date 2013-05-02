@@ -29,7 +29,25 @@ public class PowersOfTwoIntervalStrategyTest {
     }
 
     @Test
-    public void init() {
+    public void initWithoutBufferIntervals() {
+        int windowExp = 34;
+        int intervalExp = 4;
+        IntervalStrategy interval = create(windowExp, intervalExp);
+
+        long expectedIntervalRes = 1L<<(windowExp-intervalExp);
+        long expectedIntervals = 1L<<(intervalExp);
+        int expectedBufferIntervals = 0;
+        long expectedWindow = expectedIntervalRes * expectedIntervals;
+
+        assertEquals(expectedWindow, interval.timeWindowInNanos());
+        assertEquals(expectedIntervalRes, interval.intervalResolutionInNanos());
+        assertEquals(expectedIntervals, interval.intervals());
+        assertEquals(expectedBufferIntervals, interval.bufferIntervals());
+
+    }
+
+    @Test
+    public void initWithBufferIntervals() {
         int windowExp = 10;
         int intervalExp = 4;
         IntervalStrategy interval = create(windowExp, intervalExp);

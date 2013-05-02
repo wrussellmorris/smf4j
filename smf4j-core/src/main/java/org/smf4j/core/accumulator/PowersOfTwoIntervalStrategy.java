@@ -54,6 +54,8 @@ import org.smf4j.Accumulator;
  */
 public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
 
+    private static final long ONE_BILLION = 1000000000L;
+
     /**
      * The maximum interval exponent.
      */
@@ -64,6 +66,12 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
      */
     public static final int BUFFER_INTERVALS = 2;
 
+    /**
+     * If intervals are below this resolution, then use buffer intervals.
+     */
+    private static final long MAX_RESOLUTION_FOR_BUFFER_INTERVALS =
+            1 * ONE_BILLION;
+
     private final long totalWindowInNanos;
     private final long reportedWindowInNanos;
     private final int intervals;
@@ -71,6 +79,7 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
     private final int reportedIntervals;
     private final long intervalResolutionInNanos;
     private final long indexMask;
+    private final int bufferIntervals;
 
     /**
      * Creates a new instance of {@code PowersOfTwoIntervalStrategy} with the
@@ -113,8 +122,15 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
         // Total number of intervals is 2^intervalExp nanos
         this.intervals = 1 << intervalExp;
 
-        // reportedIntervals reserves BUFFER_INTERVALS intervals for buffering
-        this.reportedIntervals = intervals - BUFFER_INTERVALS;
+        // Resolutions below a threshold will use extra buffer intervals
+        if(intervalResolutionInNanos <= MAX_RESOLUTION_FOR_BUFFER_INTERVALS) {
+            this.bufferIntervals = BUFFER_INTERVALS;
+        } else {
+            this.bufferIntervals = 0;
+        }
+
+        // reportedIntervals reserves bufferIntervals intervals for buffering
+        this.reportedIntervals = intervals - bufferIntervals;
 
         // bufferIntervals must be less than intervals
         if(reportedIntervals <= 0) {
@@ -125,7 +141,7 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
         // reportedWindowInNanos takes into account intervals reserved
         // for buffering
         this.reportedWindowInNanos = totalWindowInNanos -
-                ((long)BUFFER_INTERVALS * intervalResolutionInNanos);
+                ((long)bufferIntervals * intervalResolutionInNanos);
     }
 
     public int intervals() {
@@ -145,6 +161,6 @@ public final class PowersOfTwoIntervalStrategy implements IntervalStrategy {
     }
 
     public int bufferIntervals() {
-        return BUFFER_INTERVALS;
+        return bufferIntervals;
     }
 }

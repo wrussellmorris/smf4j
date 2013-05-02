@@ -48,10 +48,17 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
      */
     public static final int BUFFER_INTERVALS = 2;
 
+    /**
+     * If intervals are below this resolution, then use buffer intervals.
+     */
+    private static final long MAX_RESOLUTION_FOR_BUFFER_INTERVALS =
+            1 * ONE_BILLION;
+
     private final long timeWindowInNanos;
     private final int intervals;
     private final int totalIntervals;
     private final long intervalResolutionInNanos;
+    private final int bufferIntervals;
 
     /**
      * Creates a new {@code SecondsIntervalStrategy} instance tracking a time
@@ -72,12 +79,17 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
                     "intervals must be > 0 and < " + MAX_INTERVALS);
         }
 
-        this.intervals = intervals;
-        this.totalIntervals = intervals + BUFFER_INTERVALS;
         this.timeWindowInNanos = ((long)timeWindowInSeconds) * ONE_BILLION;
-
-        // Figure out the interval resolution
         this.intervalResolutionInNanos = timeWindowInNanos / intervals;
+        this.intervals = intervals;
+
+        // Resolutions below a threshold will use extra buffer intervals
+        if(intervalResolutionInNanos <= MAX_RESOLUTION_FOR_BUFFER_INTERVALS) {
+            this.bufferIntervals = BUFFER_INTERVALS;
+        } else {
+            this.bufferIntervals = 0;
+        }
+        this.totalIntervals = intervals + bufferIntervals;
     }
 
     public int intervals() {
@@ -85,7 +97,7 @@ public final class SecondsIntervalStrategy implements IntervalStrategy {
     }
 
     public int bufferIntervals() {
-        return BUFFER_INTERVALS;
+        return bufferIntervals;
     }
 
     public long intervalResolutionInNanos() {

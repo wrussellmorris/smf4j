@@ -59,6 +59,7 @@ public class App
     throws IOException, InterruptedException {
         openFile("hc");
 
+        writeData("writers");
         for(TestRunner runner : runners) {
             writeData(runner.getName());
         }
@@ -66,6 +67,7 @@ public class App
 
         for(int t : numThreads) {
             System.out.print(t + " threads");
+            writeData(t);
             for(TestRunner runner : runners) {
                 System.out.print(".");
                 runHighConcurrencyTest(runner, t);
