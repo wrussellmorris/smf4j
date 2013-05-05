@@ -63,7 +63,7 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
     /**
      * The {@link MutatorRegistry} used to schedule {@code Mutator} instances.
      */
-    private final MutatorRegistry mutatorRegistry;
+    private final NewMutatorRegistry mutatorRegistry;
 
     /**
      * The {@link Map} that contains metadata describing for this instance.
@@ -77,7 +77,7 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
      *                       {@code Mutator} when necessary.
      */
     public HighContentionAccumulator(MutatorFactory mutatorFactory) {
-        this.mutatorRegistry = new MutatorRegistry(mutatorFactory);
+        this.mutatorRegistry = new NewMutatorRegistry(mutatorFactory);
         this.metadata = mutatorFactory.getMetadata();
     }
 
@@ -118,9 +118,6 @@ public final class HighContentionAccumulator extends AbstractAccumulator {
      *         {@code Thread.currentThread().isAlive() == true}.
      */
     public final Mutator getMutator() {
-        if(!on) {
-            return NopMutator.INSTANCE;
-        }
         return mutatorRegistry.get();
     }
 
