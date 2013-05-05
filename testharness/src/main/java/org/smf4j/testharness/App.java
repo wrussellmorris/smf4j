@@ -110,8 +110,11 @@ public class App
 
         // Cliff Click's HPL Counter
         runners.add(new AccTestRunner(testIterations, "hpl_counter", new HPLAccumulator(), false));
+        runners.add(new AccTestRunner(testIterations, "hc_ub_g_counter", new HighContentionAccumulator(UnboundedAddMutator.MUTATOR_FACTORY), false));
+        runners.add(new AccTestRunner(testIterations, "hc_ub_p_counter", new HighContentionAccumulator(UnboundedAddMutator.MUTATOR_FACTORY), true));
 
         // Our smf4j-core counter implementations
+        /*
         createTestRunnerSet(runners, testIterations, false, false, true);
         createTestRunnerSet(runners, testIterations, false, true, true);
         createTestRunnerSet(runners, testIterations, true, false, true);
@@ -120,6 +123,7 @@ public class App
         createTestRunnerSet(runners, testIterations, false, true, false);
         createTestRunnerSet(runners, testIterations, true, false, false);
         createTestRunnerSet(runners, testIterations, true, true, false);
+        */
         return runners;
     }
 
